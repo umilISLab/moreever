@@ -1,0 +1,1 @@
+Static website structure will be generated here.
