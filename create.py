@@ -2,10 +2,6 @@ from typing import Dict, List, Tuple
 
 from glob import glob
 
-# import pandas as pd
-# import numpy as np
-# from tqdm.notebook import tqdm
-
 from stemmers import stemmers
 from util import story_tokenize, collect_tokens
 
@@ -13,7 +9,10 @@ from util import story_tokenize, collect_tokens
 def tokenize_values(
     func_name: str = "sb", fname="values-edited"
 ) -> Tuple[Dict[str, List[str]], Dict[str, str]]:
-    """fname without extension"""
+    """Get the two directional dictionaries between values and labels.
+    As a byproduct make a stemmed version of the values list.
+    :param str func_name: stemmer name as in stemmers.py
+    :param str fname: filename without extension"""
     token_func = stemmers[func_name]
     values: Dict[str, List[str]] = {}
     valuesbackref: Dict[str, str] = {}
@@ -35,7 +34,7 @@ def tokenize_values(
 
 
 def load_source(
-    token_func, document_folders: List[str]  # , annotate: bool = False
+    token_func, document_folders: List[str]
 ) -> Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, List[List[str]]]]]:
     fulltexts: Dict[str, Dict[str, str]] = {}
     tokenized: Dict[str, Dict[str, List[List[str]]]] = {}

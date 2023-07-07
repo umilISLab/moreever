@@ -1,4 +1,7 @@
 #!/bin/python
+"""This generates a static website.
+"""
+
 
 from typing import Dict, List
 

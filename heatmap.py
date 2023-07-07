@@ -1,4 +1,5 @@
 #!/bin/python
+"""Generate a heatmap of texts/stories vs labels"""
 
 from glob import glob
 

@@ -1,3 +1,5 @@
+# TODO: make this dynamic, depending on subdirectories of stories/
+
 countries = ["Germany", "Italy", "Portugal"]
 
 code2country = {

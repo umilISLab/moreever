@@ -1,5 +1,7 @@
 #!/bin/python
-
+"""From a values file, get a flattened version,
+which can be fed into the same algorithms to work with labels as if they are unrelated.
+"""
 import csv
 
 def flatten(fname):
