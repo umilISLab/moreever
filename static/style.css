@@ -1,0 +1,19 @@
+@import url('//fonts.googleapis.com/css?family=EB+Garamond&display=swap');
+body {
+    font-family: 'EB Garamond', serif;
+    color: indigo;
+    background-color: whitesmoke;
+}
+
+div {
+    padding-bottom: 10px;
+}
+  
+.value {
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 1px 3px;
+    cursor: help;
+    color: black;
+    text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
+}

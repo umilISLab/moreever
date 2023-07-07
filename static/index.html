@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Syntactic identification of Values in Fairy Tales</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+body {
+    display: flex;
+}
+
+.row {
+  display: flex;
+}
+  
+#list {
+    position: absolute;
+    width: 250px;
+    height: 90%;
+    border: none
+}
+
+#fulltext {
+    left: 250px;
+    width: 600px;
+    position: absolute;
+    height: 100%;
+    border: none;
+}
+#values-container {
+    left: 850px;
+    width: 1000px;
+    position: absolute;
+    overflow: hidden;
+    height: 100%;
+}
+#values {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+    </style>
+    <script>
+        let init = () => {
+            var stemmer = document.getElementById("stemmer-select");
+            var country = document.getElementById("country-select");
+            var list = document.getElementById("list");
+            var fulltext = document.getElementById("fulltext");
+            var values = document.getElementById("values");
+
+            let tryUpdate = async (iPossiblyBogusURL) => {
+                const response = await fetch(iPossiblyBogusURL);
+                
+                if (response.status == 200) {
+                    fulltext.src = iPossiblyBogusURL;
+                } else {
+                    console.log("Unable to find: " + iPossiblyBogusURL)
+                }
+            }
+
+            let update = () => {
+                values.src = stemmer.value + "/values.html";
+                if (country.value == "all") {
+                    list.src = stemmer.value + "/index.html";
+                } else {
+                    list.src = stemmer.value + "/" + country.value + "/index.html";
+                }
+                let text_country = country.value;
+                if (text_country == "all") {
+                    const prefix = fulltext.src.substr(0,fulltext.src.lastIndexOf("/"));
+                    text_country = prefix.substr(prefix.lastIndexOf("/")+1);
+                }
+                // console.log(text_country);
+                // console.log(prefix);
+                // console.log(stemmer.value + "/" + text_country + fulltext.src.substr(fulltext.src.lastIndexOf("/")));
+                tryUpdate(stemmer.value + "/" + text_country + fulltext.src.substr(fulltext.src.lastIndexOf("/")));
+            }
+
+            if (window.location.hash) {
+                console.log("Route is " + window.location.hash);
+                tryUpdate(window.location.hash.replace("#", "/"));
+            }
+
+            stemmer.addEventListener('change', update);
+            country.addEventListener('change', update);
+        }
+
+    </script>
+  </head>
+<body onload="init()">
+    <form class="menu">
+        <div>
+            <label for="stemmer-select">Stemmer:</label>
+            <select name="stemmer" id="stemmer-select">
+                <option value="sb">Snowball</option>
+                <option value="lan">Lancaster</option>
+                <option value="ps">Porter</option>
+                <option value="wnl">Lemmatizer</option>
+                <option value="dummy">No Stemming</option>
+            </select>
+        </div>
+        <div>
+            <label for="country-select">Country:</label>
+            <select name="country" id="country-select">
+                <option value="all">all</option>
+                <option value="Germany">Germany</option>
+                <option value="Italy">Italy</option>
+                <option value="Portugal">Portugal</option>
+            </select>
+        </div>
+        <div>
+            <iframe name="list" id="list" src="sb/index.html"></iframe>
+        </div>s
+    </form>
+    <iframe name="fulltext" id="fulltext" src="sb/Germany/1_The_Frog_King_or_Iron_Henry.html"></iframe> 
+    <div id="values-container">
+        <iframe name="values" id="values" src="sb/values.html"></iframe> 
+    </div>
+</body></html>
