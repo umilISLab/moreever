@@ -86,17 +86,21 @@ list_templ = """<!DOCTYPE html>
 <body><h3>{title}</h3>{body}</body></html>"""
 
 
-def tale_list(stemmer: str, country: str = None) -> str:
+def tale_list(stemmer: str, country: str = None, from_parent = False) -> str:
+    """
+    :param str country: Specifies corpus/country. If not set, will do for all
+    :param bool from_parent: Specifies whether the generated file will be in the parent directory, so that URLs are adapted accordingly. This is not intended to be set manually"""
     if not country:
-        return "\n".join(tale_list(stemmer, c) for c in countries)
+        return "\n".join(tale_list(stemmer, c, True) for c in countries)
     result = []
     names = {}
     for fname in glob(f"site/{stemmer}/{country}/*.html"):
         names[fname2name(fname)] = fname
     for name in sorted(names.keys()):
         fname = names[name]
+        url = fname.replace(f'site/{stemmer}/', '') if from_parent else fname.replace(f'site/{stemmer}/{country}/', '')
         result += [
-            f"<div><a href='{fname.replace(f'site/{stemmer}/', '')}' target='fulltext'>{name}</a></div>"
+            f"<div><a href='{url}' target='fulltext'>{name}</a></div>"
         ]
     return "\n".join(result)
 
