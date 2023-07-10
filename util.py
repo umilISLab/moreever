@@ -1,8 +1,9 @@
 from typing import Dict, List, Optional
 
-import re
+import os
 import string
 import itertools
+from glob import glob
 
 from nltk import sent_tokenize, word_tokenize  # type: ignore
 from nltk.tokenize import RegexpTokenizer
@@ -124,3 +125,12 @@ def stats(fulltexts, tokenized: Dict[str, Dict[str, List[str]]]):
     print(f"symbols: {symbols}")
     print(f"tokens: {tokens}")
     return tales, symbols, tokens
+
+def get_dirs(path: str = "./stories/"):
+    """
+    >>> from const import countries
+    >>> sorted(get_dirs()) == sorted(countries)
+    True
+    """
+    return [f.replace(path, "") for f in glob(f"{path}/*") if os.path.isdir(os.path.join(f))] 
+

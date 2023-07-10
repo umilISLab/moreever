@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 from glob import glob
 
 from stemmers import stemmers
-from util import story_tokenize, collect_tokens
+from util import story_tokenize, collect_tokens, get_dirs
 
 
 def tokenize_values(
@@ -32,21 +32,25 @@ def tokenize_values(
         fout.writelines("\n".join(", ".join(v) for v in values.values()))
     return values, valuesbackref
 
-
 def load_source(
-    token_func, document_folders: List[str]
+    token_func = None, document_folders: List[str] = []
 ) -> Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, List[List[str]]]]]:
     """loads the sources from the specified directory structure
 
     Args:
-        token_func (_type_): the used stemmer as a function
+        token_func (_type_): the used stemmer as a function. Defaults to None leads to use of dummy stemmer.
         document_folders (List[str]): a list of subdirectories. Corresponds to const.countries.
-        TODO: in future versions this could be autodetected from parent
+        Defaults to empty list leads to reading all subdirectories of stories/
 
     Returns:
         Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, List[List[str]]]]]: returns two dictionaries:
             corpora->text_name->fulltext and corpora->text_name->list of tokenized sentences
     """
+    if not token_func:
+        token_func = stemmers["dummy"]
+    if not document_folders:
+        document_folders = get_dirs()
+
     fulltexts: Dict[str, Dict[str, str]] = {}
     tokenized: Dict[str, Dict[str, List[List[str]]]] = {}
     for country in document_folders:
@@ -65,20 +69,33 @@ def load_source(
 
 
 def calc_occurences(
-    values: Dict[str, List[str]], tokenized: Dict[str, Dict[str, List[List[str]]]]
+    values: Dict[str, List[str]], tokenized: Dict[str, Dict[str, List[List[str]]]], func_name = "dummy"
 ) -> Tuple[
     Dict[Tuple[str, str], int], Dict[str, Dict[str, int]], Dict[str, Dict[str, int]]
 ]:
+    """_Calculate occurences of words_
+
+    Args:
+        values (Dict[str, List[str]]): the dictionary mapping values to list of synonym labels, e.g. produced by tokenize_values()
+        tokenized (Dict[str, Dict[str, List[List[str]]]]): the tokenized text content, produced by load_source()
+        func_name (str, optional): The used stemmer, notice that stemmer is an idempotent function,
+        i.e. applying it twice produces the same result. Defaults to "dummy".
+
+    Returns:
+        Tuple[ Dict[Tuple[str, str], int], Dict[str, Dict[str, int]], Dict[str, Dict[str, int]] ]: returns three counting dictionaries:
+            (text_name, value): count), text_name: (value: count), value: (text_name:count)
+    """
+    token_func = stemmers[func_name]
     occurences: Dict[Tuple[str, str], int] = {}  # (text_name, value): count)
     occurences_tv: Dict[str, Dict[str, int]] = {}  # text_name: (value: count)
     occurences_backref: Dict[str, Dict[str, int]] = {}  # value: (text_name:count)
     for country, chapters in tokenized.items():
-        for chapter, text in chapters.items():
+        for chapter, tokens in chapters.items():
             text_name = f"{country[0]}/{chapter}"
             for value_name, synonyms in values.items():
                 cnt = sum(
-                    sum(phrase.count(keyword) for keyword in synonyms)
-                    for phrase in text
+                    sum(phrase.count(token_func(keyword)) for keyword in synonyms)
+                    for phrase in [token_func(t) for t in tokens]
                 )
                 if not cnt:
                     continue
@@ -99,24 +116,31 @@ def calc_occurences(
 
 
 def annotate_occurences(
-    tokenized: Dict[str, Dict[str, List[List[str]]]], values_br: Dict[str, str]
+    tokenized: Dict[str, Dict[str, List[List[str]]]], values_br: Dict[str, str], func_name = "dummy"
 ):
     """
     Emphasises relationships between keywords and labels/values,
     by inserting a bracketed label before and after every keyword
+
+    Args:
+        tokenized (Dict[str, Dict[str, List[List[str]]]]): the tokenized text content, produced by load_source()
+        values_br (Dict[str, str]): the backreference dictionary mapping labels to values, e.g. produced by tokenize_values()
+        func_name (str, optional): The used stemmer, notice that stemmer is an idempotent function,
+        i.e. applying it twice produces the same result. Defaults to "dummy".
 
     >>> tokenized = {'a':{'a':[['aa', 'bb', 'cc']]}}
     >>> values = {'bb': 'dd'}
     >>> annotate_occurences(tokenized, values)
     {'a': {'a': [['aa', 'dd', 'bb', 'dd', 'cc']]}}
     """
+    token_func = stemmers[func_name]
     for country, tales in tokenized.items():
         for tale, tokens in tales.items():
             overall = []
             for sentence in tokens:
                 updated = []
                 for token in sentence:
-                    if token in values_br.keys():
+                    if token_func(token) in values_br.keys():
                         updated += [values_br[token], token, values_br[token]]
                     else:
                         updated += [token]
