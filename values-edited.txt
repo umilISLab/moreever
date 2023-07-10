@@ -1,34 +1,34 @@
-Dialogue, conversation, alliance, dialog
-Equality, equal
-Free, freedom
-Right, benefit, claim
-Justice, judge, trial, fairness, just
-Peace
+dialogue, conversation, alliance, dialog
+equality, equal
+free, freedom
+right, benefit, claim
+justice, judge, trial, fairness, just
+peace
 
-Cooperation, help, together
-Curiosity, curious
-Empathy, compassion, pity, sympathy
-Evidence, revelation
-Emancipation, liberty, independence
-generous, Generosity, hospitality, goodness, benevolence, charity
-honest, Honesty, confidence, frankness
-smart, Ingenuity, intellingence, clever, cleverness, talent, wisdom, wise
-kind, Kindness, courtesy, graciousness, gentleness
-know, able, Knowledge, ability
+cooperation, help, together
+curiosity, curious
+empathy, compassion, pity, sympathy
+evidence, revelation
+emancipation, liberty, independence
+generous, generosity, hospitality, goodness, benevolence, charity
+honest, honesty, confidence, frankness
+smart, ingenuity, intellingence, clever, cleverness, talent, wisdom, wise
+kind, kindness, courtesy, graciousness, gentleness
+know, able, knowledge, ability
 brother, sister, brotherly, sisterly
-Love, married, spouse, wife, husband, marriage, wedding
-Loyal, loyalty, devotion, honor, faith
-Piety, pious, God, Virgin, Saint, Angel, pray
+love, married, spouse, wife, husband, marriage, wedding
+loyal, loyalty, devotion, honor, faith
+piety, pious, god, virgin, saint, angel, pray
 mother, father, motherly, fatherly
-punish, Punishment, discipline
-pure, selfless, innocent, Purity, selflessness, innocence
-correct, Reason, Correctness
-Reward, compensation, bounty, prize, pay, payment, treasure, jewels
-lawful, Rules, Authority, king, queen
-Solidarity, harmony, support
-tolerant, Tolerance, acceptance, permissiveness
-Majority
-Altruism, sacriﬁce
-Truth
+punish, punishment, discipline
+pure, selfless, innocent, purity, selflessness, innocence
+correct, reason, correctness
+reward, compensation, bounty, prize, pay, payment, treasure, jewels
+lawful, rules, authority, king, queen
+solidarity, harmony, support
+tolerant, tolerance, acceptance, permissiveness
+majority
+altruism, sacriﬁce
+truth
 
 

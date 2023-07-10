@@ -16,10 +16,10 @@ from bokeh.plotting import figure, save, output_file
 
 from stemmers import stemmers
 
-def heatmap(tkn: str, fname: str):
-    output_file(
-        filename=f"site/{tkn}/map.html", title="Clickable Map of Values in Fairy Tales"
-    )
+
+def render(tkn: str, fname: str):
+    title = f"Clickable Map of Values in Fairy Tales (tokenisation: {tkn})"
+    output_file(filename=f"site/{tkn}/map.html", title=title)
 
     values, _ = tokenize_values(tkn, fname=fname)
     _, tokenized = load_source(stemmers[tkn], corpora)
@@ -39,7 +39,8 @@ def heatmap(tkn: str, fname: str):
     df = pd.DataFrame(data)
     df.columns = ["country", "text", "value", "count", "label", "url"]
     value_range = sorted(
-        list(occurences_backref.keys()), key=lambda x: -sum(occurences_backref[x].values())
+        list(occurences_backref.keys()),
+        key=lambda x: -sum(occurences_backref[x].values()),
     )
 
     text_range = list(df.groupby(["text"])["count"].sum().sort_values().index)
@@ -48,7 +49,7 @@ def heatmap(tkn: str, fname: str):
     source = ColumnDataSource(data=df)
 
     p = figure(
-        title=f"Clickable Map of Values in Fairy Tales (tokenisation: {tkn})",
+        title=title,
         y_range=text_range,
         x_range=value_range,
         x_axis_location="above",
@@ -123,7 +124,8 @@ def heatmap(tkn: str, fname: str):
 
     save(p)
 
+
 if __name__ == "__main__":
     fname = "values-flat"
     tkn = "sb"
-    heatmap(tkn,fname)
+    heatmap(tkn, fname)

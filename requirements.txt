@@ -1,5 +1,6 @@
 bokeh==3.1.0
-
 colorcet==3.0.1
+gensim==4.3.1
 nltk==3.8.1
+pandas==2.0.2
 roman==4.1

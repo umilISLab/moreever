@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import re
 import string
@@ -22,7 +22,12 @@ regex_token = r"\w+"
 
 def fname2name(fname: str) -> str:
     #     print(fname)
-    name = fname.replace("_s_", "'s ").replace("_.", ".").replace(".html", "").replace(".txt", "")
+    name = (
+        fname.replace("_s_", "'s ")
+        .replace("_.", ".")
+        .replace(".html", "")
+        .replace(".txt", "")
+    )
     if name.endswith("_"):
         name = name[:-1]
     name = " ".join(w[0].upper() + w[1:].lower() for w in name.split("_")[1:])
@@ -31,7 +36,7 @@ def fname2name(fname: str) -> str:
 
 
 def story_tokenize(token_func, story: str) -> List[List[str]]:
-    """get the text of the story and returns a list of lemmas.
+    """get the text of the story and returns a lists of sentences represented as list of lemmas.
 
     >>> from nltk.stem import SnowballStemmer
     >>> from nltk.stem.lancaster import LancasterStemmer
@@ -76,8 +81,8 @@ def story_tokenize(token_func, story: str) -> List[List[str]]:
 
 
 def collect_tokens(
-    tokenized: Dict[str, Dict[str, List[str]]],
-    corpus: str = None,
+    tokenized: Dict[str, Dict[str, List[List[str]]]],
+    corpus: Optional[str] = None,
 ) -> List[str]:
     """
     >>> data = {'A': {'1': [['aa', 'bb'], ['cc']], '2':[['c', 'd']]}, 'B': {'I': [['a', 'b']], 'II': [['bd', 'ce', 'cf'], ['ff']]}}

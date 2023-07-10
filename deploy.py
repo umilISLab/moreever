@@ -18,9 +18,10 @@ from datamodel import Annotator, span_templ
 from create import tokenize_values
 
 from flatvalues import flatten
-from heatmap import heatmap
+from heatmap import render as heatmap
 
-def mkdirs(vname = "values-edited"):
+
+def mkdirs(vname="values-edited"):
     if not os.path.exists("site"):
         os.mkdir("site")
     for s in stemmers.keys():
@@ -32,9 +33,9 @@ def mkdirs(vname = "values-edited"):
             nxt2 = f"{nxt}/{c}"
             if not os.path.exists(nxt2):
                 os.mkdir(nxt2)
-        
 
-def values2css(stemmer: str, vname = "values-edited") -> None:
+
+def values2css(stemmer: str, vname="values-edited") -> None:
     mapping: Dict[str, str] = {}
     with open(f"site/{stemmer}/{vname}.txt") as f:
         for i, l in enumerate(csv.reader(f)):
@@ -86,10 +87,11 @@ list_templ = """<!DOCTYPE html>
 <body><h3>{title}</h3>{body}</body></html>"""
 
 
-def tale_list(stemmer: str, country: str = None, from_parent = False) -> str:
+def tale_list(stemmer: str, country: str = None, from_parent=False) -> str:
     """
     :param str country: Specifies corpus/country. If not set, will do for all
-    :param bool from_parent: Specifies whether the generated file will be in the parent directory, so that URLs are adapted accordingly. This is not intended to be set manually"""
+    :param bool from_parent: Specifies whether the generated file will be in the parent directory, so that URLs are adapted accordingly. This is not intended to be set manually
+    """
     if not country:
         return "\n".join(tale_list(stemmer, c, True) for c in countries)
     result = []
@@ -98,10 +100,12 @@ def tale_list(stemmer: str, country: str = None, from_parent = False) -> str:
         names[fname2name(fname)] = fname
     for name in sorted(names.keys()):
         fname = names[name]
-        url = fname.replace(f'site/{stemmer}/', '') if from_parent else fname.replace(f'site/{stemmer}/{country}/', '')
-        result += [
-            f"<div><a href='{url}' target='fulltext'>{name}</a></div>"
-        ]
+        url = (
+            fname.replace(f"site/{stemmer}/", "")
+            if from_parent
+            else fname.replace(f"site/{stemmer}/{country}/", "")
+        )
+        result += [f"<div><a href='{url}' target='fulltext'>{name}</a></div>"]
     return "\n".join(result)
 
 
@@ -142,7 +146,7 @@ def values_page(stemmer: str):
         for line in csv.reader(fin):
             if not line:
                 continue
-            stems = [stemmers[stemmer](v) for v in line]
+            stems = [stemmers[stemmer](v.strip().lower()) for v in line]
             result += [
                 ", ".join(
                     [

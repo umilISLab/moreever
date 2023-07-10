@@ -36,9 +36,21 @@ def tokenize_values(
 def load_source(
     token_func, document_folders: List[str]
 ) -> Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, List[List[str]]]]]:
+    """loads the sources from the specified directory structure
+
+    Args:
+        token_func (_type_): the used stemmer as a function
+        document_folders (List[str]): a list of subdirectories. Corresponds to const.countries.
+        TODO: in future versions this could be autodetected from parent
+
+    Returns:
+        Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, List[List[str]]]]]: returns two dictionaries:
+            corpora->text_name->fulltext and corpora->text_name->list of tokenized sentences
+    """
     fulltexts: Dict[str, Dict[str, str]] = {}
     tokenized: Dict[str, Dict[str, List[List[str]]]] = {}
     for country in document_folders:
+        # first letter used as a key. TODO: whenever directories are autodetected, assumption that first letter is unique will no longer hold
         c = country[0]
         fulltexts[c] = {}
         tokenized[c] = {}
@@ -53,7 +65,7 @@ def load_source(
 
 
 def calc_occurences(
-    values: Dict[str, List[str]], tokenized: Dict[str, Dict[str, List[str]]]
+    values: Dict[str, List[str]], tokenized: Dict[str, Dict[str, List[List[str]]]]
 ) -> Tuple[
     Dict[Tuple[str, str], int], Dict[str, Dict[str, int]], Dict[str, Dict[str, int]]
 ]:
