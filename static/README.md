@@ -1,1 +1,1 @@
-Files from this directory are directly copied to site/ directory on deploy without modifications.
+Files from this directory are directly copied to site/ directory without modifications upon deploy.

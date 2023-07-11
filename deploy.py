@@ -90,7 +90,8 @@ list_templ = """<!DOCTYPE html>
 def tale_list(stemmer: str, country: str = None, from_parent=False) -> str:
     """
     :param str country: Specifies corpus/country. If not set, will do for all
-    :param bool from_parent: Specifies whether the generated file will be in the parent directory, so that URLs are adapted accordingly. This is not intended to be set manually
+    :param bool from_parent: Specifies whether the generated file will be in the parent directory,
+        so that URLs are adapted accordingly. This is not intended to be set manually
     """
     if not country:
         return "\n".join(tale_list(stemmer, c, True) for c in countries)

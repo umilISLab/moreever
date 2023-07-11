@@ -5,7 +5,7 @@ This is meant to work with small corpora. That's why lemmatisation/stemming is s
 
 ## Setup
 ### Corpora
-Corpora are loaded in the [stories](stories) directory, with each corpus represented by a subdirectory.
+Corpora are loaded in the [stories](stories/) directory, with each corpus represented by a subdirectory.
 
 Currently these are fixed (see [const.py](const.py), [create.py](create.py),...).
 
@@ -16,10 +16,9 @@ If not in possesion of corpora, use [PD-scrape.ipynb](PD-scrape.ipynb) to downlo
 Values are defined in a CSV-like file, where each line starts with the value representant, followed by label/keywords (synonyms) separated by commas. An example is provided in [values-edited.txt](values-edited.txt).
 
 ## Use
-Running [deploy.py](deploy.py) generates a static website in the [site](site) directory to browse the texts with the values highlighter.
+Running [deploy.py](deploy.py) generates a static website in the [site](site/) directory to browse the texts with the values highlighter. To run locally, use [site/run.sh](site/run.sh)
 
-To run locally, use [site/run.sh](site/run.sh)
-
+A dynamic version is work in progress.
 ## Screenshots
 
 ### Browser preview

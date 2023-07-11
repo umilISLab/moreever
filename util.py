@@ -31,6 +31,7 @@ def fname2name(fname: str) -> str:
     )
     if name.endswith("_"):
         name = name[:-1]
+    # TODO: should not assume <chapter>_<title> name format (see split)
     name = " ".join(w[0].upper() + w[1:].lower() for w in name.split("_")[1:])
     #     print(name)
     return name
