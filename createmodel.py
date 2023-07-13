@@ -19,8 +19,8 @@ def create_models(tkn="sb", algo="w2v", epochs=200):
         os.mkdir(model_dir)
 
     _, valuesbackref = tokenize_values(tkn)
-    # _, tokenized = load_source(stemmers["dummy"], corpora)
-    _, tokenized = load_source(stemmers[tkn], corpora)
+    _, tokenized = load_source(stemmers["dummy"], corpora)
+    # _, tokenized = load_source(stemmers[tkn], corpora)
     # occurences, occurences_tv, occurences_backref = calc_occurences(values, tokenized)
     tokenized = annotate_occurences(tokenized, valuesbackref, tkn)
 
@@ -66,10 +66,12 @@ if __name__ == "__main__":
     # tkn = 'dummy'
     # tkn = "lan"
     tkn = "sb"
+    # tkn = "sb2"
 
     epochs = 200
 
     algo = "w2v"
     # algo = "ft"
 
-    create_models(tkn, algo)
+    for i in range(5):
+        create_models(tkn, algo)

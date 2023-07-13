@@ -5,7 +5,7 @@ from glob import glob
 import pandas as pd  # type: ignore
 
 from bokeh.models import LinearColorMapper, LabelSet, ColumnDataSource  # type: ignore
-from bokeh import palettes  # type: ignore
+from palettes import pal
 from bokeh.plotting import figure, show, output_file  # type: ignore
 
 from algo import algos
@@ -15,14 +15,14 @@ def last_available_iteration(
     model_dir: str, tkn: str, algo: str, epochs: int = 200
 ) -> int:
     m = -1
-    for f in glob(f"{model_dir}/M0.{tkn}.e{epochs}.{algo}.?"):
+    for f in glob(f"{model_dir}/all.{tkn}.e{epochs}.{algo}.?"):
         n = int(f.split(".")[-1])
         if n > m:
             m = n
     return m
 
 
-def calc_dist(
+def calc_sim(
     _,
     keywords: List[str],
     variant: int,
@@ -48,7 +48,7 @@ def calc_dist(
             try:
                 d[k][x] = f"{model.wv.similarity(k, x):.2f}"
             except KeyError:
-                d[k][x] = "0"
+                d[k][x] = "0.00"
             if x not in d:
                 d[x] = {}
             d[x][k] = d[k][x]
@@ -82,7 +82,7 @@ def calc_shift(
             try:
                 d[k][x] = f"{model.wv.similarity(k, x)-m0.wv.similarity(k, x):.2f}"
             except KeyError:
-                d[k][x] = "0"
+                d[k][x] = "0.00"
             if x not in d:
                 d[x] = {}
             d[x][k] = d[k][x]
@@ -97,18 +97,19 @@ def calc_agg(
     model_dir: str,
     algo: str = "ft",
     epochs: int = 200,
+    iteration: int = 0,
 ):
     """
     :param func agg: a function that takes a list
+    iteration is ignored
     variant is one of 0, 1, 2, 3
     returns list of lists that can be given as parameter to constructor of dataframe
     """
-    models = [
-        algos[algo].load(f"{model_dir}/all.{tkn}.e{epochs}.{algo}.{iteration}")
-        for iteration in range(
-            0, last_available_iteration(model_dir, tkn, algo, epochs)
-        )
-    ]
+    models = []
+    for iteration in range(last_available_iteration(model_dir, tkn, algo, epochs)):
+        models += [
+            algos[algo].load(f"{model_dir}/all.{tkn}.e{epochs}.{algo}.{iteration}")
+        ]
     d: Dict[str, Dict[str, str]] = {}
     for i, k in enumerate(keywords):
         if k not in d:
@@ -116,17 +117,21 @@ def calc_agg(
         # d[k][k] = f"{model.wv.similarity(k, k):.2f}"
         for x in keywords[i:]:
             try:
-                m = agg([m.wv.similarity(k, x) for m in models])
+                vals = [m.wv.similarity(k, x) for m in models]
+                # print(vals)
+                m = agg(vals)
                 d[k][x] = f"{m:0.3f}"
             except KeyError:
-                d[k][x] = "0"
+                d[k][x] = "0.000"
             if x not in d:
                 d[x] = {}
             d[x][k] = d[k][x]
     return d
 
 
-def render(title: str, df: pd.DataFrame, fname: str = "distance.html"):
+def render(
+    title: str, df: pd.DataFrame, corpus: str = "all", fname: str = "distance.html"
+):
     """Renders a similarity matrix from a dataframe with columns (from, to, dist)"""
     output_file(
         # filename=f"site/{tkn}/distance.html",
@@ -147,10 +152,13 @@ def render(title: str, df: pd.DataFrame, fname: str = "distance.html"):
         tooltips=[("", "@from/@to")],
     )
 
+    extreme = max(
+        df["dist"].apply(pd.to_numeric).max(), -df["dist"].apply(pd.to_numeric).min()
+    )
     mapper = LinearColorMapper(
-        palette=palettes.Greens256,
-        low=df["dist"].apply(pd.to_numeric).max(),
-        high=df["dist"].apply(pd.to_numeric).min(),
+        palette=pal[corpus],
+        low=extreme,
+        high=-extreme,
     )
     p.rect(
         x="from",

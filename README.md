@@ -7,7 +7,7 @@ This is meant to work with small corpora. That's why lemmatisation/stemming is s
 ### Corpora
 Corpora are loaded in the [stories](stories/) directory, with each corpus represented by a subdirectory.
 
-Currently these are fixed (see [const.py](const.py), [create.py](create.py),...).
+Currently these are fixed to national corpora (see [const.py](const.py)).
 
 If not in possesion of corpora, use [PD-scrape.ipynb](PD-scrape.ipynb) to download fairy tales.
 

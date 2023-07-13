@@ -9,6 +9,7 @@ from nltk.stem import PorterStemmer  # type: ignore
 from nltk.stem import WordNetLemmatizer  # type: ignore
 from nltk.stem.lancaster import LancasterStemmer  # type: ignore
 
+# changes here need to also be reflected in static/index.html
 stemmers = {
     "dummy": lambda x: x.lower(),
     "sb": SnowballStemmer("english").stem,

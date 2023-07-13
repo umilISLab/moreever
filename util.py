@@ -29,6 +29,8 @@ def fname2name(fname: str) -> str:
         str: _description_
     >>> fname2name("Germany/52_King_Thrushbeard")
     'King Thrushbeard'
+    >>> fname2name("52_King_Thrushbeard")
+    'King Thrushbeard'
     """
     #     print(fname)
     name = (
@@ -130,12 +132,12 @@ def stats(fulltexts, tokenized: Dict[str, Dict[str, List[str]]]):
     tales = {}
     tokens = {}
     for c in get_dirs():
-        tales[c] = len(fulltexts[c[0]])
+        tales[c] = len(fulltexts[c])
         symbols[c] = 0
-        for tale in fulltexts[c[0]].values():
+        for tale in fulltexts[c].values():
             symbols[c] += len(tale)
         tokens[c] = 0
-        for tale in tokenized[c[0]].values():
+        for tale in tokenized[c].values():
             tokens[c] += sum(len(s) for s in tale)
 
     print(f"tales: {tales}")
