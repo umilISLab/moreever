@@ -11,11 +11,19 @@ def tokenize_values(
 ) -> Tuple[Dict[str, List[str]], Dict[str, str]]:
     """Get the two directional dictionaries between values and labels.
     As a byproduct make a stemmed version of the values list.
+
+    Args:
     :param str func_name: stemmer name as in stemmers.py
-    :param str fname: filename without extension"""
+    :param str fname: filename without extension
+
+    Returns:
+        Tuple[Dict[str, List[str]], Dict[str, str]]: returns two dictionaries:
+            value->list_labels and label->value
+    """
     token_func = stemmers[func_name]
     values: Dict[str, List[str]] = {}
     valuesbackref: Dict[str, str] = {}
+
     with open(f"{fname}.txt") as f:
         flines = f.readlines()
         for l in flines:
@@ -32,15 +40,16 @@ def tokenize_values(
         fout.writelines("\n".join(", ".join(v) for v in values.values()))
     return values, valuesbackref
 
+
 def load_source(
-    token_func = None, document_folders: List[str] = []
+    token_func=None, corpora: List[str] = []
 ) -> Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, List[List[str]]]]]:
     """loads the sources from the specified directory structure
 
     Args:
         token_func (_type_): the used stemmer as a function. Defaults to None leads to use of dummy stemmer.
-        document_folders (List[str]): a list of subdirectories. Corresponds to const.countries.
-        Defaults to empty list leads to reading all subdirectories of stories/
+        corpora (List[str]): a list of subdirectories. Corresponds to corpora.corpora.
+        Defaults to empty list, which leads to reading all subdirectories of stories/
 
     Returns:
         Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, List[List[str]]]]]: returns two dictionaries:
@@ -48,28 +57,28 @@ def load_source(
     """
     if not token_func:
         token_func = stemmers["dummy"]
-    if not document_folders:
-        document_folders = get_dirs()
+    if not corpora:
+        corpora = get_dirs()
 
     fulltexts: Dict[str, Dict[str, str]] = {}
     tokenized: Dict[str, Dict[str, List[List[str]]]] = {}
-    for country in document_folders:
-        # first letter used as a key. TODO: whenever directories are autodetected, assumption that first letter is unique will no longer hold
-        c = country[0]
-        fulltexts[c] = {}
-        tokenized[c] = {}
-        for fname in glob(f"./stories/{country}/*.txt"):
+    for corpus in corpora:
+        fulltexts[corpus] = {}
+        tokenized[corpus] = {}
+        for fname in glob(f"./stories/{corpus}/*.txt"):
             with open(fname) as f:
                 talename = fname.split("/")[-1].split(".")[-2]
-                fulltexts[c][talename] = "".join(f.readlines())
-                tokenized[c][talename] = story_tokenize(
-                    token_func, fulltexts[c][talename]
+                fulltexts[corpus][talename] = "".join(f.readlines())
+                tokenized[corpus][talename] = story_tokenize(
+                    token_func, fulltexts[corpus][talename]
                 )
     return fulltexts, tokenized
 
 
 def calc_occurences(
-    values: Dict[str, List[str]], tokenized: Dict[str, Dict[str, List[List[str]]]], func_name = "dummy"
+    values: Dict[str, List[str]],
+    tokenized: Dict[str, Dict[str, List[List[str]]]],
+    func_name="dummy",
 ) -> Tuple[
     Dict[Tuple[str, str], int], Dict[str, Dict[str, int]], Dict[str, Dict[str, int]]
 ]:
@@ -83,19 +92,20 @@ def calc_occurences(
 
     Returns:
         Tuple[ Dict[Tuple[str, str], int], Dict[str, Dict[str, int]], Dict[str, Dict[str, int]] ]: returns three counting dictionaries:
-            (text_name, value): count), text_name: (value: count), value: (text_name:count)
+            (text_name, value): count), text_name: (value: count), value: (text_name:count),
+            where text_name is in the format <corpus>/<chapter>_<text> (no extension)
     """
     token_func = stemmers[func_name]
     occurences: Dict[Tuple[str, str], int] = {}  # (text_name, value): count)
     occurences_tv: Dict[str, Dict[str, int]] = {}  # text_name: (value: count)
     occurences_backref: Dict[str, Dict[str, int]] = {}  # value: (text_name:count)
     for country, chapters in tokenized.items():
-        for chapter, tokens in chapters.items():
-            text_name = f"{country[0]}/{chapter}"
+        for chapter, lists_of_tokens in chapters.items():
+            text_name = f"{country}/{chapter}"
             for value_name, synonyms in values.items():
                 cnt = sum(
                     sum(phrase.count(token_func(keyword)) for keyword in synonyms)
-                    for phrase in [token_func(t) for t in tokens]
+                    for phrase in lists_of_tokens
                 )
                 if not cnt:
                     continue
@@ -116,7 +126,9 @@ def calc_occurences(
 
 
 def annotate_occurences(
-    tokenized: Dict[str, Dict[str, List[List[str]]]], values_br: Dict[str, str], func_name = "dummy"
+    tokenized: Dict[str, Dict[str, List[List[str]]]],
+    values_br: Dict[str, str],
+    func_name="dummy",
 ):
     """
     Emphasises relationships between keywords and labels/values,
@@ -140,8 +152,9 @@ def annotate_occurences(
             for sentence in tokens:
                 updated = []
                 for token in sentence:
-                    if token_func(token) in values_br.keys():
-                        updated += [values_br[token], token, values_br[token]]
+                    stemmed = token_func(token)
+                    if stemmed in values_br.keys():
+                        updated += [values_br[stemmed], token, values_br[stemmed]]
                     else:
                         updated += [token]
                 overall += [updated]

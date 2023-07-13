@@ -78,7 +78,9 @@ body {
 
             if (window.location.hash) {
                 console.log("Route is " + window.location.hash);
-                tryUpdate(window.location.hash.replace("#", "/"));
+                const url = window.location.hash.replace("/index.html#", "").replace("#", "");
+                console.log("URL is " + url);
+                tryUpdate(url);
             }
 
             stemmer.addEventListener('change', update);

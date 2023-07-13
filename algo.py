@@ -1,5 +1,5 @@
-from gensim.models import Word2Vec
-from gensim.models import FastText
+from gensim.models import Word2Vec  # type: ignore
+from gensim.models import FastText  # type: ignore
 
 """
 class GloVe:

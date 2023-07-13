@@ -6,11 +6,9 @@ import itertools
 from glob import glob
 
 from nltk import sent_tokenize, word_tokenize  # type: ignore
-from nltk.tokenize import RegexpTokenizer
+from nltk.tokenize import RegexpTokenizer  # type: ignore
 
 from nltk.stem import WordNetLemmatizer  # type: ignore
-
-from const import countries
 
 wnl = WordNetLemmatizer()
 
@@ -22,6 +20,16 @@ regex_token = r"\w+"
 
 
 def fname2name(fname: str) -> str:
+    """_summary_
+
+    Args:
+        fname (str): _description_
+
+    Returns:
+        str: _description_
+    >>> fname2name("Germany/52_King_Thrushbeard")
+    'King Thrushbeard'
+    """
     #     print(fname)
     name = (
         fname.replace("_s_", "'s ")
@@ -85,7 +93,7 @@ def story_tokenize(token_func, story: str) -> List[List[str]]:
 def collect_tokens(
     tokenized: Dict[str, Dict[str, List[List[str]]]],
     corpus: Optional[str] = None,
-) -> List[str]:
+) -> List[List[str]]:
     """
     >>> data = {'A': {'1': [['aa', 'bb'], ['cc']], '2':[['c', 'd']]}, 'B': {'I': [['a', 'b']], 'II': [['bd', 'ce', 'cf'], ['ff']]}}
     >>> collect_tokens(data, 'A')
@@ -109,11 +117,19 @@ def collect_tokens(
     return result
 
 
+def get_dirs(path: str = "./stories/"):
+    result = [
+        f.replace(path, "") for f in glob(f"{path}/*") if os.path.isdir(os.path.join(f))
+    ]
+    assert len(set(c[0] for c in result)) == len(result)
+    return result
+
+
 def stats(fulltexts, tokenized: Dict[str, Dict[str, List[str]]]):
     symbols = {}
     tales = {}
     tokens = {}
-    for c in countries:
+    for c in get_dirs():
         tales[c] = len(fulltexts[c[0]])
         symbols[c] = 0
         for tale in fulltexts[c[0]].values():
@@ -126,12 +142,3 @@ def stats(fulltexts, tokenized: Dict[str, Dict[str, List[str]]]):
     print(f"symbols: {symbols}")
     print(f"tokens: {tokens}")
     return tales, symbols, tokens
-
-def get_dirs(path: str = "./stories/"):
-    """
-    >>> from const import countries
-    >>> sorted(get_dirs()) == sorted(countries)
-    True
-    """
-    return [f.replace(path, "") for f in glob(f"{path}/*") if os.path.isdir(os.path.join(f))] 
-

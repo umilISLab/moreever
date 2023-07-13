@@ -1,12 +1,12 @@
 """Functionality related to the manipulation of similarity objects"""
-from typing import List
+from typing import Dict, List
 from glob import glob
 
-import pandas as pd
+import pandas as pd  # type: ignore
 
-from bokeh.models import LinearColorMapper, LabelSet, ColumnDataSource
-from bokeh import palettes
-from bokeh.plotting import figure, show, output_file
+from bokeh.models import LinearColorMapper, LabelSet, ColumnDataSource  # type: ignore
+from bokeh import palettes  # type: ignore
+from bokeh.plotting import figure, show, output_file  # type: ignore
 
 from algo import algos
 
@@ -23,6 +23,7 @@ def last_available_iteration(
 
 
 def calc_dist(
+    _,
     keywords: List[str],
     variant: int,
     tkn: str,
@@ -36,9 +37,9 @@ def calc_dist(
     returns list of lists that can be given as parameter to constructor of dataframe
     """
     model = algos[algo].load(
-        f"{model_dir}/M{variant}.{tkn}.e{epochs}.{algo}.{iteration}"
+        f"{model_dir}/{variant}.{tkn}.e{epochs}.{algo}.{iteration}"
     )
-    d = {}
+    d: Dict[str, Dict[str, str]] = {}
     for i, k in enumerate(keywords):
         if k not in d:
             d[k] = {}
@@ -47,7 +48,7 @@ def calc_dist(
             try:
                 d[k][x] = f"{model.wv.similarity(k, x):.2f}"
             except KeyError:
-                d[k][x] = 0
+                d[k][x] = "0"
             if x not in d:
                 d[x] = {}
             d[x][k] = d[k][x]
@@ -55,6 +56,7 @@ def calc_dist(
 
 
 def calc_shift(
+    _,
     keywords: List[str],
     variant: int,
     tkn: str,
@@ -67,11 +69,11 @@ def calc_shift(
     variant is one of 0, 1, 2, 3
     returns list of lists that can be given as parameter to constructor of dataframe
     """
-    m0 = algos[algo].load(f"{model_dir}/M0.{tkn}.e{epochs}.{algo}.{iteration}")
+    m0 = algos[algo].load(f"{model_dir}/all.{tkn}.e{epochs}.{algo}.{iteration}")
     model = algos[algo].load(
-        f"{model_dir}/M{variant}.{tkn}.e{epochs}.{algo}.{iteration}"
+        f"{model_dir}/{variant}.{tkn}.e{epochs}.{algo}.{iteration}"
     )
-    d = {}
+    d: Dict[str, Dict[str, str]] = {}
     for i, k in enumerate(keywords):
         if k not in d:
             d[k] = {}
@@ -80,7 +82,7 @@ def calc_shift(
             try:
                 d[k][x] = f"{model.wv.similarity(k, x)-m0.wv.similarity(k, x):.2f}"
             except KeyError:
-                d[k][x] = 0
+                d[k][x] = "0"
             if x not in d:
                 d[x] = {}
             d[x][k] = d[k][x]
@@ -102,12 +104,12 @@ def calc_agg(
     returns list of lists that can be given as parameter to constructor of dataframe
     """
     models = [
-        algos[algo].load(f"{model_dir}/M0.{tkn}.e{epochs}.{algo}.{iteration}")
+        algos[algo].load(f"{model_dir}/all.{tkn}.e{epochs}.{algo}.{iteration}")
         for iteration in range(
             0, last_available_iteration(model_dir, tkn, algo, epochs)
         )
     ]
-    d = {}
+    d: Dict[str, Dict[str, str]] = {}
     for i, k in enumerate(keywords):
         if k not in d:
             d[k] = {}
@@ -117,7 +119,7 @@ def calc_agg(
                 m = agg([m.wv.similarity(k, x) for m in models])
                 d[k][x] = f"{m:0.3f}"
             except KeyError:
-                d[k][x] = 0
+                d[k][x] = "0"
             if x not in d:
                 d[x] = {}
             d[x][k] = d[k][x]
@@ -141,7 +143,7 @@ def render(title: str, df: pd.DataFrame, fname: str = "distance.html"):
         x_axis_location="above",
         width=30 * len(keywords),
         height=30 * len(keywords),
-        tools="tap",
+        tools="hover",
         tooltips=[("", "@from/@to")],
     )
 

@@ -9,9 +9,9 @@ import os
 import shutil
 import csv
 from glob import glob
-import colorcet as cc
+import colorcet as cc  # type: ignore
 
-from const import countries
+from corpora import corpora
 from stemmers import stemmers
 from util import fname2name
 from datamodel import Annotator, span_templ
@@ -29,7 +29,7 @@ def mkdirs(vname="values-edited"):
         if not os.path.exists(nxt):
             os.mkdir(nxt)
 
-        for c in countries:
+        for c in corpora:
             nxt2 = f"{nxt}/{c}"
             if not os.path.exists(nxt2):
                 os.mkdir(nxt2)
@@ -40,7 +40,7 @@ def values2css(stemmer: str, vname="values-edited") -> None:
     with open(f"site/{stemmer}/{vname}.txt") as f:
         for i, l in enumerate(csv.reader(f)):
             mapping[l[0]] = cc.glasbey_cool[i]
-    print(mapping)
+    print(f"{stemmer}: {mapping}")
     with open(f"site/{stemmer}/values.css", "w") as fout:
         fout.writelines(
             "\n".join(f".{k} {{background-color: {v}}}" for k, v in mapping.items())
@@ -87,14 +87,14 @@ list_templ = """<!DOCTYPE html>
 <body><h3>{title}</h3>{body}</body></html>"""
 
 
-def tale_list(stemmer: str, country: str = None, from_parent=False) -> str:
+def tale_list(stemmer: str, country: str = "", from_parent=False) -> str:
     """
     :param str country: Specifies corpus/country. If not set, will do for all
     :param bool from_parent: Specifies whether the generated file will be in the parent directory,
         so that URLs are adapted accordingly. This is not intended to be set manually
     """
     if not country:
-        return "\n".join(tale_list(stemmer, c, True) for c in countries)
+        return "\n".join(tale_list(stemmer, c, True) for c in corpora)
     result = []
     names = {}
     for fname in glob(f"site/{stemmer}/{country}/*.html"):
@@ -111,7 +111,7 @@ def tale_list(stemmer: str, country: str = None, from_parent=False) -> str:
 
 
 def list_pages(stemmer: str):
-    for country in countries:
+    for country in corpora:
         fname_out = f"site/{stemmer}/{country}/index.html"
         with open(fname_out, "w") as fout:
             title = f"{country} Fairytales"
@@ -185,7 +185,7 @@ if __name__ == "__main__":
         values2css(s)
 
     # Generate Fairy Tales
-    for country in countries:
+    for country in corpora:
         for fname in glob(f"stories/{country}/*.txt"):
             for s in stemmers.keys():
                 page(fname, s)

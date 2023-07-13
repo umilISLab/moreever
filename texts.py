@@ -1,4 +1,4 @@
-import roman
+import roman  # type: ignore
 
 """The data used to scrape the fairy tale corpora from public domain sources.
 """

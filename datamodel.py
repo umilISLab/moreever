@@ -4,10 +4,8 @@
 from re import fullmatch
 from typing import Dict, List, Union
 
-import string
-
-from nltk.data import load
-from nltk.tokenize import RegexpTokenizer
+from nltk.data import load  # type: ignore
+from nltk.tokenize import RegexpTokenizer  # type: ignore
 
 from stemmers import stemmers
 from create import tokenize_values
