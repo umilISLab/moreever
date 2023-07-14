@@ -13,7 +13,7 @@ from create import tokenize_values
 regex_token = r"\w+"
 language = "english"
 
-span_templ = "<span id='{id}' class='value {type}' title='{title}'>{content}</span>"
+from template import span_templ
 
 
 class Annotator:

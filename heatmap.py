@@ -8,7 +8,7 @@ import pandas as pd  # type: ignore
 from corpora import corpora as corpora, country2code
 from util import story_tokenize, collect_tokens, fname2name, stats
 from create import tokenize_values, load_source, calc_occurences
-from palettes import pal
+from palettes import pal_seq
 
 from bokeh.models import LinearColorMapper, LabelSet, ColumnDataSource, TapTool, OpenURL  # type: ignore
 from bokeh.plotting import figure, save, output_file  # type: ignore
@@ -61,7 +61,7 @@ def render(tkn: str, fname: str):
     )
 
     for c in corpora:
-        gmapper = LinearColorMapper(palette=pal[c], low=max_count, high=0)
+        gmapper = LinearColorMapper(palette=pal_seq[c], low=max_count, high=0)
         gsource = ColumnDataSource(data=df[df["country"] == c])
         p.rect(
             x="value",

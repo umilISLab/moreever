@@ -12,7 +12,7 @@ evidence, revelation
 emancipation, liberty, independence
 generous, generosity, hospitality, goodness, benevolence, charity
 honest, honesty, confidence, frankness
-smart, ingenuity, intellingence, clever, cleverness, talent, wisdom, wise
+smart, ingenuity, intelligence, clever, cleverness, talent, wisdom, wise
 kind, kindness, courtesy, graciousness, gentleness
 know, able, knowledge, ability
 brother, sister, brotherly, sisterly
@@ -30,5 +30,3 @@ tolerant, tolerance, acceptance, permissiveness
 majority
 altruism, sacriﬁce
 truth
-
-

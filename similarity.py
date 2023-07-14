@@ -1,14 +1,27 @@
 """Functionality related to the manipulation of similarity objects"""
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from glob import glob
 
 import pandas as pd  # type: ignore
 
 from bokeh.models import LinearColorMapper, LabelSet, ColumnDataSource  # type: ignore
-from palettes import pal
+from palettes import pal_seq
 from bokeh.plotting import figure, show, output_file  # type: ignore
 
 from algo import algos
+
+import numpy as np
+from palettes import pal_seq, pal_div
+
+
+viz_params = {"average": np.mean, "similarity": None, "shift": None, "stdev": np.std}
+viz_fns = {"average": "agg", "similarity": "sim", "shift": "shift", "stdev": "agg"}
+viz_pal = {
+    "average": pal_seq,
+    "similarity": pal_seq,
+    "shift": pal_div,
+    "stdev": pal_seq,
+}
 
 
 def last_available_iteration(
@@ -130,7 +143,11 @@ def calc_agg(
 
 
 def render(
-    title: str, df: pd.DataFrame, corpus: str = "all", fname: str = "distance.html"
+    title: str,
+    df: pd.DataFrame,
+    corpus: str = "all",
+    fname: str = "distance.html",
+    palette: Dict[str, Tuple[str]] = pal_seq,
 ):
     """Renders a similarity matrix from a dataframe with columns (from, to, dist)"""
     output_file(
@@ -153,10 +170,10 @@ def render(
     )
 
     extreme = max(
-        df["dist"].apply(pd.to_numeric).max(), -df["dist"].apply(pd.to_numeric).min()
+        -df["dist"].apply(pd.to_numeric).max(), df["dist"].apply(pd.to_numeric).min()
     )
     mapper = LinearColorMapper(
-        palette=pal[corpus],
+        palette=palette[corpus],
         low=extreme,
         high=-extreme,
     )
