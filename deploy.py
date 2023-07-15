@@ -226,7 +226,7 @@ def values_page(stemmer: str):
                 styled = (
                     span_templ.format(
                         id=s + "-tag",
-                        type=f"{stemmer} {s}" if found else stemmer,
+                        type=f"{stemmer} {s}" if i == 0 else stemmer,
                         title=title,
                         content=s,
                     )
