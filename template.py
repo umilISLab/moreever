@@ -1,5 +1,6 @@
-span_templ = "<span id='{id}-tag' class='value {type}' title='{title}'>{content}</span>"
-value_link_templ = "<a href='{url}' id='{id}-link' class='value {type}' title='{title}' target='list'>{content}</a>"
+span_templ = "<span id='{id}' class='value {type}' title='{title}'>{content}</span>"
+value_link_templ = "<a href='{url}' id='{id}' class='value {type}' title='{title}' target='list'>{content}</a>"
+list_link_templ = "<a href='{url}' id='{id}' class='link {type}' title='{title}' target='list'>{content}</a>"
 
 tale_templ = """<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
