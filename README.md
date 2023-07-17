@@ -43,9 +43,10 @@ Currently there are three views: browser, heatmap and Venn diagram.
 
 The main view is the browser. It features three columns: lists of texts on the left, lists of values on the right and fulltexts in the middle. Navigation to other views and settings are available on the top.
 
-![Browser preview](docs/browser.png "Browser preview")
+![Browser preview](docs/browser-ps.png "Browser preview for Porter Stemmer")
 
 ### Clickable heatmap
-![Clickable heatmap](docs/heatmap.png "Clickable heatmap")
+![Clickable heatmap](docs/heatmap-ps.png "Clickable heatmap for Porter Stemmer")
 
 ### Venn diagram 
+![Venn diagram](docs/venn-sb.png "Venn diagram for Snowball Stemmer")
