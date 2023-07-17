@@ -46,13 +46,13 @@ venn_templ = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
   <circle cx="50%" cy="65%" r="40%" style="fill:#aaaaff;fill-opacity:.5" />
   
   <text transform="translate(105,70)" width="20%" height="20%">
-    <tspan x="0" y="-10">Germany (DE)</tspan>{de}
+    <tspan x="0" y="-10" font-weight="bold">Germany (DE)</tspan>{de}
   </text>
   <text transform="translate(525,70)" width="20%" height="20%">
-    <tspan x="0" y="-10">Italy (IT)</tspan>{it}
+    <tspan x="0" y="-10" font-weight="bold">Italy (IT)</tspan>{it}
   </text>
-  <text transform="translate(315,595)" width="20%" height="20%">
-    <tspan x="0" y="-10">Portugal (PT)</tspan>{pt}
+  <text transform="translate(405,595)" width="20%" height="20%">
+    <tspan x="0" y="-10" font-weight="bold">Portugal (PT)</tspan>{pt}
   </text>
 
   <text transform="translate(105,350)" width="20%" height="20%">

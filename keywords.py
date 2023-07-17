@@ -42,26 +42,26 @@ def render(
     it_keywords = ckeywords["Italy"]
     pt_keywords = ckeywords["Portugal"]
 
-    params = {
+    word_cls = {
         "de_it_pt": de_keywords & it_keywords & pt_keywords,
         "de": de_keywords - it_keywords - pt_keywords,
         "it": it_keywords - de_keywords - pt_keywords,
         "pt": pt_keywords - de_keywords - it_keywords,
     }
-    params["de_it"] = (de_keywords & it_keywords) - params["de_it_pt"]
-    params["de_pt"] = (de_keywords & pt_keywords) - params["de_it_pt"]
-    params["it_pt"] = (it_keywords & pt_keywords) - params["de_it_pt"]
+    word_cls["de_it"] = (de_keywords & it_keywords) - word_cls["de_it_pt"]
+    word_cls["de_pt"] = (de_keywords & pt_keywords) - word_cls["de_it_pt"]
+    word_cls["it_pt"] = (it_keywords & pt_keywords) - word_cls["de_it_pt"]
 
-    params2 = {
+    tag_cls = {
         k: "".join(
             [
-                f'<tspan x="0" y="{i*10}">{p}</tspan>'
-                for i, p in enumerate(list(params[k]))
+                f'<tspan x="0" y="{i*11}" font-size="smaller">{p}</tspan>'
+                for i, p in enumerate(sorted(list(word_cls[k])))
             ]
         )
-        for k, v in params.items()
+        for k, v in word_cls.items()
     }
 
-    result = venn_templ.format(**params2)
+    result = venn_templ.format(**tag_cls)
     with open(f"site/{tkn}/keywords.svg", "w") as f:
         f.writelines(result)
