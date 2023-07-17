@@ -9,10 +9,26 @@ from corpora import corpora
 from template import venn_templ
 
 
-def render(tkn: str, fname: str):
-    values, _ = tokenize_values(tkn, fname=fname)
-    _, tokenized = load_source(stemmers[tkn], corpora)
-    _, occurences_tv, _ = calc_occurences(values, tokenized)
+def render(
+    tkn: str,
+    fname: str = "",
+    values: Dict[str, List[str]] = {},
+    tokenized: Dict[str, Dict[str, List[List[str]]]] = {},
+    occurences_tv: Dict[str, Dict[str, int]] = {},
+):
+    """_summary_
+
+    Args:
+        tkn (str): stemmer name, see semmers
+        fname (str, optional): need to provide either fname or other parameters.
+        values (Dict[str, List[str]], optional): see create.tokenize_values(). Recalculated when missing.
+        tokenized (Dict[str, Dict[str, List[List[str]]]], optional): see create.load_source(). Recalculated when missing.
+        occurences_tv (Dict[str, Dict[str, int]], optional): see create.calc_occurences(). Recalculated when missing.
+    """
+    if not values or not tokenized or not occurences_tv:
+        values, _ = tokenize_values(tkn, fname=fname)
+        _, tokenized = load_source(stemmers[tkn], corpora)
+        _, occurences_tv, _ = calc_occurences(values, tokenized)
 
     ckeywords: Dict[str, Set[str]] = {}
     for c in corpora:

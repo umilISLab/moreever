@@ -70,7 +70,7 @@ def values2css(stemmer: str, vname="values-edited") -> None:
         )
 
 
-def page(fname: str, stemmer: str) -> None:
+def page(fname: str, stemmer: str, values_br: Dict[str, str] = {}) -> None:
     # print(f"Reading: {fname}...")
     fname_path = fname.split(".")[0]
     fname_base = fname_path.split("/")[-1]
@@ -80,7 +80,7 @@ def page(fname: str, stemmer: str) -> None:
     with open(fname) as fin:
         fulltext = fin.read()
     # print(fulltext)
-    a = Annotator(stemmer, fulltext)
+    a = Annotator(stemmer, fulltext, values_br)
     annotated = a.rich_text()
     # print(annotated)
     fname_out = f"{fname_path}.html".replace("stories", f"site/{stemmer}")
@@ -164,7 +164,6 @@ def value_list_page(
 
     # all-corpus list
     listed = value_list_html(occurences_backref, stemmer, label)
-    # TODO: Find out why help and together get generated empty
     if not listed.strip():
         return
     fname_out = f"site/{stemmer}/values/{label}.html"
@@ -173,13 +172,21 @@ def value_list_page(
         fout.write(list_templ.format(title=title, body=listed, root_path="../../"))
 
 
-def value_list_pages(stemmer: str):
+def value_list_pages(
+    stemmer: str,
+    values: Dict[str, List[str]] = {},
+    values_backref: Dict[str, str] = {},
+    tokenized: Dict[str, Dict[str, List[List[str]]]] = {},
+    occurences_backref: Dict[str, Dict[str, int]] = {},
+):
     """Generation of list (left-hand side) per value. Works with all files in site/<stemmer>/<corpus>/*.html,
     so make sure tu run it before list_pages() which generates an index file in those directories.
     """
-    values, values_backref = tokenize_values(stemmer, fname="values-edited.flat")
-    _, tokenized = load_source(stemmers[stemmer], corpora)
-    _, _, occurences_backref = calc_occurences(values, tokenized)
+    if not values or not values_backref or not tokenized or not occurences_backref:
+        values, values_backref = tokenize_values(stemmer, fname="values-edited.flat")
+        _, tokenized = load_source(stemmers[stemmer], corpora)
+        _, _, occurences_backref = calc_occurences(values, tokenized)
+
     print(f"For {stemmer}: {len(values_backref)} labels")
     for l in values_backref.keys():
         if l not in occurences_backref:
@@ -264,23 +271,41 @@ if __name__ == "__main__":
 
     # Generate CSS
     for s in stemmers.keys():
-        heatmap(s, "values-edited.flat")
-        keywords_venn(s, "values-edited.flat")
-        tokenize_values(s)
+        _1, values_br = tokenize_values(s)
+        values_flat, values_br_flat = tokenize_values(s, "values-edited.flat")
+        _2, tokenized = load_source(stemmers[s], corpora)
+        if s == "morph":
+            from morphroot import save_roots
+
+            save_roots()
+        occ_flat, occ_tv_flat, occ_br_flat = calc_occurences(values_flat, tokenized)
+
+        heatmap(
+            s,
+            values=values_flat,
+            tokenized=tokenized,
+            occurences=occ_flat,
+            occurences_backref=occ_br_flat,
+        )
+        keywords_venn(
+            s, values=values_flat, tokenized=tokenized, occurences_tv=occ_tv_flat
+        )
         values2css(s)
 
-    # Generate Fairy Tales
-    for country in corpora:
-        for fname in glob(f"stories/{country}/*.txt"):
-            for s in stemmers.keys():
-                page(fname, s)
-    # page("stories/Germany/160_A_Riddling_Tale.txt", "lan")
+        # Generate Fairy Tales
+        for country in corpora:
+            for fname in glob(f"stories/{country}/*.txt"):
+                page(fname, s, values_br)
 
-    # Generate Lists
-    for s in stemmers.keys():
-        value_list_pages(s)
+        # Generate Lists
+        value_list_pages(
+            s,
+            values=values_flat,
+            values_backref=values_br_flat,
+            tokenized=tokenized,
+            occurences_backref=occ_br_flat,
+        )
         list_pages(s)
 
-    # Generate Values
-    for s in stemmers.keys():
+        # Generate Values
         values_page(s)

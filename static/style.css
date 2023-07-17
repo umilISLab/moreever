@@ -13,7 +13,7 @@ div {
     border: 1px solid lightgray;
     border-radius: 5px;
     padding: 1px 1px;
-    cursor: help;
+    /* cursor: help; */
     color: black;
     text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
 }

@@ -1,5 +1,7 @@
 #!/bin/python
 """Generate a heatmap of texts/stories vs labels"""
+from typing import Dict, List, Tuple
+
 
 from glob import glob
 
@@ -17,13 +19,31 @@ from bokeh.plotting import figure, save, output_file  # type: ignore
 from stemmers import stemmers
 
 
-def render(tkn: str, fname: str):
+def render(
+    tkn: str,
+    fname: str = "",
+    values: Dict[str, List[str]] = {},
+    tokenized: Dict[str, Dict[str, List[List[str]]]] = {},
+    occurences: Dict[Tuple[str, str], int] = {},
+    occurences_backref: Dict[str, Dict[str, int]] = {},
+):
+    """Needs either fname or rest of named parameters.
+
+    Args:
+        tkn (str): stemmer name, see semmers
+        fname (str, optional): need to provide either fname or other parameters
+        values (Dict[str, List[str]], optional): see create.tokenize_values(). Recalculated when missing.
+        tokenized (Dict[str, Dict[str, List[List[str]]]], optional): see create.load_source(). Recalculated when missing.
+        occurences (Dict[Tuple[str, str], int], optional): see create.calc_occurences(). Recalculated when missing.
+        occurences_backref (Dict[str, Dict[str, int]], optional): see create.calc_occurences(). Recalculated when missing.
+    """
+    if not values or not tokenized or not occurences or not occurences_backref:
+        values, _ = tokenize_values(tkn, fname=fname)
+        _, tokenized = load_source(stemmers[tkn], corpora)
+        occurences, _, occurences_backref = calc_occurences(values, tokenized)
+
     title = f"Clickable Map of Values in Fairy Tales (tokenisation: {tkn})"
     output_file(filename=f"site/{tkn}/map.html", title=title)
-
-    values, _ = tokenize_values(tkn, fname=fname)
-    _, tokenized = load_source(stemmers[tkn], corpora)
-    occurences, _, occurences_backref = calc_occurences(values, tokenized)
 
     data = [
         [

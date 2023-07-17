@@ -17,10 +17,11 @@ from template import span_templ
 
 
 class Annotator:
-    def __init__(self, tokenizer_name, fulltext: str):
+    def __init__(self, tokenizer_name, fulltext: str, values_br: Dict[str, str] = {}):
         self.token_func = stemmers[tokenizer_name]
         self.func_name = tokenizer_name
-        _, self.values = tokenize_values(tokenizer_name)
+        # label->value dict
+        self.values = values_br if values_br else tokenize_values(tokenizer_name)[1]
         self.fulltext = fulltext
         self.tokenizer = RegexpTokenizer(regex_token)
         self.sent_tokenizer = load(f"tokenizers/punkt/{language}.pickle")

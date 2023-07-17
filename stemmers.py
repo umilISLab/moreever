@@ -9,6 +9,8 @@ from nltk.stem import PorterStemmer  # type: ignore
 from nltk.stem import WordNetLemmatizer  # type: ignore
 from nltk.stem.lancaster import LancasterStemmer  # type: ignore
 
+from morphroot import get_root_morpheme
+
 # changes here need to also be reflected in static/index.html
 stemmers = {
     "dummy": lambda x: x.lower(),
@@ -20,4 +22,5 @@ stemmers = {
     "ps": PorterStemmer().stem,
     "wnl": lambda x: WordNetLemmatizer().lemmatize(x.lower()),
     "lan": LancasterStemmer().stem,
+    "morph": get_root_morpheme,
 }
