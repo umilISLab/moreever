@@ -1,13 +1,13 @@
 # moreever - MulticORpus Explorer for Explicit ValuE References
 
-This is a tool to visually explore (for the sake of comparison) the presence of user-defined sets of textual references in several corpora. It is motivated by the conviction that quantitative analysis (or distant reading if you prefer) can lead to misinterpretations or omissions if not grounded in examples (close reading) from the actual corpora. The risk is somewhat discussed in Franco Moretti's "Falso Movimento", but is just a case of the need to have theory and empiricism go hand in hand.
+This is a tool to visually explore (as a case of comparative linguistics) the presence of user-defined sets of textual references in several corpora. It is motivated by the conviction that quantitative analysis (or distant reading if you prefer) can lead to misinterpretations or omissions if not grounded in examples (close reading) from the actual corpora. The risk is somewhat discussed in Franco Moretti's "Falso Movimento", but is just a case of the need to have theory and empiricism go hand in hand.
 
 
 This is meant to be useful for a set of three small corpora in English (tested on 3x~50K word tokens).
 
 
 
-* Lemmatisation/stemming is supported as a way to extract more from the small corpora. For currently supported stemmers, see [stemmers.py](stemmers.py).
+* Stemming (also including lemmatisation and morphological root extraction as variants) is supported as a way to extract more from the small corpora. For currently supported stemmers, see [stemmers.py](stemmers.py).
 
 ## Setup
 
@@ -25,6 +25,8 @@ Currently these are fixed to three national corpora (see [const.py](const.py), [
 
 If not in possesion of corpora, use [PD-scrape.ipynb](PD-scrape.ipynb) to download fairy tales.
 
+Also, clustering requires creation of models and is not integrated in the web interface.
+
 ### Values
 
 Due to the original context of this research, we call the sets/clusters of explicit references (societal) values and the words that form these - labels.
@@ -32,9 +34,14 @@ Due to the original context of this research, we call the sets/clusters of expli
 Values are defined in a CSV-like file, where each line starts with the value representant, followed by label/keywords (synonyms) separated by commas. An example is provided in [values-edited.txt](values-edited.txt).
 
 ## Use
+For local use, the dynamic version is advisable. For deployment the static version is more efficient, but possibly redundant in generating data for stemmers that are irrelevant.
+
+TODO: caching for the dynamic version, so that the static becomes redundant. Probably best way to implement this is via HTTP headers.
+### Dynamic
+Using [main.py](main.py) a version could be run that generates the analytical pages dynamically on demand. This has slower performance (barely noticeable for a single user).
+### Static
 Running [deploy.py](deploy.py) generates a static website in the [site](site/) directory to browse the texts with the values highlighter. To run locally, use [site/run.sh](site/run.sh)
 
-A dynamic version is work in progress.
 ## Screenshots
 
 Currently there are three views: browser, heatmap and Venn diagram.

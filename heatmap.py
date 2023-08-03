@@ -2,21 +2,19 @@
 """Generate a heatmap of texts/stories vs labels"""
 from typing import Dict, List, Tuple
 
-
-from glob import glob
-
 import pandas as pd  # type: ignore
 
-from corpora import corpora as corpora, country2code
-from util import story_tokenize, collect_tokens, fname2name, stats
-from create import tokenize_values, load_source, calc_occurences
+from corpora import corpora, country2code
+from stemmers import stemmers
 from palettes import pal_seq
 
+from util import fname2name
+from create import tokenize_values, load_source, calc_occurences
+
 from bokeh.models import LinearColorMapper, LabelSet, ColumnDataSource, TapTool, OpenURL  # type: ignore
-from bokeh.plotting import figure, save, output_file  # type: ignore
-
-
-from stemmers import stemmers
+from bokeh.plotting import figure  # type: ignore
+from bokeh.resources import CDN  # type: ignore
+from bokeh.embed import file_html  # type: ignore
 
 
 def render(
@@ -26,7 +24,7 @@ def render(
     tokenized: Dict[str, Dict[str, List[List[str]]]] = {},
     occurences: Dict[Tuple[str, str], int] = {},
     occurences_backref: Dict[str, Dict[str, int]] = {},
-):
+) -> str:
     """Needs either fname or rest of named parameters.
 
     Args:
@@ -43,7 +41,7 @@ def render(
         occurences, _, occurences_backref = calc_occurences(values, tokenized)
 
     title = f"Clickable Map of Values in Fairy Tales (tokenisation: {tkn})"
-    output_file(filename=f"site/{tkn}/map.html", title=title)
+    # output_file(filename=f"site/{tkn}/map.html", title=title)
 
     data = [
         [
@@ -120,7 +118,7 @@ def render(
     taptool = p.select(type=TapTool)
     taptool.callback = OpenURL(url="@url")
 
-    save(p)
+    return file_html(p, CDN, title)
 
 
 if __name__ == "__main__":
