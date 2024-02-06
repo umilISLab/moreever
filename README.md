@@ -1,4 +1,4 @@
-# moreever - MulticORpus Explorer for Explicit ValuE References
+# moreever - MulticORpus Explorer for Explicit Vocabulary References
 
 This is a tool to visually explore (as a case of comparative linguistics) the presence of user-defined sets of textual references in several corpora. It is motivated by the conviction that quantitative analysis (or distant reading if you prefer) can lead to misinterpretations or omissions if not grounded in examples (close reading) from the actual corpora. The risk is somewhat discussed in Franco Moretti's "Falso Movimento", but is just a case of the need to have theory and empiricism go hand in hand.
 
