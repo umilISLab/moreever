@@ -7,7 +7,7 @@ tale_templ = """<!DOCTYPE html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>{title}</title>
-    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="../../../style.css">
     <link rel="stylesheet" href="../values.css">
   </head>
 <body><h1>{title}</h1>{body}</body></html>"""
@@ -26,7 +26,7 @@ values_templ = """<!DOCTYPE html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>{title}</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../../style.css">
     <link rel="stylesheet" href="values.css">
     <style>
 .value {{
@@ -40,32 +40,37 @@ values_templ = """<!DOCTYPE html>
     <h3>{title}</h3>{body}</body></html>"""
 
 venn_templ = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg" height="700" width="700">
-  <circle cx="37.5%" cy="37.5%" r="40%" style="fill:#aaffaa;fill-opacity:.5" />
-  <circle cx="62.5%" cy="37.5%" r="40%" style="fill:#ffaaaa;fill-opacity:.5" />
-  <circle cx="50%" cy="65%" r="40%" style="fill:#aaaaff;fill-opacity:.5" />
-  
-  <text transform="translate(105,70)" width="20%" height="20%">
-    <tspan x="0" y="-10" font-weight="bold">Germany (DE)</tspan>{de}
-  </text>
-  <text transform="translate(525,70)" width="20%" height="20%">
-    <tspan x="0" y="-10" font-weight="bold">Italy (IT)</tspan>{it}
-  </text>
-  <text transform="translate(405,595)" width="20%" height="20%">
-    <tspan x="0" y="-10" font-weight="bold">Portugal (PT)</tspan>{pt}
-  </text>
+<svg xmlns="http://www.w3.org/2000/svg" height="100%" width="100%">
+  <title>{title}</title>
+  <svg x="50%" y="50%" overflow="visible" width="700" height="700">
+    <g transform="translate(-350,-350)">
+      <circle cx="37.5%" cy="37.5%" r="40%" style="fill:#aaffaa;fill-opacity:.5" />
+      <circle cx="62.5%" cy="37.5%" r="40%" style="fill:#ffaaaa;fill-opacity:.5" />
+      <circle cx="50%" cy="65%" r="40%" style="fill:#aaaaff;fill-opacity:.5" />
+      
+      <text transform="translate(105,70)" width="20%" height="20%">
+        <tspan x="0" y="-10" font-weight="bold">{a_name}</tspan>{a}
+      </text>
+      <text transform="translate(525,70)" width="20%" height="20%">
+        <tspan x="0" y="-10" font-weight="bold">{b_name}</tspan>{b}
+      </text>
+      <text transform="translate(405,595)" width="20%" height="20%">
+        <tspan x="0" y="-10" font-weight="bold">{c_name}</tspan>{c}
+      </text>
 
-  <text transform="translate(105,350)" width="20%" height="20%">
-    {de_pt}
-  </text>
-  <text transform="translate(535,350)" width="20%" height="20%">
-    {it_pt}
-  </text>
-  <text transform="translate(315,35)" width="20%" height="20%">
-    {de_it}
-  </text>
+      <text transform="translate(105,350)" width="20%" height="20%">
+        {a_c}
+      </text>
+      <text transform="translate(535,350)" width="20%" height="20%">
+        {b_c}
+      </text>
+      <text transform="translate(315,35)" width="20%" height="20%">
+        {a_b}
+      </text>
 
-  <text transform="translate(315,210)" width="20%" height="20%">
-    {de_it_pt}
-  </text>
+      <text transform="translate(315,210)" width="20%" height="20%">
+        {a_b_c}
+      </text>
+    </g>
+  </svg>
 </svg>"""

@@ -27,22 +27,22 @@ def fname2name(fname: str) -> str:
 
     Returns:
         str: _description_
-    >>> fname2name("Germany/52_King_Thrushbeard")
-    'King Thrushbeard'
-    >>> fname2name("52_King_Thrushbeard")
-    'King Thrushbeard'
+    >>> fname2name("four/Lansdowne_72-43_Transcription.html")
+    'Lansdowne 72-43 Transcription'
+    >>> fname2name("two/A29858_sec.html")
+    'A29858 Sec'
     """
     #     print(fname)
     name = (
-        fname.replace("_s_", "'s ")
+        fname.split("/")[-1]
+        .replace("_s_", "'s ")
         .replace("_.", ".")
         .replace(".html", "")
         .replace(".txt", "")
     )
     if name.endswith("_"):
         name = name[:-1]
-    # TODO: should not assume <chapter>_<title> name format (see split)
-    name = " ".join(w[0].upper() + w[1:].lower() for w in name.split("_")[1:])
+    name = " ".join(w[0].upper() + w[1:].lower() for w in name.split("_"))
     #     print(name)
     return name
 
@@ -119,7 +119,44 @@ def collect_tokens(
     return result
 
 
-def get_dirs(path: str = "./stories/"):
+def rmdirs():
+    for s in stemmers.keys():
+        stem_dir = f"site/{s}"
+        if os.path.exists(stem_dir):
+            shutil.rmtree(stem_dir)
+
+
+def mkdirs():
+    from stemmers import stemmers
+    from vocabulary import vocabulary
+    from corpora import corpora
+
+    if not os.path.exists("site"):
+        os.mkdir("site")
+    for s in stemmers.keys():
+        nxt = f"site/{s}"
+        if not os.path.exists(nxt):
+            os.mkdir(nxt)
+        nxt3 = f"{nxt}/values"
+        if not os.path.exists(nxt3):
+            os.mkdir(nxt3)
+
+        for v in vocabulary: 
+            nxt4 = f"{nxt}/{v}"
+            if not os.path.exists(nxt4):
+                os.mkdir(nxt4)
+
+            for c in corpora:
+                nxt2 = f"{nxt4}/{c}"
+                if not os.path.exists(nxt2):
+                    os.mkdir(nxt2)
+                nxt3 = f"{nxt2}/values"
+                if not os.path.exists(nxt3):
+                    os.mkdir(nxt3)
+
+
+
+def get_dirs(path: str = "./corpora/"):
     result = [
         f.replace(path, "") for f in glob(f"{path}/*") if os.path.isdir(os.path.join(f))
     ]

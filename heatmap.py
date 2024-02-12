@@ -19,13 +19,13 @@ from bokeh.embed import file_html  # type: ignore
 
 def render(
     tkn: str,
-    fname: str = "",
+    vocab: str = "",
     values: Dict[str, List[str]] = {},
     tokenized: Dict[str, Dict[str, List[List[str]]]] = {},
     occurences: Dict[Tuple[str, str], int] = {},
     occurences_backref: Dict[str, Dict[str, int]] = {},
 ) -> str:
-    """Needs either fname or rest of named parameters.
+    """Needs either vocab/fname or rest of named parameters.
 
     Args:
         tkn (str): stemmer name, see semmers
@@ -36,12 +36,12 @@ def render(
         occurences_backref (Dict[str, Dict[str, int]], optional): see create.calc_occurences(). Recalculated when missing.
     """
     if not values or not tokenized or not occurences or not occurences_backref:
-        values, _ = tokenize_values(tkn, fname=fname)
+        values, _ = tokenize_values(tkn, vocab)
         _, tokenized = load_source(stemmers[tkn], corpora)
         occurences, _, occurences_backref = calc_occurences(values, tokenized)
 
-    title = f"Clickable Map of Values in Fairy Tales (tokenisation: {tkn})"
-    # output_file(filename=f"site/{tkn}/map.html", title=title)
+    title = f"Clickable Map of Values in Texts (tokenisation: {tkn})"
+    # output_file(filename=f"site/{tkn}/{vocab}/map.html", title=title)
 
     data = [
         [
@@ -71,8 +71,8 @@ def render(
         y_range=text_range,
         x_range=value_range,
         x_axis_location="above",
-        width=17 * len(value_range),
-        height=1100,
+        width=15 * len(value_range) + 250,
+        height=15* len(text_range) + 150,
         # toolbar_location = None,
         tools="tap",
         tooltips=[("label", "@value/@text: @count")],

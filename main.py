@@ -18,6 +18,8 @@ from pages import values_css
 from keywords import keywords_venn, clusters, render_venn, filter_clusters_containing
 from heatmap import render as heatmap_render
 
+from settings import DEBUG
+
 
 class CSSResponse(Response):
     media_type = "text/css"
@@ -31,7 +33,7 @@ app = FastAPI(
     title="moreever",
     description=__doc__,
     # docs_url="/",
-    version="0.0.1",
+    version="0.2.0",
 )
 
 app.add_middleware(
@@ -43,24 +45,24 @@ app.add_middleware(
 )
 
 
-@app.get("/{stemmer}/values.css", response_class=CSSResponse)
-async def values_css_page(stemmer: str):
-    return values_css(stemmer)
+@app.get("/{stemmer}/{vocab}/values.css", response_class=CSSResponse)
+async def values_css_page(vocab: str, stemmer: str):
+    return values_css(stemmer, vocab)
 
 
-@app.get("/{stemmer}/values.html", response_class=HTMLResponse)
-async def values_page(stemmer: str):
-    return values_html(stemmer)
+@app.get("/{stemmer}/{vocab}/values.html", response_class=HTMLResponse)
+async def values_page(vocab: str, stemmer: str):
+    return values_html(stemmer, vocab)
 
 
-@app.get("/{stemmer}/keywords.svg", response_class=SVGResponse)
-async def keywords_venn_page(stemmer: str):
-    return keywords_venn(stemmer, fname="values-edited.flat")
+@app.get("/{stemmer}/{vocab}/keywords.svg", response_class=SVGResponse)
+async def keywords_venn_page(vocab: str, stemmer: str):
+    return keywords_venn(stemmer, f"{vocab}.flat")
 
 
-@app.get("/{stemmer}/cluster-{value}.svg", response_class=SVGResponse)
-async def cluster_venn_page(stemmer: str, value: str):
-    values, _ = tokenize_values(stemmer, fname="values-edited")
+@app.get("/{stemmer}/{vocab}/cluster-{value}.svg", response_class=SVGResponse)
+async def cluster_venn_page(vocab: str, stemmer: str, value: str):
+    values, _ = tokenize_values(stemmer, vocab)
     _, tokenized = load_source(stemmers[stemmer], corpora)
     _, occurences_tv, _ = calc_occurences(values, tokenized)
     cl = clusters(stemmer, values=values, occurences_tv=occurences_tv)
@@ -75,68 +77,69 @@ async def cluster_venn_page(stemmer: str, value: str):
     return render_venn({k: set(v.pop()) for k, v in per_corpus.items()})
 
 
-@app.get("/{stemmer}/map.html", response_class=HTMLResponse)
-async def heatmap_page(stemmer: str):
-    return heatmap_render(stemmer, fname="values-edited.flat")
+@app.get("/{stemmer}/{vocab}/map.html", response_class=HTMLResponse)
+async def heatmap_page(stemmer: str, vocab: str):
+    return heatmap_render(stemmer, f"{vocab}.flat")
 
 
 # @app.get("/{stemmer}", response_class=HTMLResponse)
-@app.get("/{stemmer}/index.html", response_class=HTMLResponse)
+@app.get("/{stemmer}/{vocab}/index.html", response_class=HTMLResponse)
 # @app.get("/{stemmer}", response_class=HTMLResponse)
-@app.get("/{stemmer}/{corpus}/index.html", response_class=HTMLResponse)
-async def values_index(stemmer: str, corpus: str = ""):
+@app.get("/{stemmer}/{vocab}/{corpus}/index.html", response_class=HTMLResponse)
+async def values_index(stemmer: str, vocab: str, corpus: str = ""):
+    print(corpus)
     if corpus:
         if corpus not in corpora:
             raise HTTPException(
                 status_code=404, detail=f"Corpus not found for {corpus}"
             )
-        title = f"{corpus} Fairytales"
-        listed = tale_html(stemmer, corpus)
-        return list_templ.format(title=title, body=listed, root_path="../../")
+        title = f"{corpus} Texts"
+        listed = tale_html(stemmer, vocab, corpus)
+        return list_templ.format(title=title, body=listed, root_path="../../../")
 
-    title = f"All Fairytales"
-    listed = tale_html(stemmer)
-    return list_templ.format(title=title, body=listed, root_path="../")
+    title = f"All Texts"
+    listed = tale_html(stemmer, vocab)
+    return list_templ.format(title=title, body=listed, root_path="../../")
 
 
-@app.get("/{stemmer}/values/{label}.html", response_class=HTMLResponse)
-@app.get("/{stemmer}/{corpus}/values/{label}.html", response_class=HTMLResponse)
-async def value_list_page(stemmer: str, label: str, corpus: str = ""):
+@app.get("/{stemmer}/{vocab}/values/{label}.html", response_class=HTMLResponse)
+@app.get("/{stemmer}/{vocab}/{corpus}/values/{label}.html", response_class=HTMLResponse)
+async def value_list_page(stemmer: str, vocab: str, label: str, corpus: str = ""):
     if corpus:
         if corpus not in corpora:
             raise HTTPException(
                 status_code=404, detail=f"Corpus not found for {corpus}"
             )
-        values, _ = tokenize_values(stemmer, fname="values-edited.flat")
+        values, _ = tokenize_values(stemmer, f"{vocab}.flat")
         _, tokenized = load_source(stemmers[stemmer], corpora)
         _, _, occurences_backref = calc_occurences(values, tokenized)
-        listed = value_list_html(occurences_backref, stemmer, label, corpus)
+        listed = value_list_html(occurences_backref, stemmer, vocab, label, corpus)
         # print(listed)
         if not listed.strip():
             raise HTTPException(
                 status_code=404,
                 detail=f"List not found for {label} in {corpus} with {stemmer}",
             )
-        title = f"{corpus} Fairytales [{label}]"
-        return list_templ.format(title=title, body=listed, root_path="../../../")
+        title = f"{corpus} Texts [{label}]"
+        return list_templ.format(title=title, body=listed, root_path="../../../../")
 
-    values, _ = tokenize_values(stemmer, fname="values-edited.flat")
+    values, _ = tokenize_values(stemmer, f"{vocab}.flat")
     _, tokenized = load_source(stemmers[stemmer], corpora)
     _, _, occurences_backref = calc_occurences(values, tokenized)
-    listed = value_list_html(occurences_backref, stemmer, label)
+    listed = value_list_html(occurences_backref, vocab, stemmer, label)
     if not listed.strip():
         raise HTTPException(
             status_code=404, detail=f"List not found for {label} with {stemmer}"
         )
-    title = f"All Fairytales [{label}]"
-    return list_templ.format(title=title, body=listed, root_path="../../")
+    title = f"All Texts [{label}]"
+    return list_templ.format(title=title, body=listed, root_path="../../../")
 
 
-@app.get("/{stemmer}/{corpus}/{talename}.html", response_class=HTMLResponse)
-async def page(stemmer: str, corpus: str, talename: str):
-    fname = f"stories/{corpus}/{talename}.txt"
-    _, values_br = tokenize_values(stemmer, fname="values-edited")
-    return page_html(fname, stemmer, values_br)
+@app.get("/{stemmer}/{vocab}/{corpus}/{talename}.html", response_class=HTMLResponse)
+async def page(stemmer: str, vocab: str, corpus: str, talename: str):
+    fname = f"corpora/{corpus}/{talename}.txt"
+    _, values_br = tokenize_values(stemmer, vocab)
+    return page_html(fname, stemmer, vocab, values_br)
 
 
 app.mount("", StaticFiles(directory="./static", html=True), name="static")
@@ -144,4 +147,4 @@ app.mount("", StaticFiles(directory="./static", html=True), name="static")
 if __name__ == "__main__":
     import uvicorn  # type: ignore
 
-    uvicorn.run("main:app", reload=True)
+    uvicorn.run("main:app", reload=True, log_level=10 if DEBUG else 30)

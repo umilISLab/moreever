@@ -7,4 +7,6 @@ model_dir = os.path.expanduser(f"~/models/{datestamp}")
 # model_dir = "/home/mapto/models/20230713"
 # model_dir = "/home/mapto/models/20230707.renamed"
 
-db_dir = "/home/mapto/work/moreever/db"
+db_dir = "/home/mapto/work/dllcm/metaling/moreever/db"
+
+DEBUG = True

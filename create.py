@@ -1,13 +1,14 @@
 from typing import Dict, List, Tuple
 
 from glob import glob
+import os
 
 from stemmers import stemmers
-from util import story_tokenize, collect_tokens, get_dirs
-
+from util import story_tokenize, collect_tokens, get_dirs, mkdirs
+from flatvalues import flatten
 
 def tokenize_values(
-    func_name: str = "sb", fname="values-edited"
+    func_name: str = "sb", vocab: str = "values"
 ) -> Tuple[Dict[str, List[str]], Dict[str, str]]:
     """Get the two directional dictionaries between values and labels.
     As a byproduct make a stemmed version of the values list.
@@ -24,7 +25,9 @@ def tokenize_values(
     values: Dict[str, List[str]] = {}
     valuesbackref: Dict[str, str] = {}
 
-    with open(f"{fname}.txt") as f:
+    if vocab.endswith(".flat") and not os.path.exists(f"{vocab}.csv"):
+        flatten(f"{vocab[:-5]}.csv")
+    with open(f"{vocab}.csv") as f:
         flines = f.readlines()
         for l in flines:
             if not l.strip():
@@ -36,7 +39,8 @@ def tokenize_values(
                 # if i in valuesbackref:
                 #     print(i, stemmed_fitems[0])
                 valuesbackref[i] = stemmed_fitems[0]
-    with open(f"site/{func_name}/{fname}.txt", "w") as fout:
+    mkdirs()
+    with open(f"site/{func_name}/{vocab}.csv", "w") as fout:
         fout.writelines("\n".join(", ".join(v) for v in values.values()))
     return values, valuesbackref
 
@@ -49,7 +53,7 @@ def load_source(
     Args:
         token_func (_type_): the used stemmer as a function. Defaults to None leads to use of dummy stemmer.
         corpora (List[str]): a list of subdirectories. Corresponds to corpora.corpora.
-        Defaults to empty list, which leads to reading all subdirectories of stories/
+        Defaults to empty list, which leads to reading all subdirectories of corpora/
 
     Returns:
         Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, List[List[str]]]]]: returns two dictionaries:
@@ -65,7 +69,7 @@ def load_source(
     for corpus in corpora:
         fulltexts[corpus] = {}
         tokenized[corpus] = {}
-        for fname in glob(f"./stories/{corpus}/*.txt"):
+        for fname in glob(f"./corpora/{corpus}/*.txt"):
             with open(fname) as f:
                 talename = fname.split("/")[-1].split(".")[-2]
                 fulltexts[corpus][talename] = "".join(f.readlines())
@@ -99,9 +103,9 @@ def calc_occurences(
     occurences: Dict[Tuple[str, str], int] = {}  # (text_name, value): count)
     occurences_tv: Dict[str, Dict[str, int]] = {}  # text_name: (value: count)
     occurences_backref: Dict[str, Dict[str, int]] = {}  # value: (text_name:count)
-    for country, chapters in tokenized.items():
+    for corpus, chapters in tokenized.items():
         for chapter, lists_of_tokens in chapters.items():
-            text_name = f"{country}/{chapter}"
+            text_name = f"{corpus}/{chapter}"
             for value_name, synonyms in values.items():
                 cnt = sum(
                     sum(phrase.count(token_func(keyword)) for keyword in synonyms)
@@ -146,7 +150,7 @@ def annotate_occurences(
     {'a': {'a': [['aa', 'dd', 'bb', 'dd', 'cc']]}}
     """
     token_func = stemmers[func_name]
-    for country, tales in tokenized.items():
+    for corpus, tales in tokenized.items():
         for tale, tokens in tales.items():
             overall = []
             for sentence in tokens:
@@ -158,9 +162,9 @@ def annotate_occurences(
                     else:
                         updated += [token]
                 overall += [updated]
-            tokenized[country][tale] = overall
+            tokenized[corpus][tale] = overall
     return tokenized
 
 
 if __name__ == "__main__":
-    print(tokenize_values(fname="values-flat"))
+    print(tokenize_values(vocab="values.flat"))

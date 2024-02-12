@@ -6,6 +6,8 @@ import csv
 
 
 def flatten(fname):
+    if fname.endswith(".flat.csv"):
+        return
     result = []
     with open(fname) as fin:
         for row in csv.reader(fin):
@@ -21,4 +23,4 @@ def flatten(fname):
 
 
 if __name__ == "__main__":
-    flatten("values-edited.txt")
+    flatten("values.csv")

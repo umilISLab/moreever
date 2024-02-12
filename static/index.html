@@ -42,8 +42,9 @@ body {
     </style>
     <script>
         let init = () => {
+            var vocab = document.getElementById("vocab-select");
             var stemmer = document.getElementById("stemmer-select");
-            var country = document.getElementById("country-select");
+            var corpus = document.getElementById("corpus-select");
             var list = document.getElementById("list");
             var fulltext = document.getElementById("fulltext");
             var values = document.getElementById("values");
@@ -59,21 +60,21 @@ body {
             }
 
             let update = () => {
-                values.src = stemmer.value + "/values.html";
-                if (country.value == "all") {
-                    list.src = stemmer.value + "/index.html";
+                values.src = stemmer.value + "/" + vocab.value + "/values.html";
+                if (corpus.value == "all") {
+                    list.src = stemmer.value + "/" + vocab.value + "/index.html";
                 } else {
-                    list.src = stemmer.value + "/" + country.value + "/index.html";
+                    list.src = stemmer.value + "/" + vocab.value + "/" + corpus.value + "/index.html";
                 }
-                let text_country = country.value;
-                if (text_country == "all") {
+                let text_corpus = corpus.value;
+                if (text_corpus == "all") {
                     const prefix = fulltext.src.substr(0,fulltext.src.lastIndexOf("/"));
-                    text_country = prefix.substr(prefix.lastIndexOf("/")+1);
+                    text_corpus = prefix.substr(prefix.lastIndexOf("/")+1);
                 }
-                // console.log(text_country);
+                // console.log(text_corpus);
                 // console.log(prefix);
-                // console.log(stemmer.value + "/" + text_country + fulltext.src.substr(fulltext.src.lastIndexOf("/")));
-                tryUpdate(stemmer.value + "/" + text_country + fulltext.src.substr(fulltext.src.lastIndexOf("/")));
+                // console.log(stemmer.value + "/" + text_corpus + fulltext.src.substr(fulltext.src.lastIndexOf("/")));
+                tryUpdate(stemmer.value + "/" + vocab.value + "/" + text_corpus + fulltext.src.substr(fulltext.src.lastIndexOf("/")));
             }
 
             if (window.location.hash) {
@@ -83,14 +84,22 @@ body {
                 tryUpdate(url);
             }
 
+            vocab.addEventListener('change', update);
             stemmer.addEventListener('change', update);
-            country.addEventListener('change', update);
+            corpus.addEventListener('change', update);
         }
 
     </script>
   </head>
 <body onload="init()">
     <form class="menu">
+        <div>
+            <label for="vocab-select">Vocabulary:</label>
+            <select name="vocab" id="vocab-select">
+                <option value="variation">Variation</option>
+                <option value="values">Values</option>
+            </select>
+        </div>
         <div>
             <label for="stemmer-select">Stemmer:</label>
             <!-- List defined in stemmers.py -->
@@ -105,20 +114,22 @@ body {
             </select>
         </div>
         <div>
-            <label for="country-select">Country:</label>
-            <select name="country" id="country-select">
+            <!-- TODO: load corpora dynamically -->
+            <label for="corpus-select">Corpus:</label>
+            <select name="corpus" id="corpus-select">
                 <option value="all">all</option>
-                <option value="Germany">Germany</option>
-                <option value="Italy">Italy</option>
-                <option value="Portugal">Portugal</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
             </select>
         </div>
         <div>
-            <iframe name="list" id="list" src="sb/index.html"></iframe>
+            <iframe name="list" id="list" src="sb/variation/index.html"></iframe>
         </div>s
     </form>
-    <iframe name="fulltext" id="fulltext" src="sb/Germany/1_The_Frog_King_or_Iron_Henry.html"></iframe> 
+    <!-- TODO: generalise to first text in corpus list -->
+    <iframe name="fulltext" id="fulltext" src="sb/variation/A/3184.html"></iframe> 
     <div id="values-container">
-        <iframe name="values" id="values" src="sb/values.html"></iframe> 
+        <iframe name="values" id="values" src="sb/variation/values.html"></iframe> 
     </div>
 </body></html>

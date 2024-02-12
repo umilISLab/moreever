@@ -33,11 +33,11 @@ for i in range(1, len(pal_seq_list)):
         )
     ]
 
-assert corpora == [
-    "Italy",
-    "Germany",
-    "Portugal",
-], "For 3-country fairy tale corpora, an exact match of colors is intended"
+# assert corpora == [
+#     "Italy",
+#     "Germany",
+#     "Portugal",
+# ], "For 3-country fairy tale corpora, an exact match of colors is intended"
 
 # This will be meaningful for other corpora
 assert len(corpora) + 1 <= len(
