@@ -141,7 +141,7 @@ def mkdirs():
         if not os.path.exists(nxt3):
             os.mkdir(nxt3)
 
-        for v in vocabulary: 
+        for v in vocabulary:
             nxt4 = f"{nxt}/{v}"
             if not os.path.exists(nxt4):
                 os.mkdir(nxt4)
@@ -153,7 +153,6 @@ def mkdirs():
                 nxt3 = f"{nxt2}/values"
                 if not os.path.exists(nxt3):
                     os.mkdir(nxt3)
-
 
 
 def get_dirs(path: str = "./corpora/"):

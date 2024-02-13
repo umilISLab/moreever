@@ -94,6 +94,9 @@ body {
 <body onload="init()">
     <form class="menu">
         <div>
+        <h1 class="title"><a href="https://github.com/umilISLab/moreever/">moreever</a></h1>
+        </div>
+        <div>
             <label for="vocab-select">Vocabulary:</label>
             <select name="vocab" id="vocab-select">
                 <option value="variation">Variation</option>
@@ -123,6 +126,7 @@ body {
                 <option value="C">C</option>
             </select>
         </div>
+        <br/>
         <div>
             <iframe name="list" id="list" src="sb/variation/index.html"></iframe>
         </div>s
@@ -130,6 +134,11 @@ body {
     <!-- TODO: generalise to first text in corpus list -->
     <iframe name="fulltext" id="fulltext" src="sb/variation/A/3184.html"></iframe> 
     <div id="values-container">
+        <div>
+            <small>developed at Università degli Studi di Milano</small>
+            <br/>
+            <a href="https://dllcm.unimi.it/"><img src="logo-unimi.svg" width="150px"/></a>
+        </div>
         <iframe name="values" id="values" src="sb/variation/values.html"></iframe> 
     </div>
 </body></html>

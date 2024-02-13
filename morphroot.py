@@ -1,3 +1,4 @@
+#!/bin/python
 from typing import Dict
 
 from settings import db_dir
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     from corpora import corpora
 
     for corpus in corpora:
-        for fname in glob(f"./stories/{corpus}/*.txt"):
+        for fname in glob(f"./corpora/{corpus}/*.txt"):
             print(fname)
             with open(fname) as f:
                 talename = fname.split("/")[-1].split(".")[-2]

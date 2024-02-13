@@ -72,7 +72,7 @@ def render(
         x_range=value_range,
         x_axis_location="above",
         width=15 * len(value_range) + 250,
-        height=15* len(text_range) + 150,
+        height=15 * len(text_range) + 150,
         # toolbar_location = None,
         tools="tap",
         tooltips=[("label", "@value/@text: @count")],

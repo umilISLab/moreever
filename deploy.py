@@ -24,6 +24,7 @@ from pages import values_css
 
 from util import rmdirs, mkdirs
 
+
 def values2css(stemmer: str, vocab) -> None:
     with open(f"site/{stemmer}/values.css", "w") as fout:
         fout.writelines(values_css(stemmer, vocab))
@@ -99,7 +100,9 @@ def list_pages(stemmer: str):
         with open(fname_out, "w") as fout:
             title = f"{corpus} Texts"
             listed = tale_html(stemmer, corpus)
-            fout.write(list_templ.format(title=title, body=listed, root_path="../../../"))
+            fout.write(
+                list_templ.format(title=title, body=listed, root_path="../../../")
+            )
 
     # all-corpus list
     fname_out = f"site/{stemmer}/index.html"

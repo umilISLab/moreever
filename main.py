@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""A dynamic service for moreever. See github.com/umilISLab/moreever/ for details."""
+"""A dynamic service for moreever. See https://github.com/umilISLab/moreever/ for details."""
 from typing import Any
 
 from fastapi import FastAPI, HTTPException

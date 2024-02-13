@@ -8,6 +8,10 @@ body {
 div {
     padding-bottom: 10px;
 }
+
+.title {
+    text-align: right;
+}
   
 .value {
     border: 1px solid lightgray;

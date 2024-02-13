@@ -4,8 +4,7 @@
 from re import fullmatch
 from typing import Dict, List, Union
 
-from nltk.data import load  # type: ignore
-from nltk.tokenize import RegexpTokenizer  # type: ignore
+import nltk  # type: ignore
 
 from stemmers import stemmers
 from create import tokenize_values
@@ -15,6 +14,8 @@ language = "english"
 
 from template import span_templ
 
+nltk.download("punkt")
+
 
 class Annotator:
     def __init__(self, tokenizer_name, fulltext: str, values_br: Dict[str, str] = {}):
@@ -23,8 +24,8 @@ class Annotator:
         # label->value dict
         self.values = values_br if values_br else tokenize_values(tokenizer_name)[1]
         self.fulltext = fulltext
-        self.tokenizer = RegexpTokenizer(regex_token)
-        self.sent_tokenizer = load(f"tokenizers/punkt/{language}.pickle")
+        self.tokenizer = nltk.tokenize.RegexpTokenizer(regex_token)
+        self.sent_tokenizer = nltk.data.load(f"tokenizers/punkt/{language}.pickle")
 
     def rich_text(self):
         """

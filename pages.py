@@ -37,13 +37,17 @@ def tale_dict(stemmer: str, vocab: str, corpus: str) -> Dict[str, str]:
     print(corpus)
     for raw_fname in glob(f"corpora/{corpus}/*.txt"):
         # print(raw_fname)
-        fname = raw_fname.replace("corpora", f"site/{stemmer}/{vocab}").replace(".txt", ".html")
+        fname = raw_fname.replace("corpora", f"site/{stemmer}/{vocab}").replace(
+            ".txt", ".html"
+        )
         print(fname)
         names[fname2name(fname)] = fname
     return names
 
 
-def page_html(fname: str, stemmer: str, vocab: str, values_br: Dict[str, str] = {}) -> str:
+def page_html(
+    fname: str, stemmer: str, vocab: str, values_br: Dict[str, str] = {}
+) -> str:
     """generates the story page
 
     Args:

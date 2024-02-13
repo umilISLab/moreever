@@ -45,6 +45,7 @@ def render_venn(ckeywords: List[str], title: str = "") -> str:
 
     return venn_templ.format(**tag_cls)
 
+
 def keywords_venn(
     tkn: str,
     vocab: str = "",

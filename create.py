@@ -7,6 +7,7 @@ from stemmers import stemmers
 from util import story_tokenize, collect_tokens, get_dirs, mkdirs
 from flatvalues import flatten
 
+
 def tokenize_values(
     func_name: str = "sb", vocab: str = "values"
 ) -> Tuple[Dict[str, List[str]], Dict[str, str]]:

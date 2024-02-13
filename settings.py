@@ -3,10 +3,9 @@ import os
 
 dateformat_log = "%Y%m%d"
 datestamp = datetime.now().strftime(dateformat_log)
-model_dir = os.path.expanduser(f"~/models/{datestamp}")
-# model_dir = "/home/mapto/models/20230713"
-# model_dir = "/home/mapto/models/20230707.renamed"
+# model_dir = os.path.expanduser(f"~/models/{datestamp}")
+model_dir = os.path.abspath(f"./models/{datestamp}")
 
-db_dir = "/home/mapto/work/dllcm/metaling/moreever/db"
+db_dir = os.path.abspath("./db")
 
 DEBUG = True

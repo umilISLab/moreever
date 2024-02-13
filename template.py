@@ -35,9 +35,11 @@ values_templ = """<!DOCTYPE html>
     </style>
   </head>
 <body>
+  <div>
     <a href="map.html" target="_top">Tales vs Labels Heatmap</a><br/>
     <a href="keywords.svg" target="_top">Labels Venn Diagram</a>
-    <h3>{title}</h3>{body}</body></html>"""
+  </div>
+  <h3>{title}</h3>{body}</body></html>"""
 
 venn_templ = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg xmlns="http://www.w3.org/2000/svg" height="100%" width="100%">
