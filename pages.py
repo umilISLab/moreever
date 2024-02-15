@@ -20,6 +20,8 @@ from template import (
 from util import fname2name
 from datamodel import Annotator
 
+from create import tokenize_values, load_source, calc_occurences
+
 
 def values_css(stemmer: str, vocab: str) -> str:
     mapping: Dict[str, str] = {}
@@ -105,12 +107,12 @@ def value_list_html(
             for c in corpora
         )
     all_texts = text_dict(stemmer, vocab, corpus)
-    # print(stemmer, country, all_texts)
+    # print(stemmer, corpus, all_texts)
     names = {}
     for name, fname in all_texts.items():
         # sample fname is 'site/sb/Germany/65_Allerleirauh.html'
         # sample shortname is 'Germany/65_Allerleirauh'
-        shortname = fname[6 + len(stemmer) : -5]
+        shortname = fname[len(f"site/{stemmer}/{vocab}/") : -5]
         if shortname in occurences_backref[label]:
             names[f"{name} ({occurences_backref[label][shortname]})"] = fname
     result = []
@@ -125,6 +127,11 @@ def values_html(stemmer: str, vocab: str) -> str:
     """The page that list all the values, see values_templ for reference"""
     title = "Values and Labels"
     result = []
+
+    values, _ = tokenize_values(stemmer, f"{vocab}.flat")
+    _, tokenized = load_source(stemmers[stemmer], corpora)
+    _, _, occurences_backref = calc_occurences(values, tokenized)
+
     with open(f"{vocab}.csv") as fin:
         for line in csv.reader(fin):
             if not line:
@@ -132,7 +139,8 @@ def values_html(stemmer: str, vocab: str) -> str:
             stems = [stemmers[stemmer](v.strip().lower()) for v in line]
             links = []
             for i, s in enumerate(stems):
-                found = os.path.exists(f"site/{stemmer}/{vocab}/values/{s}.html")
+                print(occurences_backref.keys())
+                found = s in occurences_backref and len(occurences_backref[s]) > 0
                 title = s if found else f"{s} (not found)"
                 styled = (
                     span_templ.format(

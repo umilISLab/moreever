@@ -97,7 +97,7 @@ def calc_occurences(
 
     Returns:
         Tuple[ Dict[Tuple[str, str], int], Dict[str, Dict[str, int]], Dict[str, Dict[str, int]] ]: returns three counting dictionaries:
-            (text_name, value): count), text_name: (value: count), value: (text_name:count),
+            (text_name, value): count, text_name: (value: count), value: (text_name: count),
             where text_name is in the format <corpus>/<chapter>_<text> (no extension)
     """
     token_func = stemmers[func_name]

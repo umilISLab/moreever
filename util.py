@@ -18,6 +18,7 @@ regex_token = r"\w+"
 # def clean_word(s: str) -> str:
 #     return re.sub("")
 
+
 def fname2name(fname: str) -> str:
     """_summary_
 

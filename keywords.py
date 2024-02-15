@@ -15,7 +15,7 @@ from template import venn_templ
 from create import tokenize_values, load_source, calc_occurences
 
 
-def render_venn(ckeywords: List[str], title: str = "") -> str:
+def render_venn(ckeywords: Dict[str, Set[str]], title: str = "") -> str:
     keywords = [ckeywords[c] for c in corpora]
 
     word_cls = {

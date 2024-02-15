@@ -22,7 +22,6 @@ cleanup_map = {
 }
 
 
-
 class Annotator:
     def __init__(self, tokenizer_name, fulltext: str, values_br: Dict[str, str] = {}):
         self.token_func = stemmers[tokenizer_name]

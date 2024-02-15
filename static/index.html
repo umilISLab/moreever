@@ -7,6 +7,26 @@
     <style>
 body {
     display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+form select {
+    float: right;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 4em;
+  padding: 5px;
+  background-color: whitesmoke;
+}
+
+footer div {
+    float: right;
+    padding-left: 10px;
 }
 
 .row {
@@ -136,11 +156,14 @@ body {
     <!-- TODO: generalise to first text in corpus list -->
     <iframe name="fulltext" id="fulltext" src="sb/variation/B/3184.html"></iframe> 
     <div id="values-container">
-        <div>
-            <small>developed at Università degli Studi di Milano</small>
-            <br/>
-            <a href="https://dllcm.unimi.it/"><img src="logo-unimi.svg" width="150px"/></a>
-        </div>
         <iframe name="values" id="values" src="sb/variation/values.html"></iframe> 
     </div>
+    <footer>
+      <a href="https://dllcm.unimi.it/"><img src="/logo-unimi.svg" height="100%"/></a>
+      <div>
+        developed at<br/>
+        Università degli Studi di Milano<br/>
+        <a href="https://dllcm.unimi.it/">https://dllcm.unimi.it/</a>
+      </div>
+    </footer>
 </body></html>
