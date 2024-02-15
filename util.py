@@ -4,6 +4,7 @@ import os
 import string
 import itertools
 from glob import glob
+import shutil
 
 from nltk import sent_tokenize, word_tokenize  # type: ignore
 from nltk.tokenize import RegexpTokenizer  # type: ignore
@@ -14,10 +15,8 @@ wnl = WordNetLemmatizer()
 
 regex_token = r"\w+"
 
-
 # def clean_word(s: str) -> str:
 #     return re.sub("")
-
 
 def fname2name(fname: str) -> str:
     """_summary_
@@ -120,6 +119,8 @@ def collect_tokens(
 
 
 def rmdirs():
+    from stemmers import stemmers
+
     for s in stemmers.keys():
         stem_dir = f"site/{s}"
         if os.path.exists(stem_dir):
@@ -165,10 +166,10 @@ def get_dirs(path: str = "./corpora/"):
 
 def stats(fulltexts, tokenized: Dict[str, Dict[str, List[str]]]):
     symbols = {}
-    tales = {}
+    texts = {}
     tokens = {}
     for c in get_dirs():
-        tales[c] = len(fulltexts[c])
+        texts[c] = len(fulltexts[c])
         symbols[c] = 0
         for tale in fulltexts[c].values():
             symbols[c] += len(tale)
@@ -176,7 +177,7 @@ def stats(fulltexts, tokenized: Dict[str, Dict[str, List[str]]]):
         for tale in tokenized[c].values():
             tokens[c] += sum(len(s) for s in tale)
 
-    print(f"tales: {tales}")
+    print(f"texts: {texts}")
     print(f"symbols: {symbols}")
     print(f"tokens: {tokens}")
-    return tales, symbols, tokens
+    return texts, symbols, tokens

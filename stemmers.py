@@ -6,7 +6,8 @@ so algoritms can also work without stemming."""
 import nltk  # type: ignore
 from morphroot import get_root_morpheme
 
-nltk.download("wordnet")
+nltk.download('wordnet')
+
 # changes here need to also be reflected in static/index.html
 stemmers = {
     "dummy": lambda x: x.lower(),

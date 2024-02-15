@@ -2,7 +2,7 @@ span_templ = "<span id='{id}' class='value {type}' title='{title}'>{content}</sp
 value_link_templ = "<a href='{url}' id='{id}' class='value {type}' title='{title}' target='list'>{content}</a>"
 list_link_templ = "<a href='{url}' id='{id}' class='link {type}' title='{title}' target='list'>{content}</a>"
 
-tale_templ = """<!DOCTYPE html>
+text_templ = """<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -36,7 +36,7 @@ values_templ = """<!DOCTYPE html>
   </head>
 <body>
   <div>
-    <a href="map.html" target="_top">Tales vs Labels Heatmap</a><br/>
+    <a href="map.html" target="_top">Texts vs Labels Heatmap</a><br/>
     <a href="keywords.svg" target="_top">Labels Venn Diagram</a>
   </div>
   <h3>{title}</h3>{body}</body></html>"""

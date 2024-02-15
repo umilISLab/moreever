@@ -9,7 +9,7 @@ import colorcet as cc  # type: ignore
 from corpora import corpora
 from stemmers import stemmers
 from template import (
-    tale_templ,
+    text_templ,
     list_templ,
     values_templ,
     value_link_templ,
@@ -30,7 +30,7 @@ def values_css(stemmer: str, vocab: str) -> str:
     return "\n".join(f".{k} {{background-color: {v}}}" for k, v in mapping.items())
 
 
-def tale_dict(stemmer: str, vocab: str, corpus: str) -> Dict[str, str]:
+def text_dict(stemmer: str, vocab: str, corpus: str) -> Dict[str, str]:
     names = {}
     # for fname in glob(f"site/{stemmer}/{vocab}/{corpus}/*.html"):
     # print(corpus)
@@ -67,18 +67,18 @@ def page_html(
         fulltext = fin.read()
     a = Annotator(stemmer, fulltext, values_br)
     annotated = a.rich_text()
-    return tale_templ.format(title=text, body=annotated)
+    return text_templ.format(title=text, body=annotated)
 
 
-def tale_html(stemmer: str, vocab: str, corpus: str = "", from_parent=False) -> str:
+def text_html(stemmer: str, vocab: str, corpus: str = "", from_parent=False) -> str:
     """
     :param str corpus: Specifies corpus/country. If not set, will do for all
     :param bool from_parent: Specifies whether the generated file will be in the parent directory,
         so that URLs are adapted accordingly. This is not intended to be set manually
     """
     if not corpus:
-        return "\n".join(tale_html(stemmer, vocab, c, True) for c in corpora)
-    names = tale_dict(stemmer, vocab, corpus)
+        return "\n".join(text_html(stemmer, vocab, c, True) for c in corpora)
+    names = text_dict(stemmer, vocab, corpus)
     result = []
     for name in sorted(names.keys()):
         fname = names[name]
@@ -104,10 +104,10 @@ def value_list_html(
             value_list_html(occurences_backref, vocab, stemmer, label, c, True)
             for c in corpora
         )
-    all_tales = tale_dict(stemmer, vocab, corpus)
-    # print(stemmer, country, all_tales)
+    all_texts = text_dict(stemmer, vocab, corpus)
+    # print(stemmer, country, all_texts)
     names = {}
-    for name, fname in all_tales.items():
+    for name, fname in all_texts.items():
         # sample fname is 'site/sb/Germany/65_Allerleirauh.html'
         # sample shortname is 'Germany/65_Allerleirauh'
         shortname = fname[6 + len(stemmer) : -5]
@@ -159,4 +159,4 @@ def values_html(stemmer: str, vocab: str) -> str:
             result += [", ".join(links)]
     # body = "<p>" + "</p><p>".join(result) + "</p>"
     body = "<br/>".join(result)
-    return values_templ.format(title="Values", body=body)
+    return values_templ.format(title="Vocabulary", body=body)

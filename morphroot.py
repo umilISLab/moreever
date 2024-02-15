@@ -72,7 +72,7 @@ if __name__ == "__main__":
         for fname in glob(f"./corpora/{corpus}/*.txt"):
             print(fname)
             with open(fname) as f:
-                talename = fname.split("/")[-1].split(".")[-2]
+                # talename = fname.split("/")[-1].split(".")[-2]
                 fulltext = "".join(f.readlines())
                 story_tokenize(get_root_morpheme, fulltext)
             save_roots()

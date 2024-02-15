@@ -72,10 +72,10 @@ def load_source(
         tokenized[corpus] = {}
         for fname in glob(f"./corpora/{corpus}/*.txt"):
             with open(fname) as f:
-                talename = fname.split("/")[-1].split(".")[-2]
-                fulltexts[corpus][talename] = "".join(f.readlines())
-                tokenized[corpus][talename] = story_tokenize(
-                    token_func, fulltexts[corpus][talename]
+                textname = fname.split("/")[-1].split(".")[-2]
+                fulltexts[corpus][textname] = "".join(f.readlines())
+                tokenized[corpus][textname] = story_tokenize(
+                    token_func, fulltexts[corpus][textname]
                 )
     return fulltexts, tokenized
 
@@ -151,8 +151,8 @@ def annotate_occurences(
     {'a': {'a': [['aa', 'dd', 'bb', 'dd', 'cc']]}}
     """
     token_func = stemmers[func_name]
-    for corpus, tales in tokenized.items():
-        for tale, tokens in tales.items():
+    for corpus, texts in tokenized.items():
+        for text, tokens in texts.items():
             overall = []
             for sentence in tokens:
                 updated = []
@@ -163,7 +163,7 @@ def annotate_occurences(
                     else:
                         updated += [token]
                 overall += [updated]
-            tokenized[corpus][tale] = overall
+            tokenized[corpus][text] = overall
     return tokenized
 
 

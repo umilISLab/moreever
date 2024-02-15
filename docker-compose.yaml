@@ -3,20 +3,14 @@ version: '3.9'
 services:
   fastapi:
     image: python:3-slim-buster
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
     expose:
       - 8000
     ports:
       - 8093:8000
     volumes:
       - .:/app
-      # - ./static:/static:ro
-      #- ./db:/data  # used by sqlite
-      #- ./arguments-test.tsv:/data/arguments-test.tsv:ro
     command: sh -c "tail -f /dev/null"
-    entrypoint: sh -c "apt-get update && apt-get install wget -y && rm -rf /var/lib/apt/lists/* && pip install --no-cache-dir --upgrade -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8000 --log-level debug"
+    entrypoint: sh -c "apt-get update && apt-get install wget -y && rm -rf /var/lib/apt/lists/* && pip install --no-cache-dir --upgrade -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-level debug"
     working_dir: /app
     healthcheck:
       test: ["CMD-SHELL", "wget -nv -t1 --spider http://localhost:8000/docs || exit 1"]

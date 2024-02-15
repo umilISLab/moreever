@@ -19,7 +19,7 @@ from flatvalues import flatten
 from heatmap import render as heatmap
 from keywords import keywords_venn, clusters_venn
 
-from pages import values_html, tale_html, value_list_html, page_html
+from pages import values_html, text_html, value_list_html, page_html
 from pages import values_css
 
 from util import rmdirs, mkdirs
@@ -91,7 +91,7 @@ def value_list_pages(
 
 
 def list_pages(stemmer: str):
-    """The page containing a list of tales. See list_templ for reference.
+    """The page containing a list of texts. See list_templ for reference.
     Generates an index file in site/<stemmer> and site/<stemmer>/<corpus>,
     so if any code reads list of texts as files, make sure to run it before this."""
     # per-corpus list
@@ -99,7 +99,7 @@ def list_pages(stemmer: str):
         fname_out = f"site/{stemmer}/{corpus}/index.html"
         with open(fname_out, "w") as fout:
             title = f"{corpus} Texts"
-            listed = tale_html(stemmer, corpus)
+            listed = text_html(stemmer, corpus)
             fout.write(
                 list_templ.format(title=title, body=listed, root_path="../../../")
             )
@@ -108,7 +108,7 @@ def list_pages(stemmer: str):
     fname_out = f"site/{stemmer}/index.html"
     with open(fname_out, "w") as fout:
         title = f"All Texts"
-        listed = tale_html(stemmer, vocab)
+        listed = text_html(stemmer, vocab)
         fout.write(list_templ.format(title=title, body=listed, root_path="../../"))
 
 

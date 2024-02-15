@@ -37,7 +37,7 @@ for i in range(1, len(pal_seq_list)):
 #     "Italy",
 #     "Germany",
 #     "Portugal",
-# ], "For 3-country fairy tale corpora, an exact match of colors is intended"
+# ], "For 3-corpora, an exact match of colors is intended"
 
 # This will be meaningful for other corpora
 assert len(corpora) + 1 <= len(

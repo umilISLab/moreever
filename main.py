@@ -13,7 +13,7 @@ from stemmers import stemmers
 from template import list_templ
 
 from create import tokenize_values, load_source, calc_occurences
-from pages import values_html, tale_html, value_list_html, page_html
+from pages import values_html, text_html, value_list_html, page_html
 from pages import values_css
 from keywords import keywords_venn, clusters, render_venn, filter_clusters_containing
 from heatmap import render as heatmap_render
@@ -47,21 +47,25 @@ app.add_middleware(
 
 @app.get("/{stemmer}/{vocab}/values.css", response_class=CSSResponse)
 async def values_css_page(vocab: str, stemmer: str):
+    """The CSS providing the coloring for the vocabulary."""
     return values_css(stemmer, vocab)
 
 
 @app.get("/{stemmer}/{vocab}/values.html", response_class=HTMLResponse)
 async def values_page(vocab: str, stemmer: str):
+    """The coloured vocabularly."""
     return values_html(stemmer, vocab)
 
 
 @app.get("/{stemmer}/{vocab}/keywords.svg", response_class=SVGResponse)
 async def keywords_venn_page(vocab: str, stemmer: str):
+    """The Venn diagram with the vocabulary"""
     return keywords_venn(stemmer, f"{vocab}.flat")
 
 
 @app.get("/{stemmer}/{vocab}/cluster-{value}.svg", response_class=SVGResponse)
 async def cluster_venn_page(vocab: str, stemmer: str, value: str):
+    """The Venn diagram with the word vectors"""
     values, _ = tokenize_values(stemmer, vocab)
     _, tokenized = load_source(stemmers[stemmer], corpora)
     _, occurences_tv, _ = calc_occurences(values, tokenized)
@@ -79,6 +83,7 @@ async def cluster_venn_page(vocab: str, stemmer: str, value: str):
 
 @app.get("/{stemmer}/{vocab}/map.html", response_class=HTMLResponse)
 async def heatmap_page(stemmer: str, vocab: str):
+    """The Heatmap with texts vs labels"""
     return heatmap_render(stemmer, f"{vocab}.flat")
 
 
@@ -87,18 +92,19 @@ async def heatmap_page(stemmer: str, vocab: str):
 # @app.get("/{stemmer}", response_class=HTMLResponse)
 @app.get("/{stemmer}/{vocab}/{corpus}/index.html", response_class=HTMLResponse)
 async def values_index(stemmer: str, vocab: str, corpus: str = ""):
-    print(corpus)
+    """The list of texts in the corpus (or in all corpora if corpus unspecified)"""
+    # print(corpus)
     if corpus:
         if corpus not in corpora:
             raise HTTPException(
                 status_code=404, detail=f"Corpus not found for {corpus}"
             )
         title = f"{corpus} Texts"
-        listed = tale_html(stemmer, vocab, corpus)
+        listed = text_html(stemmer, vocab, corpus)
         return list_templ.format(title=title, body=listed, root_path="../../../")
 
     title = f"All Texts"
-    listed = tale_html(stemmer, vocab)
+    listed = text_html(stemmer, vocab)
     return list_templ.format(title=title, body=listed, root_path="../../")
 
 
@@ -135,9 +141,9 @@ async def value_list_page(stemmer: str, vocab: str, label: str, corpus: str = ""
     return list_templ.format(title=title, body=listed, root_path="../../../")
 
 
-@app.get("/{stemmer}/{vocab}/{corpus}/{talename}.html", response_class=HTMLResponse)
-async def page(stemmer: str, vocab: str, corpus: str, talename: str):
-    fname = f"corpora/{corpus}/{talename}.txt"
+@app.get("/{stemmer}/{vocab}/{corpus}/{textname}.html", response_class=HTMLResponse)
+async def page(stemmer: str, vocab: str, corpus: str, textname: str):
+    fname = f"corpora/{corpus}/{textname}.txt"
     _, values_br = tokenize_values(stemmer, vocab)
     return page_html(fname, stemmer, vocab, values_br)
 

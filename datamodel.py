@@ -16,6 +16,12 @@ from template import span_templ
 
 nltk.download("punkt")
 
+cleanup_map = {
+    "-\n": "",
+    "ſ": "s",
+}
+
+
 
 class Annotator:
     def __init__(self, tokenizer_name, fulltext: str, values_br: Dict[str, str] = {}):
@@ -24,6 +30,8 @@ class Annotator:
         # label->value dict
         self.values = values_br if values_br else tokenize_values(tokenizer_name)[1]
         self.fulltext = fulltext
+        for k, v in cleanup_map.items():
+            self.fulltext = self.fulltext.replace(k, v)
         self.tokenizer = nltk.tokenize.RegexpTokenizer(regex_token)
         self.sent_tokenizer = nltk.data.load(f"tokenizers/punkt/{language}.pickle")
 
