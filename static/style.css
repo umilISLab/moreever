@@ -4,6 +4,7 @@ body {
     font-family: 'EB Garamond', serif;
     color: indigo;
     background-color: whitesmoke;
+    border: 0;
 }
 
 div {

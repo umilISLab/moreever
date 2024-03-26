@@ -34,7 +34,7 @@ def save_roots():
 
 def extract_root(word, tree):
     result = ""
-    print(word)
+    # print(word)
     for e in tree:
         if e["type"] == "root":
             # assert not result, f'Found at least two roots for {word}: {result} and {e["text"]}'

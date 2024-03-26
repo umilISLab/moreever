@@ -6,7 +6,7 @@ services:
     expose:
       - 8000
     ports:
-      - 8093:8000
+      - 8103:8000
     volumes:
       - .:/app
     command: sh -c "tail -f /dev/null"
@@ -19,7 +19,7 @@ services:
   nginx:
     image: nginx:1.25-alpine-slim
     ports:
-      - 8092:80
+      - 8102:80
     volumes: 
       # - ./frontend/dist:/usr/share/nginx/html:ro
       - ./site:/usr/share/nginx
