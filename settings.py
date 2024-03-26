@@ -9,3 +9,7 @@ model_dir = os.path.abspath(f"./models/{datestamp}")
 db_dir = os.path.abspath("./db")
 
 DEBUG = True
+
+VOCAB = "clustering"
+
+lang = "it"

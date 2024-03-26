@@ -19,7 +19,7 @@ from flatvalues import flatten
 from heatmap import render as heatmap
 from keywords import keywords_venn, clusters_venn
 
-from pages import values_html, text_html, value_list_html, page_html
+from pages import values_html, text_html, value_list_html, page_text_html
 from pages import values_css
 
 from util import rmdirs, mkdirs
@@ -35,7 +35,7 @@ def page(fname: str, stemmer: str, vocab: str, values_br: Dict[str, str] = {}) -
     fname_out = f"{fname_path}.html".replace("corpora", f"site/{stemmer}/{vocab}")
     print(f"Writing: {fname_out}...")
     with open(fname_out, "w") as fout:
-        fout.write(page_html(fname, stemmer, vocab, values_br))
+        fout.write(page_text_html(fname, stemmer, vocab, values_br))
 
 
 def value_list_page(

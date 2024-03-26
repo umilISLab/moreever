@@ -73,6 +73,7 @@ def load_source(
         for fname in glob(f"./corpora/{corpus}/*.txt"):
             with open(fname) as f:
                 textname = fname.split("/")[-1].split(".")[-2]
+                assert textname, f"Seems not to contain file name: {fname}"
                 fulltexts[corpus][textname] = "".join(f.readlines())
                 tokenized[corpus][textname] = story_tokenize(
                     token_func, fulltexts[corpus][textname]
@@ -100,6 +101,7 @@ def calc_occurences(
             (text_name, value): count, text_name: (value: count), value: (text_name: count),
             where text_name is in the format <corpus>/<chapter>_<text> (no extension)
     """
+    # print(tokenized)
     token_func = stemmers[func_name]
     occurences: Dict[Tuple[str, str], int] = {}  # (text_name, value): count)
     occurences_tv: Dict[str, Dict[str, int]] = {}  # text_name: (value: count)
@@ -107,6 +109,7 @@ def calc_occurences(
     for corpus, chapters in tokenized.items():
         for chapter, lists_of_tokens in chapters.items():
             text_name = f"{corpus}/{chapter}"
+            # print(text_name)
             for value_name, synonyms in values.items():
                 cnt = sum(
                     sum(phrase.count(token_func(keyword)) for keyword in synonyms)

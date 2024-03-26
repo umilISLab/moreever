@@ -15,8 +15,18 @@ wnl = WordNetLemmatizer()
 
 regex_token = r"\w+"
 
+
 # def clean_word(s: str) -> str:
 #     return re.sub("")
+def name2fname(name: str) -> str:
+    return (
+        name.replace(" ", "_")
+        .replace("’", "_")
+        .replace("'", "_")
+        .replace(",", "_")
+        .replace(".", "_")
+        .replace("__", "_")
+    )
 
 
 def fname2name(fname: str) -> str:
@@ -32,7 +42,7 @@ def fname2name(fname: str) -> str:
     >>> fname2name("two/A29858_sec.html")
     'A29858 Sec'
     """
-    #     print(fname)
+    # print(fname)
     name = (
         fname.split("/")[-1]
         .replace("_s_", "'s ")
@@ -40,10 +50,11 @@ def fname2name(fname: str) -> str:
         .replace(".html", "")
         .replace(".txt", "")
     )
+    assert name, f"Path {fname} is empty"
     if name.endswith("_"):
         name = name[:-1]
     name = " ".join(w[0].upper() + w[1:].lower() for w in name.split("_"))
-    #     print(name)
+    # print(name)
     return name
 
 
@@ -157,11 +168,14 @@ def mkdirs():
                     os.mkdir(nxt3)
 
 
-def get_dirs(path: str = "./corpora/"):
+def get_dirs(path: str = "./corpora/") -> List[str]:
     result = [
         f.replace(path, "") for f in glob(f"{path}/*") if os.path.isdir(os.path.join(f))
     ]
-    assert len(set(c[0] for c in result)) == len(result)
+    # TODO: remove
+    assert len(set(c[0] for c in result)) == len(
+        result
+    ), "Each collection should start with a different letter"
     return result
 
 

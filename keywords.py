@@ -18,15 +18,29 @@ from create import tokenize_values, load_source, calc_occurences
 def render_venn(ckeywords: Dict[str, Set[str]], title: str = "") -> str:
     keywords = [ckeywords[c] for c in corpora]
 
-    word_cls = {
-        "a_b_c": keywords[0] & keywords[1] & keywords[2],
-        "a": keywords[0] - keywords[1] - keywords[2],
-        "b": keywords[1] - keywords[0] - keywords[2],
-        "c": keywords[2] - keywords[0] - keywords[1],
-    }
-    word_cls["a_b"] = (keywords[0] & keywords[1]) - word_cls["a_b_c"]
-    word_cls["a_c"] = (keywords[0] & keywords[2]) - word_cls["a_b_c"]
-    word_cls["b_c"] = (keywords[1] & keywords[2]) - word_cls["a_b_c"]
+    if len(corpora) == 1:
+        # Quite pointless
+        word_cls["a"] = keywords[0]
+    elif len(corpora) == 2:
+        word_cls = {
+            "a_b": keywords[0] & keywords[1],
+            "a": keywords[0] - keywords[1],
+            "b": keywords[1] - keywords[0],
+        }
+    elif len(corpora) == 3:
+        word_cls = {
+            "a_b_c": keywords[0] & keywords[1] & keywords[2],
+            "a": keywords[0] - keywords[1] - keywords[2],
+            "b": keywords[1] - keywords[0] - keywords[2],
+            "c": keywords[2] - keywords[0] - keywords[1],
+        }
+        word_cls["a_b"] = (keywords[0] & keywords[1]) - word_cls["a_b_c"]
+        word_cls["a_c"] = (keywords[0] & keywords[2]) - word_cls["a_b_c"]
+        word_cls["b_c"] = (keywords[1] & keywords[2]) - word_cls["a_b_c"]
+    elif len(corpora) == 4:
+        raise NotImplementedError("Venn diagrams for 4 corpora not yet implemented. Could be done with ellipses as in: https://en.wikipedia.org/wiki/Venn_diagram#Extensions_to_higher_numbers_of_sets")        
+    else:
+        raise NotImplementedError("Venn diagrams for that many corpora are not supported.")
 
     tag_cls = {
         k: "".join(
@@ -38,12 +52,16 @@ def render_venn(ckeywords: Dict[str, Set[str]], title: str = "") -> str:
         for k, v in word_cls.items()
     }
 
-    tag_cls["a_name"] = corpora[0]
-    tag_cls["b_name"] = corpora[1]
-    tag_cls["c_name"] = corpora[2]
+    if len(corpora) > 0:
+        tag_cls["a_name"] = corpora[0]
+    if len(corpora) > 1:
+        tag_cls["b_name"] = corpora[1]
+    if len(corpora) > 2:
+        tag_cls["c_name"] = corpora[2]
+
     tag_cls["title"] = title
 
-    return venn_templ.format(**tag_cls)
+    return venn_templ[len(corpora)].format(**tag_cls)
 
 
 def keywords_venn(

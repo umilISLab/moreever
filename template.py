@@ -44,7 +44,42 @@ values_templ = """<!DOCTYPE html>
   <div>{body}</div>
 </body></html>"""
 
-venn_templ = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+venn_templ = {
+    1: """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" height="100%" width="100%">
+  <title>{title}</title>
+  <svg x="50%" y="50%" overflow="visible" width="700" height="700">
+    <g transform="translate(-350,-350)">
+      <circle cx="37.5%" cy="37.5%" r="40%" style="fill:#aaffaa;fill-opacity:.5" />
+      
+      <text transform="translate(105,70)" width="20%" height="20%">
+        <tspan x="0" y="-10" font-weight="bold">{a_name}</tspan>{a}
+      </text>
+    </g>
+  </svg>
+</svg>""",
+    2: """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" height="100%" width="100%">
+  <title>{title}</title>
+  <svg x="50%" y="50%" overflow="visible" width="700" height="700">
+    <g transform="translate(-350,-350)">
+      <circle cx="37.5%" cy="37.5%" r="40%" style="fill:#aaffaa;fill-opacity:.5" />
+      <circle cx="62.5%" cy="37.5%" r="40%" style="fill:#ffaaaa;fill-opacity:.5" />
+      
+      <text transform="translate(105,70)" width="20%" height="20%">
+        <tspan x="0" y="-10" font-weight="bold">{a_name}</tspan>{a}
+      </text>
+      <text transform="translate(525,70)" width="20%" height="20%">
+        <tspan x="0" y="-10" font-weight="bold">{b_name}</tspan>{b}
+      </text>
+
+      <text transform="translate(315,35)" width="20%" height="20%">
+        {a_b}
+      </text>
+    </g>
+  </svg>
+</svg>""",
+    3: """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg xmlns="http://www.w3.org/2000/svg" height="100%" width="100%">
   <title>{title}</title>
   <svg x="50%" y="50%" overflow="visible" width="700" height="700">
@@ -78,4 +113,58 @@ venn_templ = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
       </text>
     </g>
   </svg>
-</svg>"""
+</svg>""",
+}
+
+select_option_templ = '<option value="{value}">{label}</option>'
+
+index_templ = """<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>moreever - Syntactic Identification of Values in Text Corpora</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="index.css">
+    <script src="index.js"></script>
+  </head>
+<body onload="init()">
+  <form class="menu">
+    <div>
+    <h1 class="title"><a href="https://github.com/umilISLab/moreever/">moreever</a></h1>
+    </div>
+    <div>
+      <input type="hidden" id="vocab-select" value="{vocab}"/>
+    </div>
+    <div>
+      <label for="stemmer-select">Stemmer:</label>
+      <!-- List defined in stemmers.py -->
+      <select name="stemmer" id="stemmer-select">
+        {stemmers}
+      </select>
+    </div>
+    <div>
+      <!-- TODO: load corpora dynamically -->
+      <label for="corpus-select">Corpus:</label>
+      <select name="corpus" id="corpus-select">
+        {corpora}
+      </select>
+    </div>
+    <br/>
+    <div>
+        <iframe name="list" id="list" src="sb/variation/index.html"></iframe>
+    </div>
+  </form>
+  <!-- TODO: generalise to first text in corpus list -->
+  <iframe name="fulltext" id="fulltext" src="{text}"></iframe> 
+  <div id="values-container">
+      <iframe name="values" id="values" src="{stem}/{vocab}/values.html"></iframe> 
+  </div>
+  <footer>
+    <a href="https://dllcm.unimi.it/"><img src="/logo-unimi.svg" height="100%"/></a>
+    <div>
+      developed at<br/>
+      Università degli Studi di Milano<br/>
+      <a href="https://dllcm.unimi.it/">https://dllcm.unimi.it/</a>
+    </div>
+  </footer>
+</body></html>"""

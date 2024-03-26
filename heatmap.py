@@ -43,6 +43,7 @@ def render(
     title = f"Clickable Map of Values in Texts (tokenisation: {tkn})"
     # output_file(filename=f"site/{tkn}/{vocab}/map.html", title=title)
 
+    # print(occurences)
     data = [
         [
             k[0].split("/")[0],
@@ -50,7 +51,7 @@ def render(
             k[1],
             v,
             str(v),
-            f"/index.html#/{tkn}/{k[0]}.html",
+            f"/index.html#/{tkn}/{vocab.replace('.flat', '')}/{k[0]}.html",
         ]
         for k, v in occurences.items()
     ]

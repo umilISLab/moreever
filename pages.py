@@ -6,16 +6,14 @@ from glob import glob
 
 import colorcet as cc  # type: ignore
 
+from settings import VOCAB
+
 from corpora import corpora
 from stemmers import stemmers
-from template import (
-    text_templ,
-    list_templ,
-    values_templ,
-    value_link_templ,
-    list_link_templ,
-    span_templ,
-)
+from template import span_templ, select_option_templ
+from template import index_templ, text_templ, list_templ, values_templ
+from template import value_link_templ, list_link_templ
+
 
 from util import fname2name
 from datamodel import Annotator
@@ -36,18 +34,44 @@ def text_dict(stemmer: str, vocab: str, corpus: str) -> Dict[str, str]:
     names = {}
     # for fname in glob(f"site/{stemmer}/{vocab}/{corpus}/*.html"):
     # print(corpus)
-    print(corpus)
     for raw_fname in glob(f"corpora/{corpus}/*.txt"):
         # print(raw_fname)
         fname = raw_fname.replace("corpora", f"site/{stemmer}/{vocab}").replace(
             ".txt", ".html"
         )
-        print(fname)
+        # print(fname)
         names[fname2name(fname)] = fname
     return names
 
 
-def page_html(
+def index_html() -> str:
+    stemmers_html = "".join(
+        select_option_templ.format(value=k, label=k) for k in stemmers
+    )
+    stemmer_default = next(iter(stemmers.keys()))
+
+    corpora_html = select_option_templ.format(value="all", label="all")
+    corpora_html += "".join(
+        select_option_templ.format(value=c, label=c) for c in corpora
+    )
+    corpus_default = next(iter(corpora))
+
+    text_default = next(
+        iter(text_dict(stemmer_default, VOCAB, corpus_default).values())
+    ).replace("site/", "")
+
+    tokenize_values(stemmer_default, VOCAB)
+    return index_templ.format(
+        stemmers=stemmers_html,
+        corpora=corpora_html,
+        vocab=VOCAB,
+        stem=stemmer_default,
+        corpus=corpus_default,
+        text=text_default,
+    )
+
+
+def page_text_html(
     fname: str, stemmer: str, vocab: str, values_br: Dict[str, str] = {}
 ) -> str:
     """generates the story page
@@ -70,6 +94,30 @@ def page_html(
     a = Annotator(stemmer, fulltext, values_br)
     annotated = a.rich_text()
     return text_templ.format(title=text, body=annotated)
+
+
+def page_corpus_html(
+    corpus: str, stemmer: str, vocab: str, values_br: Dict[str, str] = {}
+) -> str:
+    """generates a unified page for stories in a corpus
+
+    Args:
+        corpus (str): one of the corpora
+        stemmer (str): one of the stemmers
+        values_br (Dict[str, str], optional): _description_. Defaults to {}.
+
+    Returns:
+        str: the annotated HTML page
+    """
+    annotated = ""
+
+    fulltext = ""
+    for fname in glob(f"site/{stemmer}/{vocab}/{corpus}/*.txt"):
+        with open(fname) as fin:
+            fulltext += "\n" + fin.read() + "\n"
+    a = Annotator(stemmer, fulltext, values_br)
+    annotated = a.rich_text()
+    return text_templ.format(title=corpus, body=annotated)
 
 
 def text_html(stemmer: str, vocab: str, corpus: str = "", from_parent=False) -> str:
@@ -139,7 +187,7 @@ def values_html(stemmer: str, vocab: str) -> str:
             stems = [stemmers[stemmer](v.strip().lower()) for v in line]
             links = []
             for i, s in enumerate(stems):
-                print(occurences_backref.keys())
+                # print(occurences_backref.keys())
                 found = s in occurences_backref and len(occurences_backref[s]) > 0
                 title = s if found else f"{s} (not found)"
                 styled = (

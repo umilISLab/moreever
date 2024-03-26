@@ -13,7 +13,8 @@ from stemmers import stemmers
 from template import list_templ
 
 from create import tokenize_values, load_source, calc_occurences
-from pages import values_html, text_html, value_list_html, page_html
+from pages import index_html, page_text_html, page_corpus_html
+from pages import text_html, values_html, value_list_html
 from pages import values_css
 from keywords import keywords_venn, clusters, render_venn, filter_clusters_containing
 from heatmap import render as heatmap_render
@@ -142,10 +143,23 @@ async def value_list_page(stemmer: str, vocab: str, label: str, corpus: str = ""
 
 
 @app.get("/{stemmer}/{vocab}/{corpus}/{textname}.html", response_class=HTMLResponse)
-async def page(stemmer: str, vocab: str, corpus: str, textname: str):
+async def page_text(stemmer: str, vocab: str, corpus: str, textname: str):
     fname = f"corpora/{corpus}/{textname}.txt"
     _, values_br = tokenize_values(stemmer, vocab)
-    return page_html(fname, stemmer, vocab, values_br)
+    return page_text_html(fname, stemmer, vocab, values_br)
+
+
+@app.get("/{stemmer}/{vocab}/{corpus}.html", response_class=HTMLResponse)
+async def page_corpus(stemmer: str, vocab: str, corpus: str, textname: str):
+    # TODO
+    _, values_br = tokenize_values(stemmer, vocab)
+    return page_corpus_html(corpus, stemmer, vocab, values_br)
+
+
+@app.get("/", response_class=HTMLResponse)
+@app.get("/index.html", response_class=HTMLResponse)
+async def index():
+    return index_html()
 
 
 app.mount("", StaticFiles(directory="./static", html=True), name="static")
