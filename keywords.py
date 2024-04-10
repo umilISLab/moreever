@@ -17,6 +17,7 @@ from create import tokenize_values, load_source, calc_occurences
 
 def render_venn(ckeywords: Dict[str, Set[str]], title: str = "") -> str:
     keywords = [ckeywords[c] for c in corpora]
+    word_cls: Dict[str, List[str]] = {}
 
     if len(corpora) == 1:
         # Quite pointless
@@ -38,9 +39,13 @@ def render_venn(ckeywords: Dict[str, Set[str]], title: str = "") -> str:
         word_cls["a_c"] = (keywords[0] & keywords[2]) - word_cls["a_b_c"]
         word_cls["b_c"] = (keywords[1] & keywords[2]) - word_cls["a_b_c"]
     elif len(corpora) == 4:
-        raise NotImplementedError("Venn diagrams for 4 corpora not yet implemented. Could be done with ellipses as in: https://en.wikipedia.org/wiki/Venn_diagram#Extensions_to_higher_numbers_of_sets")        
+        raise NotImplementedError(
+            "Venn diagrams for 4 corpora not yet implemented. Could be done with ellipses as in: https://en.wikipedia.org/wiki/Venn_diagram#Extensions_to_higher_numbers_of_sets"
+        )
     else:
-        raise NotImplementedError("Venn diagrams for that many corpora are not supported.")
+        raise NotImplementedError(
+            "Venn diagrams for that many corpora are not supported."
+        )
 
     tag_cls = {
         k: "".join(

@@ -46,7 +46,8 @@ def fname2name(fname: str) -> str:
     """
     # print(fname)
     name = (
-        fname.split("/")[-1].split("#")[-1]
+        fname.split("/")[-1]
+        .split("#")[-1]
         .replace("_s_", "'s ")
         .replace("_.", ".")
         .replace(".html", "")
@@ -59,6 +60,15 @@ def fname2name(fname: str) -> str:
     # print(name)
     return name
 
+def fname2path(fname: str) -> str:
+    """
+    >>> fname2path("corpora/singles/Sammy.txt")
+    'singles.html#sammy'
+    """
+    parts = fname.split("/")[-2:]
+    parts[-1] = parts[-1].split(".")[0]
+    name = ".html#".join(parts)
+    return name.lower()
 
 def story_tokenize(token_func, story: str) -> List[List[str]]:
     """get the text of the story and returns a lists of sentences represented as list of lemmas.

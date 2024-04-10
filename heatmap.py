@@ -8,7 +8,7 @@ from corpora import corpora, country2code
 from stemmers import stemmers
 from palettes import pal_seq
 
-from util import fname2name
+from util import fname2name, fname2path
 from create import tokenize_values, load_source, calc_occurences
 
 from bokeh.models import LinearColorMapper, LabelSet, ColumnDataSource, TapTool, OpenURL  # type: ignore
@@ -44,6 +44,7 @@ def render(
     # output_file(filename=f"site/{tkn}/{vocab}/map.html", title=title)
 
     # print(occurences)
+
     data = [
         [
             k[0].split("/")[0],
@@ -51,7 +52,8 @@ def render(
             k[1],
             v,
             str(v),
-            f"/index.html#/{tkn}/{vocab.replace('.flat', '')}/{k[0]}.html",
+            # f"/index.html#/{tkn}/{vocab.replace('.flat', '')}/{k[0]}.html",
+            f"/index.html#/{tkn}/{vocab.replace('.flat', '')}/{fname2path(k[0])}",
         ]
         for k, v in occurences.items()
     ]

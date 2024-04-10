@@ -166,7 +166,7 @@ index_templ = """<!DOCTYPE html>
     </div>
   </form>
   <!-- TODO: generalise to first text in corpus list -->
-  <iframe name="fulltext" id="fulltext" src="onboarding.html"></iframe> 
+  <iframe name="fulltext" id="fulltext" src="{text}"></iframe> 
   <div id="values-container">
       <iframe name="values" id="values" src="{stem}/{vocab}/values.html"></iframe> 
   </div>

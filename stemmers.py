@@ -29,7 +29,7 @@ stemmers = {
 # it
 stemmers = {
     "dummy": lambda x: x.lower(),
-    "simpl": lambda x: simplemma.lemmatize(x, lang='it'),
+    "simpl": lambda x: simplemma.lemmatize(x, lang="it"),
     "sb": nltk.stem.SnowballStemmer("italian").stem,
     # Double application of the Snowball Stemmer to ensure it is idempotent function over the values
     "sb2": lambda x: nltk.stem.SnowballStemmer("italian").stem(
@@ -46,4 +46,3 @@ stemmer_labels = {
     "wnl": "Lemmatizer",
     "simpl": "Lemmatizer",
 }
-

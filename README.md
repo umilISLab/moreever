@@ -36,11 +36,9 @@ Values are defined in a CSV-like file, where each line starts with the value rep
 ## Use
 For local use, the dynamic version is advisable. For deployment the static version is more efficient, but possibly redundant in generating data for stemmers that are irrelevant.
 
-TODO: caching for the dynamic version, so that the static becomes redundant. Probably best way to implement this is via HTTP headers.
-### Dynamic
 Using [main.py](main.py) a version could be run that generates the analytical pages dynamically on demand. This has slower performance (barely noticeable for a single user).
-### Static
-Running [deploy.py](deploy.py) generates a static website in the [site](site/) directory to browse the texts with the values highlighter. To run locally, use [site/run.sh](site/run.sh)
+
+Implementing caching is recommended in cases of heavier load. Probably best way to implement this is via HTTP headers.
 
 ## Screenshots
 
