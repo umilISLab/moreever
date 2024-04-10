@@ -2,9 +2,14 @@ bokeh==3.3.4
 colorcet==3.0.1
 fastapi==0.109.2
 gensim==4.3.2
-morphemes==1.2.0
 networkx==3.2.1
 nltk==3.8.1
 pandas==2.2.0
 roman==4.1
 uvicorn==0.17.1
+
+# english
+morphemes==1.2.0
+
+# italian
+simplemma==0.9.1

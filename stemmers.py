@@ -14,13 +14,13 @@ nltk.download("wordnet")
 # en
 stemmers = {
     "dummy": lambda x: x.lower(),
+    "wnl": lambda x: nltk.stem.WordNetLemmatizer().lemmatize(x.lower()),
     "sb": nltk.stem.SnowballStemmer("english").stem,
     # Double application of the Snowball Stemmer to ensure it is idempotent function over the values
     "sb2": lambda x: nltk.stem.SnowballStemmer("english").stem(
         nltk.stem.SnowballStemmer("english").stem(x)
     ),
     "ps": nltk.stem.PorterStemmer().stem,
-    "wnl": lambda x: nltk.stem.WordNetLemmatizer().lemmatize(x.lower()),
     "lan": nltk.stem.lancaster.LancasterStemmer().stem,
     # "morph": get_root_morpheme,
 }
@@ -29,10 +29,21 @@ stemmers = {
 # it
 stemmers = {
     "dummy": lambda x: x.lower(),
+    "simpl": lambda x: simplemma.lemmatize(x, lang='it'),
     "sb": nltk.stem.SnowballStemmer("italian").stem,
     # Double application of the Snowball Stemmer to ensure it is idempotent function over the values
     "sb2": lambda x: nltk.stem.SnowballStemmer("italian").stem(
         nltk.stem.SnowballStemmer("italian").stem(x)
     ),
-    "simpl": lambda x: simplemma.lemmatize(x, lang='it'),
 }
+
+stemmer_labels = {
+    "dummy": "none",
+    "sb": "SnowBall Stemmer",
+    "sb2": "SnowBall repeated",
+    "ps": "Porter Stemmer",
+    "lan": "Lancaster Stemmer",
+    "wnl": "Lemmatizer",
+    "simpl": "Lemmatizer",
+}
+

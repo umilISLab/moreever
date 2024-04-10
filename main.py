@@ -13,8 +13,8 @@ from stemmers import stemmers
 from template import list_templ
 
 from create import tokenize_values, load_source, calc_occurences
-from pages import index_html, page_text_html, page_corpus_html
-from pages import text_html, values_html, value_list_html
+from pages import index_html, page_corpus_html
+from pages import text_anchor_html, values_html, value_list_html
 from pages import values_css
 from keywords import keywords_venn, clusters, render_venn, filter_clusters_containing
 from heatmap import render as heatmap_render
@@ -101,11 +101,11 @@ async def values_index(stemmer: str, vocab: str, corpus: str = ""):
                 status_code=404, detail=f"Corpus not found for {corpus}"
             )
         title = f"{corpus} Texts"
-        listed = text_html(stemmer, vocab, corpus)
+        listed = text_anchor_html(stemmer, vocab, corpus)
         return list_templ.format(title=title, body=listed, root_path="../../../")
 
     title = f"All Texts"
-    listed = text_html(stemmer, vocab)
+    listed = text_anchor_html(stemmer, vocab)
     return list_templ.format(title=title, body=listed, root_path="../../")
 
 
@@ -142,16 +142,8 @@ async def value_list_page(stemmer: str, vocab: str, label: str, corpus: str = ""
     return list_templ.format(title=title, body=listed, root_path="../../../")
 
 
-@app.get("/{stemmer}/{vocab}/{corpus}/{textname}.html", response_class=HTMLResponse)
-async def page_text(stemmer: str, vocab: str, corpus: str, textname: str):
-    fname = f"corpora/{corpus}/{textname}.txt"
-    _, values_br = tokenize_values(stemmer, vocab)
-    return page_text_html(fname, stemmer, vocab, values_br)
-
-
 @app.get("/{stemmer}/{vocab}/{corpus}.html", response_class=HTMLResponse)
-async def page_corpus(stemmer: str, vocab: str, corpus: str, textname: str):
-    # TODO
+async def page_corpus(stemmer: str, vocab: str, corpus: str):
     _, values_br = tokenize_values(stemmer, vocab)
     return page_corpus_html(corpus, stemmer, vocab, values_br)
 

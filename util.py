@@ -41,10 +41,12 @@ def fname2name(fname: str) -> str:
     'Lansdowne 72-43 Transcription'
     >>> fname2name("two/A29858_sec.html")
     'A29858 Sec'
+    >>> fname2name("site/sb/variation/singles.html#Sammy")
+    'Sammy'
     """
     # print(fname)
     name = (
-        fname.split("/")[-1]
+        fname.split("/")[-1].split("#")[-1]
         .replace("_s_", "'s ")
         .replace("_.", ".")
         .replace(".html", "")

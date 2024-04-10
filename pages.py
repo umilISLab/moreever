@@ -9,9 +9,9 @@ import colorcet as cc  # type: ignore
 from settings import VOCAB
 
 from corpora import corpora
-from stemmers import stemmers
-from template import span_templ, select_option_templ
-from template import index_templ, text_templ, list_templ, values_templ
+from stemmers import stemmers, stemmer_labels
+from template import title_templ, span_templ, select_option_templ
+from template import index_templ, corpus_templ, text_templ, list_templ, values_templ
 from template import value_link_templ, list_link_templ
 
 
@@ -30,35 +30,31 @@ def values_css(stemmer: str, vocab: str) -> str:
     return "\n".join(f".{k} {{background-color: {v}}}" for k, v in mapping.items())
 
 
-def text_dict(stemmer: str, vocab: str, corpus: str) -> Dict[str, str]:
+def text_anchor_dict(stemmer: str, vocab: str, corpus: str) -> Dict[str, str]:
     names = {}
     # for fname in glob(f"site/{stemmer}/{vocab}/{corpus}/*.html"):
     # print(corpus)
     for raw_fname in glob(f"corpora/{corpus}/*.txt"):
         # print(raw_fname)
-        fname = raw_fname.replace("corpora", f"site/{stemmer}/{vocab}").replace(
-            ".txt", ".html"
-        )
+        fname = raw_fname.replace("corpora", f"site/{stemmer}/{vocab}")
+        fname = fname.replace(f"{corpus}/", f"{corpus}.html#")
+        fname = fname.replace(".txt", "")
         # print(fname)
-        names[fname2name(fname)] = fname
+        names[fname2name(fname)] = fname.lower()
     return names
 
 
 def index_html() -> str:
+    stemmer_default = next(reversed(stemmers.keys()))
     stemmers_html = "".join(
-        select_option_templ.format(value=k, label=k) for k in stemmers
+        select_option_templ.format(value=k, label=stemmer_labels[k], default="selected" if k==stemmer_default else "") for k in stemmers
     )
-    stemmer_default = next(iter(stemmers.keys()))
 
-    corpora_html = select_option_templ.format(value="all", label="all")
+    corpora_html = select_option_templ.format(value="all", label="all", default="")
     corpora_html += "".join(
-        select_option_templ.format(value=c, label=c) for c in corpora
+        select_option_templ.format(value=c, label=c, default="") for c in corpora
     )
     corpus_default = next(iter(corpora))
-
-    text_default = next(
-        iter(text_dict(stemmer_default, VOCAB, corpus_default).values())
-    ).replace("site/", "")
 
     tokenize_values(stemmer_default, VOCAB)
     return index_templ.format(
@@ -67,33 +63,7 @@ def index_html() -> str:
         vocab=VOCAB,
         stem=stemmer_default,
         corpus=corpus_default,
-        text=text_default,
     )
-
-
-def page_text_html(
-    fname: str, stemmer: str, vocab: str, values_br: Dict[str, str] = {}
-) -> str:
-    """generates the story page
-
-    Args:
-        fname (str): one of "corpora/{corpus}/*.txt"
-        stemmer (str): one of the stemmers
-        values_br (Dict[str, str], optional): _description_. Defaults to {}.
-
-    Returns:
-        str: the annotated HTML page
-    """
-    fname_path = fname.split(".")[0]
-    fname_base = fname_path.split("/")[-1]
-    text = " ".join(fname_base.split("_")[1:])
-    annotated = ""
-
-    with open(fname) as fin:
-        fulltext = fin.read()
-    a = Annotator(stemmer, fulltext, values_br)
-    annotated = a.rich_text()
-    return text_templ.format(title=text, body=annotated)
 
 
 def page_corpus_html(
@@ -112,31 +82,37 @@ def page_corpus_html(
     annotated = ""
 
     fulltext = ""
-    for fname in glob(f"site/{stemmer}/{vocab}/{corpus}/*.txt"):
+    for fname in sorted(glob(f"corpora/{corpus}/*.txt")):
         with open(fname) as fin:
-            fulltext += "\n" + fin.read() + "\n"
+            ftitle = fname2name(fname)
+            # parts = fname.split("_")[1:]
+            fid = "_".join(ftitle.split(" ")).lower()
+            # ftitle = " ".join(parts)
+            fulltext += "<br/>" + title_templ.format(id=fid, level=2, content=ftitle) + fin.read() + "<br/>"
     a = Annotator(stemmer, fulltext, values_br)
     annotated = a.rich_text()
-    return text_templ.format(title=corpus, body=annotated)
+    return corpus_templ.format(title=corpus, body=annotated)
 
 
-def text_html(stemmer: str, vocab: str, corpus: str = "", from_parent=False) -> str:
-    """
+def text_anchor_html(stemmer: str, vocab: str, corpus: str = "", from_parent=False) -> str:
+    """Refers to texts in a united corpus file.
     :param str corpus: Specifies corpus/country. If not set, will do for all
     :param bool from_parent: Specifies whether the generated file will be in the parent directory,
         so that URLs are adapted accordingly. This is not intended to be set manually
     """
     if not corpus:
-        return "\n".join(text_html(stemmer, vocab, c, True) for c in corpora)
-    names = text_dict(stemmer, vocab, corpus)
+        return "\n".join(text_anchor_html(stemmer, vocab, c, True) for c in corpora)
+    names = text_anchor_dict(stemmer, vocab, corpus)
     result = []
     for name in sorted(names.keys()):
         fname = names[name]
+        # print(fname)
         url = (
             fname.replace(f"site/{stemmer}/{vocab}/", "")
             if from_parent
-            else fname.replace(f"site/{stemmer}/{vocab}/{corpus}/", "")
+            else fname.replace(f"site/{stemmer}/{vocab}/", "../")
         )
+        # print(url)
         result += [f"<div><a href='{url}' target='fulltext'>{name}</a></div>"]
     return "\n".join(result)
 

@@ -4,8 +4,13 @@ body {
     overflow: hidden;
 }
 
-form select {
+.menu {
+    width: 200px;
+}
+
+.menu select {
     float: right;
+    width: 100%;
 }
 
 footer {

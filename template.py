@@ -1,3 +1,4 @@
+title_templ = "<h{level} id='{id}'>{content}</h{level}>"
 span_templ = "<span id='{id}' class='value {type}' title='{title}'>{content}</span>"
 value_link_templ = "<a href='{url}' id='{id}' class='value {type}' title='{title}' target='list'>{content}</a>"
 list_link_templ = "<a href='{url}' id='{id}' class='link {type}' title='{title}' target='list'>{content}</a>"
@@ -9,6 +10,16 @@ text_templ = """<!DOCTYPE html>
     <title>{title}</title>
     <link rel="stylesheet" href="../../../style.css">
     <link rel="stylesheet" href="../values.css">
+  </head>
+<body><h1>{title}</h1>{body}</body></html>"""
+
+corpus_templ = """<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>{title}</title>
+    <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="values.css">
   </head>
 <body><h1>{title}</h1>{body}</body></html>"""
 
@@ -116,7 +127,7 @@ venn_templ = {
 </svg>""",
 }
 
-select_option_templ = '<option value="{value}">{label}</option>'
+select_option_templ = '<option value="{value}" {default}>{label}</option>'
 
 index_templ = """<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -136,7 +147,7 @@ index_templ = """<!DOCTYPE html>
       <input type="hidden" id="vocab-select" value="{vocab}"/>
     </div>
     <div>
-      <label for="stemmer-select">Stemmer:</label>
+      <label for="stemmer-select">Generalization:</label><br/>
       <!-- List defined in stemmers.py -->
       <select name="stemmer" id="stemmer-select">
         {stemmers}
@@ -144,18 +155,18 @@ index_templ = """<!DOCTYPE html>
     </div>
     <div>
       <!-- TODO: load corpora dynamically -->
-      <label for="corpus-select">Corpus:</label>
+      <label for="corpus-select">Corpus:</label></br>
       <select name="corpus" id="corpus-select">
         {corpora}
       </select>
     </div>
     <br/>
     <div>
-        <iframe name="list" id="list" src="sb/variation/index.html"></iframe>
+        <iframe name="list" id="list" src="{stem}/{vocab}/index.html"></iframe>
     </div>
   </form>
   <!-- TODO: generalise to first text in corpus list -->
-  <iframe name="fulltext" id="fulltext" src="{text}"></iframe> 
+  <iframe name="fulltext" id="fulltext" src="onboarding.html"></iframe> 
   <div id="values-container">
       <iframe name="values" id="values" src="{stem}/{vocab}/values.html"></iframe> 
   </div>
