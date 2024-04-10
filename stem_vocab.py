@@ -19,7 +19,9 @@ dics += ["../dict/Provisional_dictionary.dic"]
 dics += ["../dict/Refined_dictionary.dic"]  # Ponizovskiy
 
 
-def classify_vocab(vocab_br: Dict[str, str], fname: str):
+def classify_vocab(
+    vocab_br: Dict[str, str], fname: str
+) -> Dict[str, Dict[str, Set[str]]]:
     vlabels: Dict[int, str] = {}
     result: Dict[str, Dict[str, Set[str]]] = {}
     with open(fname, "r") as fin:
@@ -51,16 +53,16 @@ def classify_vocab(vocab_br: Dict[str, str], fname: str):
                 else:
                     result[val][cat] = {word}  # {f"{word}({stem(word)})"}
             else:
-                result[val]: Dict[str, Set[str]] = {}
+                result[val] = {}
                 result[val][cat] = {word}  # {f"{word}({stem(word)})"}
     return result
 
 
 vocab, vocab_br = tokenize_values(tkn, values_src)
-print("# Our values vocabulary:")
-for k, v in vocab.items():
-    print(f"{set(v)}")
-print()
+# print("# Our values vocabulary:")
+# for k, v2 in vocab.items():
+#     print(f"{set(v2)}")
+# print()
 
 for dic in dics:
     d = dic.split("/")[1].split(".")[0]

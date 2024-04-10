@@ -1,5 +1,6 @@
 title_templ = "<h{level} id='{id}'>{content}</h{level}>"
 span_templ = "<span id='{id}' class='value {type}' title='{title}'>{content}</span>"
+tspan_templ = '<tspan x="0" y="{y}" font-size="smaller">{p}</tspan>'
 value_link_templ = "<a href='{url}' id='{id}' class='value {type}' title='{title}' target='list'>{content}</a>"
 list_link_templ = "<a href='{url}' id='{id}' class='link {type}' title='{title}' target='list'>{content}</a>"
 
@@ -48,8 +49,8 @@ values_templ = """<!DOCTYPE html>
 <body>
   <h3>Analysis</h3>
   <div>
-    <a href="map.html" target="_top">Texts vs Labels Heatmap</a><br/>
-    <a href="keywords.svg" target="_top">Labels Venn Diagram</a>
+    <a href="map.html" target="fulltext">Texts vs Labels Heatmap</a><br/>
+    <a href="keywords.svg" target="fulltext">Labels Venn Diagram</a>
   </div>
   <h3>{title}</h3>
   <div>{body}</div>

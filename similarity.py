@@ -1,5 +1,5 @@
 """Functionality related to the manipulation of similarity objects"""
-from typing import Dict, List, Tuple
+from typing import Dict, List, Mapping, Tuple
 from glob import glob
 
 import pandas as pd  # type: ignore
@@ -147,7 +147,7 @@ def render(
     df: pd.DataFrame,
     corpus: str = "all",
     fname: str = "distance.html",
-    palette: Dict[str, Tuple[str]] = pal_seq,
+    palette: Mapping[str, Tuple[str, ...]] = pal_seq,
 ):
     """Renders a similarity matrix from a dataframe with columns (from, to, dist)"""
     output_file(

@@ -11,9 +11,9 @@ pylint -E -v *.py
 echo '>>> Running Mypy'
 mypy .
 
-## currently no tests
-# echo '>>> Running Pytest'
-# pytest -vv --doctest-modules -s backend # --disable-warnings
+echo '>>> Running Pytest on util.py'
+pytest --doctest-modules -s util.py # -vv --disable-warnings
 
 echo '>>> Running Black'
 black .
+

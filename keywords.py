@@ -10,14 +10,14 @@ from settings import model_dir
 from stemmers import stemmers
 from corpora import corpora
 from algo import algos
-from template import venn_templ
+from template import venn_templ, tspan_templ, value_link_templ
 
 from create import tokenize_values, load_source, calc_occurences
 
 
 def render_venn(ckeywords: Dict[str, Set[str]], title: str = "") -> str:
     keywords = [ckeywords[c] for c in corpora]
-    word_cls: Dict[str, List[str]] = {}
+    word_cls: Dict[str, Set[str]] = {}
 
     if len(corpora) == 1:
         # Quite pointless
@@ -50,7 +50,7 @@ def render_venn(ckeywords: Dict[str, Set[str]], title: str = "") -> str:
     tag_cls = {
         k: "".join(
             [
-                f'<tspan x="0" y="{i*11}" font-size="smaller">{p}</tspan>'
+                tspan_templ.format(y=i * 11, p=p)
                 for i, p in enumerate(sorted(list(word_cls[k])))
             ]
         )

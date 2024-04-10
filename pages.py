@@ -13,9 +13,10 @@ from stemmers import stemmers, stemmer_labels
 from template import title_templ, span_templ, select_option_templ
 from template import index_templ, corpus_templ, text_templ, list_templ, values_templ
 from template import value_link_templ, list_link_templ
+from hyper import enrich_value
 
 
-from util import fname2name, fname2path
+from util import fname2name, fname2path, path2corpus, path2name
 from datamodel import Annotator
 
 from create import tokenize_values, load_source, calc_occurences
@@ -146,7 +147,8 @@ def value_list_html(
     for name, fname in all_texts.items():
         # sample fname is 'site/sb/Germany/65_Allerleirauh.html'
         # sample shortname is 'Germany/65_Allerleirauh'
-        shortname = fname[len(f"site/{stemmer}/{vocab}/") : -5]
+        # shortname = fname[len(f"site/{stemmer}/{vocab}/") : -5]
+        shortname = f"{path2corpus(fname)}/{path2name(fname)}"
         if shortname in occurences_backref[label]:
             names[f"{name} ({occurences_backref[label][shortname]})"] = fname
     result = []
@@ -175,28 +177,7 @@ def values_html(stemmer: str, vocab: str) -> str:
             for i, s in enumerate(stems):
                 # print(occurences_backref.keys())
                 found = s in occurences_backref and len(occurences_backref[s]) > 0
-                title = s if found else f"{s} (not found)"
-                styled = (
-                    span_templ.format(
-                        id=s + "-tag",
-                        type=f"{stemmer} {s}" if i == 0 else stemmer,
-                        title=title,
-                        content=s,
-                    )
-                    # TODO: Understand why first letter of ending is different for values and labels
-                    + line[i][len(s) + (1 if i else 0) :]
-                )
-                linked = (
-                    list_link_templ.format(
-                        id=s + "-link",
-                        url=f"/{stemmer}/{vocab}/values/{s}.html",
-                        type=f"{stemmer}",
-                        title=title,
-                        content=styled,
-                    )
-                    if found
-                    else styled
-                )
+                linked = enrich_value(stemmer, vocab, line[i].strip(), s, found)
                 links += [linked]
             result += [", ".join(links)]
     # body = "<p>" + "</p><p>".join(result) + "</p>"
