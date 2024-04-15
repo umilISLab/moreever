@@ -40,15 +40,15 @@ footer div {
 
 #fulltext {
     left: 250px;
-    width: 600px;
+    width: calc(100% - 550px);
     position: absolute;
     height: 100%;
     border: none;
 }
 
 #values-container {
-    left: 850px;
-    width: 1000px;
+    right: 0;
+    width: 300px;
     position: absolute;
     overflow: scroll;
     height: 99vh;
@@ -56,7 +56,6 @@ footer div {
 }
 
 #values {
-    width: 100%;
     height: 100%;
     border: none;
 }

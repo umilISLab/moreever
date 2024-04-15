@@ -180,6 +180,5 @@ def values_html(stemmer: str, vocab: str) -> str:
                 linked = enrich_value(stemmer, vocab, line[i].strip(), s, found)
                 links += [linked]
             result += [", ".join(links)]
-    # body = "<p>" + "</p><p>".join(result) + "</p>"
-    body = "<br/>".join(result)
+    body = "<p>" + "</p><p>".join(result) + "</p>"
     return values_templ.format(title="Vocabulary", body=body)

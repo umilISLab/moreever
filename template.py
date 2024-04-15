@@ -44,6 +44,12 @@ values_templ = """<!DOCTYPE html>
 .value {{
     line-height: 1.4em;
 }}
+
+div p {{
+    word-wrap: break-word;
+    padding-left: 1em;
+    text-indent:-1em;
+}}
     </style>
   </head>
 <body>
