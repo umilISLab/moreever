@@ -1,0 +1,15 @@
+.value {
+  line-height: 1.4em;
+}
+
+.show p {
+  word-wrap: break-word;
+  padding-left: 1em;
+  text-indent:-1em;
+  margin: 3px 0;
+}
+
+textarea {
+  height: 50vh;
+  width: 90%;
+}

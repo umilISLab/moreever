@@ -39,23 +39,8 @@ values_templ = """<!DOCTYPE html>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>{title}</title>
     <link rel="stylesheet" href="../../style.css">
+    <link rel="stylesheet" href="../../values-static.css">
     <link rel="stylesheet" href="values.css">
-    <style>
-.value {{
-  line-height: 1.4em;
-}}
-
-div p {{
-  word-wrap: break-word;
-  padding-left: 1em;
-  text-indent:-1em;
-}}
-
-textarea {{
-  height: 50vh;
-  width: 90%;
-}}
-    </style>
   </head>
 <body>
   <h3>Analysis</h3>

@@ -195,7 +195,7 @@ def edit_vocab_html(stemmer: str, vocab: str) -> str:
     """same as values_html(), but editable"""
     with open(f"vocab/{vocab}.csv") as f:
         contents = "".join(f.readlines())
-    body = f"""<textarea name="contents" id="contents" oninput="this.style.height = ''; this.style.height = this.scrollHeight +'px';">{contents}</textarea>"""
+    body = f"""<textarea name="contents" id="contents">{contents}</textarea>"""
     return values_templ.format(
         title="Modify Vocabulary",
         body=body,

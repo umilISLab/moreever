@@ -51,7 +51,9 @@ app.add_middleware(
 
 @app.get("/{stemmer}/{vocab}/values.css", response_class=CSSResponse)
 async def values_css_page(vocab: str, stemmer: str):
-    """The CSS providing the coloring for the vocabulary."""
+    """The CSS providing the coloring for the vocabulary.
+    TODO: Does not need to depend on stemmer, as vocab categories and colors same regardless.
+    """
     return values_css(stemmer, vocab)
 
 
@@ -166,9 +168,7 @@ async def saveVocab(request: Request):
 
     if "contents" in form:
         save_vocab(form["contents"], vocab)
-        return RedirectResponse(
-            f"/{stemmer}/{vocab}/values.html", status_code=status.HTTP_302_FOUND
-        )
+        return RedirectResponse("/reload.html", status_code=status.HTTP_302_FOUND)
     else:
         return RedirectResponse(
             f"/{stemmer}/{vocab}/values-edit.html", status_code=status.HTTP_302_FOUND
