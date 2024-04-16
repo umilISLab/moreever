@@ -6,6 +6,9 @@ import csv
 
 
 def flatten(fname):
+    assert fname.startswith("vocab/") and fname.endswith(
+        ".csv"
+    ), "Only values files in the corresponding folder can be flattened"
     if fname.endswith(".flat.csv"):
         return
     result = []
@@ -23,4 +26,4 @@ def flatten(fname):
 
 
 if __name__ == "__main__":
-    flatten("values.csv")
+    flatten("vocab/values.csv")

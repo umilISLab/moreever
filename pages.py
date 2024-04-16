@@ -5,6 +5,7 @@ import csv
 from glob import glob
 
 import colorcet as cc  # type: ignore
+from urllib.parse import quote_plus
 
 from settings import VOCAB
 
@@ -24,7 +25,7 @@ from create import tokenize_values, load_source, calc_occurences
 
 def values_css(stemmer: str, vocab: str) -> str:
     mapping: Dict[str, str] = {}
-    with open(f"site/{stemmer}/{vocab}.csv") as f:
+    with open(f"vocab/{stemmer}/{vocab}.csv") as f:
         for i, l in enumerate(csv.reader(f)):
             mapping[l[0]] = cc.glasbey_cool[i]
     # print(f"Styles for {stemmer}: {mapping}")
@@ -160,7 +161,11 @@ def value_list_html(
 
 
 def values_html(stemmer: str, vocab: str) -> str:
-    """The page that list all the values, see values_templ for reference"""
+    """The page that list all the values, see values_templ for reference
+    Args:
+        stemmer - name as in stemmer.py
+        vocab - list without path and extension
+    """
     title = "Values and Labels"
     result = []
 
@@ -168,7 +173,7 @@ def values_html(stemmer: str, vocab: str) -> str:
     _, tokenized = load_source(stemmers[stemmer], corpora)
     _, _, occurences_backref = calc_occurences(values, tokenized)
 
-    with open(f"{vocab}.csv") as fin:
+    with open(f"vocab/{vocab}.csv") as fin:
         for line in csv.reader(fin):
             if not line:
                 continue
@@ -180,5 +185,21 @@ def values_html(stemmer: str, vocab: str) -> str:
                 linked = enrich_value(stemmer, vocab, line[i].strip(), s, found)
                 links += [linked]
             result += [", ".join(links)]
-    body = "<p>" + "</p><p>".join(result) + "</p>"
-    return values_templ.format(title="Vocabulary", body=body)
+    body = '<div class="show"><p>' + "</p><p>".join(result) + "</p></div>"
+    return values_templ.format(
+        title="Vocabulary", body=body, vocab=vocab, stemmer=stemmer, button="Modify"
+    )
+
+
+def edit_vocab_html(stemmer: str, vocab: str) -> str:
+    """same as values_html(), but editable"""
+    with open(f"vocab/{vocab}.csv") as f:
+        contents = "".join(f.readlines())
+    body = f"""<textarea name="contents" id="contents" oninput="this.style.height = ''; this.style.height = this.scrollHeight +'px';">{contents}</textarea>"""
+    return values_templ.format(
+        title="Modify Vocabulary",
+        body=body,
+        vocab=vocab,
+        stemmer=stemmer,
+        button="Save",
+    )

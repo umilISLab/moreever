@@ -12,11 +12,11 @@ def tokenize_values(
     func_name: str = "sb", vocab: str = "values"
 ) -> Tuple[Dict[str, List[str]], Dict[str, str]]:
     """Get the two directional dictionaries between values and labels.
-    As a byproduct make a stemmed version of the values list.
+    As a byproduct make a stemmed version of the values list in the corresponding folder.
 
     Args:
     :param str func_name: stemmer name as in stemmers.py
-    :param str fname: filename without extension
+    :param str fname: filename without path and .csv extension (.flat might be included)
 
     Returns:
         Tuple[Dict[str, List[str]], Dict[str, str]]: returns two dictionaries:
@@ -26,9 +26,9 @@ def tokenize_values(
     values: Dict[str, List[str]] = {}
     valuesbackref: Dict[str, str] = {}
 
-    if vocab.endswith(".flat") and not os.path.exists(f"{vocab}.csv"):
-        flatten(f"{vocab[:-5]}.csv")
-    with open(f"{vocab}.csv") as f:
+    if vocab.endswith(".flat") and not os.path.exists(f"vocab/{vocab}.csv"):
+        flatten(f"vocab/{vocab[:-5]}.csv")
+    with open(f"vocab/{vocab}.csv") as f:
         flines = f.readlines()
         for l in flines:
             if not l.strip():
@@ -41,7 +41,7 @@ def tokenize_values(
                 #     print(i, stemmed_fitems[0])
                 valuesbackref[i] = stemmed_fitems[0]
     mkdirs()
-    with open(f"site/{func_name}/{vocab}.csv", "w") as fout:
+    with open(f"vocab/{func_name}/{vocab}.csv", "w") as fout:
         fout.writelines("\n".join(", ".join(v) for v in values.values()))
     return values, valuesbackref
 

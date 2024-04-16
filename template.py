@@ -42,13 +42,18 @@ values_templ = """<!DOCTYPE html>
     <link rel="stylesheet" href="values.css">
     <style>
 .value {{
-    line-height: 1.4em;
+  line-height: 1.4em;
 }}
 
 div p {{
-    word-wrap: break-word;
-    padding-left: 1em;
-    text-indent:-1em;
+  word-wrap: break-word;
+  padding-left: 1em;
+  text-indent:-1em;
+}}
+
+textarea {{
+  height: 50vh;
+  width: 90%;
 }}
     </style>
   </head>
@@ -59,7 +64,12 @@ div p {{
     <a href="keywords.svg" target="fulltext">Labels Venn Diagram</a>
   </div>
   <h3>{title}</h3>
-  <div>{body}</div>
+    <form class="menu" id="vocab" action="/vocab" method="GET">
+    <input type="hidden" name="stemmer" value="{stemmer}"/>
+    <input type="hidden" name="vocab" value="{vocab}"/>
+    {body}
+    '<input type="submit" id="submitVocab" value="{button}"/>'
+    </form>
 </body></html>"""
 
 venn_templ = {

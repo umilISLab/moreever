@@ -1,3 +1,3 @@
 from glob import glob
 
-vocabulary = [v[:-4] for v in glob("*.csv")]
+vocabulary = [v[6:-4] for v in glob("vocab/*.csv")]

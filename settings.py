@@ -10,6 +10,10 @@ db_dir = os.path.abspath("./db")
 
 DEBUG = True
 
-VOCAB = "clustering"
+DATEFORMAT_LOG = "%Y%m%d%H%M%S"
+
+# VOCAB = "clustering"
+# VOCAB = "variation"
+VOCAB = "values"
 
 lang = "it"

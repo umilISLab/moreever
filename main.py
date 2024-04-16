@@ -3,18 +3,21 @@
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import Response, HTMLResponse
+from fastapi.responses import Response, HTMLResponse, RedirectResponse
+from fastapi.requests import Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-
+from starlette import status
 
 from corpora import corpora
 from stemmers import stemmers
 from template import list_templ
 
+from util import save_vocab
 from create import tokenize_values, load_source, calc_occurences
 from pages import index_html, page_corpus_html
-from pages import text_anchor_html, values_html, value_list_html
+from pages import text_anchor_html
+from pages import edit_vocab_html, values_html, value_list_html
 from pages import values_css
 from keywords import keywords_venn, clusters, render_venn, filter_clusters_containing
 from heatmap import render as heatmap_render
@@ -56,6 +59,12 @@ async def values_css_page(vocab: str, stemmer: str):
 async def values_page(vocab: str, stemmer: str):
     """The coloured vocabularly."""
     return values_html(stemmer, vocab)
+
+
+@app.get("/{stemmer}/{vocab}/values-edit.html", response_class=HTMLResponse)
+async def values_page(vocab: str, stemmer: str):
+    """The coloured vocabularly."""
+    return edit_vocab_html(stemmer, vocab)
 
 
 @app.get("/{stemmer}/{vocab}/keywords.svg", response_class=SVGResponse)
@@ -146,6 +155,25 @@ async def value_list_page(stemmer: str, vocab: str, label: str, corpus: str = ""
 async def page_corpus(stemmer: str, vocab: str, corpus: str):
     _, values_br = tokenize_values(stemmer, vocab)
     return page_corpus_html(corpus, stemmer, vocab, values_br)
+
+
+@app.get("/vocab")
+async def saveVocab(request: Request):
+    # async with request.form() as form:
+    form = request.query_params
+    vocab = form["vocab"]
+    stemmer = form["stemmer"]
+
+    if "contents" in form:
+        save_vocab(form["contents"], vocab)
+        return RedirectResponse(
+            f"/{stemmer}/{vocab}/values.html", status_code=status.HTTP_302_FOUND
+        )
+    else:
+        return RedirectResponse(
+            f"/{stemmer}/{vocab}/values-edit.html", status_code=status.HTTP_302_FOUND
+        )
+        # return edit_vocab_html(stemmer, vocab)
 
 
 @app.get("/", response_class=HTMLResponse)

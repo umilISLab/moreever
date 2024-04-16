@@ -4,7 +4,9 @@ import os
 import string
 import itertools
 from glob import glob
+import filecmp
 import shutil
+from datetime import datetime
 
 from nltk import sent_tokenize, word_tokenize  # type: ignore
 from nltk.tokenize import RegexpTokenizer  # type: ignore
@@ -14,6 +16,8 @@ from nltk.stem import WordNetLemmatizer  # type: ignore
 wnl = WordNetLemmatizer()
 
 regex_token = r"\w+"
+
+from settings import DATEFORMAT_LOG, VOCAB
 
 
 # def clean_word(s: str) -> str:
@@ -164,7 +168,7 @@ def rmdirs():
     from stemmers import stemmers
 
     for s in stemmers.keys():
-        stem_dir = f"site/{s}"
+        stem_dir = f"vocab/{s}"
         if os.path.exists(stem_dir):
             shutil.rmtree(stem_dir)
 
@@ -174,10 +178,10 @@ def mkdirs():
     from vocabulary import vocabulary
     from corpora import corpora
 
-    if not os.path.exists("site"):
-        os.mkdir("site")
+    if not os.path.exists("vocab"):
+        os.mkdir("vocab")
     for s in stemmers.keys():
-        nxt = f"site/{s}"
+        nxt = f"vocab/{s}"
         if not os.path.exists(nxt):
             os.mkdir(nxt)
         nxt3 = f"{nxt}/values"
@@ -226,3 +230,18 @@ def stats(fulltexts, tokenized: Dict[str, Dict[str, List[str]]]):
     print(f"symbols: {symbols}")
     print(f"tokens: {tokens}")
     return texts, symbols, tokens
+
+
+def save_vocab(contents: str, vocab: str) -> None:
+    ts = datetime.now().strftime(DATEFORMAT_LOG)
+    fname = f"vocab/{vocab}.csv"
+    backup = fname.replace(".", f".{ts}.")
+    shutil.copy(fname, fname.replace(".", f".{ts}."))
+    with open(fname, "w") as f:
+        f.write(contents)
+    if filecmp.cmp(fname, backup, False):
+        os.remove(backup)
+    else:
+        os.remove(f"vocab/{vocab}.flat.csv")
+        rmdirs()
+        mkdirs()

@@ -163,6 +163,9 @@ cython_debug/
 # the source corpora that need to be populated
 corpora/
 
+# the vocabulary lists
+vocab/
+
 # the final site to be generated
 site/
 
