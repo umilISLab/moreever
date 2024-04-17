@@ -1,8 +1,8 @@
 from template import list_link_templ, span_templ
 
 
-def enrich_value(stemmer: str, vocab: str, word: str, stem: str, found=True) -> str:
-    title = stem if found else f"{stem} (not found)"
+def enrich_value(stemmer: str, vocab: str, word: str, stem: str, found: int = 0) -> str:
+    title = f"{stem} ({found})" if found else f"{stem} (not found)"
     styled = (
         span_templ.format(
             id=stem + "-tag",
@@ -11,6 +11,7 @@ def enrich_value(stemmer: str, vocab: str, word: str, stem: str, found=True) -> 
             content=stem,
         )
         + word[len(stem) :]
+        + (f" ({found})" if found else "")
     )
     linked = (
         list_link_templ.format(

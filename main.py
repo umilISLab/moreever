@@ -64,8 +64,8 @@ async def values_page(vocab: str, stemmer: str):
 
 
 @app.get("/{stemmer}/{vocab}/values-edit.html", response_class=HTMLResponse)
-async def values_page(vocab: str, stemmer: str):
-    """The coloured vocabularly."""
+async def values_edit_page(vocab: str, stemmer: str):
+    """The editable vocabularly."""
     return edit_vocab_html(stemmer, vocab)
 
 

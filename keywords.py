@@ -20,7 +20,7 @@ def render_venn(ckeywords: Dict[str, Set[str]], title: str = "") -> str:
     word_cls: Dict[str, Set[str]] = {}
 
     if len(corpora) == 1:
-        # Quite pointless
+        # Quite pointless, but if one insists, it is possible
         word_cls["a"] = keywords[0]
     elif len(corpora) == 2:
         word_cls = {
@@ -39,12 +39,27 @@ def render_venn(ckeywords: Dict[str, Set[str]], title: str = "") -> str:
         word_cls["a_c"] = (keywords[0] & keywords[2]) - word_cls["a_b_c"]
         word_cls["b_c"] = (keywords[1] & keywords[2]) - word_cls["a_b_c"]
     elif len(corpora) == 4:
-        raise NotImplementedError(
-            "Venn diagrams for 4 corpora not yet implemented. Could be done with ellipses as in: https://en.wikipedia.org/wiki/Venn_diagram#Extensions_to_higher_numbers_of_sets"
-        )
+        word_cls = {
+            "a_b_c_d": keywords[0] & keywords[1] & keywords[2] & keywords[3],
+            "a": keywords[0] - keywords[1] - keywords[2] - keywords[3],
+            "b": keywords[1] - keywords[0] - keywords[2] - keywords[3],
+            "c": keywords[2] - keywords[0] - keywords[1] - keywords[3],
+            "d": keywords[3] - keywords[0] - keywords[1] - keywords[2],
+        }
+        word_cls["a_b_c"] = (keywords[0] & keywords[1] & keywords[2]) - word_cls["a_b_c_d"]
+        word_cls["a_b_d"] = (keywords[0] & keywords[1] & keywords[3]) - word_cls["a_b_c_d"]
+        word_cls["a_c_d"] = (keywords[0] & keywords[2] & keywords[3]) - word_cls["a_b_c_d"]
+        word_cls["b_c_d"] = (keywords[1] & keywords[2] & keywords[3]) - word_cls["a_b_c_d"]
+
+        word_cls["a_b"] = (keywords[0] & keywords[1]) - word_cls["a_b_c"] - word_cls["a_b_d"] - word_cls["a_b_c_d"]
+        word_cls["a_c"] = (keywords[0] & keywords[2]) - word_cls["a_b_c"] - word_cls["a_c_d"] - word_cls["a_b_c_d"]
+        word_cls["a_d"] = (keywords[0] & keywords[3]) - word_cls["a_b_d"] - word_cls["a_c_d"] - word_cls["a_b_c_d"]
+        word_cls["b_c"] = (keywords[1] & keywords[2]) - word_cls["a_b_c"] - word_cls["b_c_d"] - word_cls["a_b_c_d"]
+        word_cls["b_d"] = (keywords[1] & keywords[3]) - word_cls["a_b_d"] - word_cls["b_c_d"] - word_cls["a_b_c_d"]
+        word_cls["c_d"] = (keywords[2] & keywords[3]) - word_cls["a_c_d"] - word_cls["b_c_d"] - word_cls["a_b_c_d"]
     else:
         raise NotImplementedError(
-            "Venn diagrams for that many corpora are not supported."
+            f"Venn diagrams for more than 4 corpora are not supported. You have {len(keywords)}."
         )
 
     tag_cls = {
@@ -63,6 +78,8 @@ def render_venn(ckeywords: Dict[str, Set[str]], title: str = "") -> str:
         tag_cls["b_name"] = corpora[1]
     if len(corpora) > 2:
         tag_cls["c_name"] = corpora[2]
+    if len(corpora) > 3:
+        tag_cls["d_name"] = corpora[3]
 
     tag_cls["title"] = title
 

@@ -181,7 +181,7 @@ def values_html(stemmer: str, vocab: str) -> str:
             links = []
             for i, s in enumerate(stems):
                 # print(occurences_backref.keys())
-                found = s in occurences_backref and len(occurences_backref[s]) > 0
+                found = len(occurences_backref[s]) if s in occurences_backref else 0
                 linked = enrich_value(stemmer, vocab, line[i].strip(), s, found)
                 links += [linked]
             result += [", ".join(links)]

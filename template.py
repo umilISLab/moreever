@@ -97,10 +97,11 @@ venn_templ = {
   <title>{title}</title>
   <svg x="50%" y="50%" overflow="visible" width="700" height="700">
     <g transform="translate(-350,-350)">
-      <circle cx="37.5%" cy="37.5%" r="40%" style="fill:#aaffaa;fill-opacity:.5" />
-      <circle cx="62.5%" cy="37.5%" r="40%" style="fill:#ffaaaa;fill-opacity:.5" />
-      <circle cx="50%" cy="65%" r="40%" style="fill:#aaaaff;fill-opacity:.5" />
-      
+      <g fill-opacity=".2" stroke="#000" stroke-width="2.4">
+        <circle cx="37.5%" cy="37.5%" r="40%" style="fill:#aaffaa" />
+        <circle cx="62.5%" cy="37.5%" r="40%" style="fill:#ffaaaa" />
+        <circle cx="50%" cy="65%" r="40%" style="fill:#aaaaff" />
+      </g>
       <text transform="translate(105,70)" width="20%" height="20%">
         <tspan x="0" y="-10" font-weight="bold">{a_name}</tspan>{a}
       </text>
@@ -127,6 +128,70 @@ venn_templ = {
     </g>
   </svg>
 </svg>""",
+  4: """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Source: https://en.wikipedia.org/wiki/Venn_diagram#/media/File:Venn's_four_ellipse_construction.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%">
+  <title>{title}</title>
+	<defs>
+		<ellipse id="a" rx="350" ry="230"/>
+	</defs>
+	<g fill-opacity=".2" stroke="#000" stroke-width="2.4">
+		<use fill="#6fff05" transform="rotate(-40 960 -600)" xlink:href="#a"/>
+		<use fill="#ff6405" transform="rotate(-40 650 -490)" xlink:href="#a"/>
+		<use fill="#0525ff" transform="rotate(40 -180 800)" xlink:href="#a"/>
+		<use fill="#1e1e1e" transform="rotate(40 -490 690)" xlink:href="#a"/>
+	</g>
+
+  <text transform="translate(255,70)" width="20%" height="20%">
+    <tspan x="0" y="-10" font-weight="bold">{a_name}</tspan>{a}
+  </text>
+  <text transform="translate(600,70)" width="20%" height="20%">
+    <tspan x="0" y="-10" font-weight="bold">{b_name}</tspan>{b}
+  </text>
+  <text transform="translate(55,350)" width="20%" height="20%">
+    <tspan x="0" y="-10" font-weight="bold">{c_name}</tspan>{c}
+  </text>
+  <text transform="translate(805,350)" width="20%" height="20%">
+    <tspan x="0" y="-10" font-weight="bold">{d_name}</tspan>{d}
+  </text>
+
+      <text transform="translate(425,135)" width="20%" height="20%">
+        {a_b}
+      </text>
+      <text transform="translate(170,215)" width="20%" height="20%">
+        {a_c}
+      </text>
+      <text transform="translate(700,420)" width="20%" height="20%">
+        {a_d}
+      </text>
+      <text transform="translate(170,420)" width="20%" height="20%">
+        {b_c}
+      </text>
+      <text transform="translate(700,215)" width="20%" height="20%">
+        {b_d}
+      </text>
+      <text transform="translate(425,620)" width="20%" height="20%">
+        {c_d}
+      </text>
+
+      <text transform="translate(245,290)" width="20%" height="20%">
+        {a_b_c}
+      </text>
+      <text transform="translate(555,290)" width="20%" height="20%">
+        {a_b_d}
+      </text>
+      <text transform="translate(515,540)" width="20%" height="20%">
+        {a_c_d}
+      </text>
+      <text transform="translate(315,540)" width="20%" height="20%">
+        {b_c_d}
+      </text>
+
+      <text transform="translate(425,450)" width="20%" height="20%">
+        {a_b_c_d}
+      </text>
+
+</svg>"""
 }
 
 select_option_templ = '<option value="{value}" {default}>{label}</option>'
