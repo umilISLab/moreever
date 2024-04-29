@@ -19,6 +19,7 @@ from pages import index_html, page_corpus_html
 from pages import text_anchor_html
 from pages import edit_vocab_html, values_html, value_list_html
 from pages import values_css
+from pages import stats_html
 from keywords import keywords_venn, clusters, render_venn, filter_clusters_containing
 from heatmap import render as heatmap_render
 
@@ -51,9 +52,7 @@ app.add_middleware(
 
 @app.get("/{stemmer}/{vocab}/values.css", response_class=CSSResponse)
 async def values_css_page(vocab: str, stemmer: str):
-    """The CSS providing the coloring for the vocabulary.
-    TODO: Does not need to depend on stemmer, as vocab categories and colors same regardless.
-    """
+    """The CSS providing the coloring for the vocabulary."""
     return values_css(stemmer, vocab)
 
 
@@ -83,7 +82,7 @@ async def cluster_venn_page(vocab: str, stemmer: str, value: str):
     _, occurences_tv, _ = calc_occurences(values, tokenized)
     cl = clusters(stemmer, values=values, occurences_tv=occurences_tv)
     per_corpus = {c: filter_clusters_containing(cl[c], value) for c in corpora}
-    print(per_corpus)
+    #print(per_corpus)
     # if exactly one cluster per corpus contains the value
     if len([k for k, v in per_corpus.items() if len(v) == 1]) != 3:
         raise HTTPException(
@@ -157,6 +156,11 @@ async def value_list_page(stemmer: str, vocab: str, label: str, corpus: str = ""
 async def page_corpus(stemmer: str, vocab: str, corpus: str):
     _, values_br = tokenize_values(stemmer, vocab)
     return page_corpus_html(corpus, stemmer, vocab, values_br)
+
+
+@app.get("/stats.html", response_class=HTMLResponse)
+async def stats():
+    return stats_html()
 
 
 @app.get("/vocab")

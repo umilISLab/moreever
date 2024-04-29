@@ -1,19 +1,26 @@
+from typing import Final
+
 from datetime import datetime
 import os
 
-dateformat_log = "%Y%m%d"
-datestamp = datetime.now().strftime(dateformat_log)
+DATEFORMAT_LOG: Final = "%Y%m%d%H%M%S"
+
+datestamp: Final = datetime.now().strftime(DATEFORMAT_LOG)
 # model_dir = os.path.expanduser(f"~/models/{datestamp}")
-model_dir = os.path.abspath(f"./models/{datestamp}")
+model_dir: Final = os.path.abspath(f"./models/{datestamp}")
 
-db_dir = os.path.abspath("./db")
+db_dir: Final = os.path.abspath("./db")
 
-DEBUG = True
-
-DATEFORMAT_LOG = "%Y%m%d%H%M%S"
+DEBUG: Final = True
 
 # VOCAB = "clustering"
 # VOCAB = "variation"
-VOCAB = "values"
+# VOCAB = "values"
+# VOCAB = "mfd2.0.dummy" # TODO: remove dots in classes
+VOCAB: Final = "Refined_dictionary.dummy"
+# VOCAB: Final = "Refined_dictionary.lan"
 
-lang = "it"
+DATABASE_URL: Final = f"sqlite:///{VOCAB}.sqlite?check_same_thread=False"
+
+# lang = "it"
+lang: Final = "en"

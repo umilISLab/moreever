@@ -57,30 +57,30 @@ def classify_vocab(
                 result[val][cat] = {word}  # {f"{word}({stem(word)})"}
     return result
 
+if __name__=="__main__":
+    vocab, vocab_br = tokenize_values(tkn, values_src)
+    # print("# Our values vocabulary:")
+    # for k, v2 in vocab.items():
+    #     print(f"{set(v2)}")
+    # print()
 
-vocab, vocab_br = tokenize_values(tkn, values_src)
-# print("# Our values vocabulary:")
-# for k, v2 in vocab.items():
-#     print(f"{set(v2)}")
-# print()
-
-for dic in dics:
-    d = dic.split("/")[1].split(".")[0]
-    # the dictionary to be exported
-    vs: Dict[str, List[str]] = {}
-    print(f"# Dictionary: {d}")
-    for k, v in classify_vocab(vocab_br, dic).items():
-        # keep only stemmed tokens that belong to a single class
-        if len(v) == 1:
-            kv = v.popitem()
-            if kv[0] in vs:
-                vs[kv[0]] += list(kv[1])
+    for dic in dics:
+        d = dic.split("/")[1].split(".")[0]
+        # the dictionary to be exported
+        vs: Dict[str, List[str]] = {}
+        print(f"# Dictionary: {d}")
+        for k, v in classify_vocab(vocab_br, dic).items():
+            # keep only stemmed tokens that belong to a single class
+            if len(v) == 1:
+                kv = v.popitem()
+                if kv[0] in vs:
+                    vs[kv[0]] += list(kv[1])
+                else:
+                    vs[kv[0]] = list(kv[1])
             else:
-                vs[kv[0]] = list(kv[1])
-        else:
-            print(f"## {k}")
-            for kk, vv in v.items():
-                print(f"\t{kk}:\t{vv}")
-    with open(f"{d}.values", "w") as fout:
-        fout.writelines([",".join([k] + v) + "\n" for k, v in vs.items()])
-    print(vs)
+                print(f"## {k}")
+                for kk, vv in v.items():
+                    print(f"\t{kk}:\t{vv}")
+        with open(f"{d}.values", "w") as fout:
+            fout.writelines([",".join([k] + v) + "\n" for k, v in vs.items()])
+        print(vs)

@@ -1,3 +1,5 @@
+"""General functions without internal dependencies"""
+
 from typing import Dict, List, Optional
 
 import os
@@ -184,22 +186,22 @@ def mkdirs():
         nxt = f"vocab/{s}"
         if not os.path.exists(nxt):
             os.mkdir(nxt)
-        nxt3 = f"{nxt}/values"
-        if not os.path.exists(nxt3):
-            os.mkdir(nxt3)
+        # nxt3 = f"{nxt}/values"
+        # if not os.path.exists(nxt3):
+        #     os.mkdir(nxt3)
 
-        for v in vocabulary:
-            nxt4 = f"{nxt}/{v}"
-            if not os.path.exists(nxt4):
-                os.mkdir(nxt4)
+        # for v in vocabulary:
+        #     nxt4 = f"{nxt}/{v}"
+        #     if not os.path.exists(nxt4):
+        #         os.mkdir(nxt4)
 
-            for c in corpora:
-                nxt2 = f"{nxt4}/{c}"
-                if not os.path.exists(nxt2):
-                    os.mkdir(nxt2)
-                nxt3 = f"{nxt2}/values"
-                if not os.path.exists(nxt3):
-                    os.mkdir(nxt3)
+        #     for c in corpora:
+        #         nxt2 = f"{nxt4}/{c}"
+        #         if not os.path.exists(nxt2):
+        #             os.mkdir(nxt2)
+        #         nxt3 = f"{nxt2}/values"
+        #         if not os.path.exists(nxt3):
+        #             os.mkdir(nxt3)
 
 
 def get_dirs(path: str = "./corpora/") -> List[str]:
@@ -226,9 +228,9 @@ def stats(fulltexts, tokenized: Dict[str, Dict[str, List[str]]]):
         for tale in tokenized[c].values():
             tokens[c] += sum(len(s) for s in tale)
 
-    print(f"texts: {texts}")
-    print(f"symbols: {symbols}")
-    print(f"tokens: {tokens}")
+    # print(f"texts: {texts}")
+    # print(f"symbols: {symbols}")
+    # print(f"tokens: {tokens}")
     return texts, symbols, tokens
 
 

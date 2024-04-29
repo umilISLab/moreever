@@ -12,7 +12,9 @@ from corpora import corpora
 from algo import algos
 from template import venn_templ, tspan_templ, value_link_templ
 
-from create import tokenize_values, load_source, calc_occurences
+# from create import tokenize_values, load_source, calc_occurences
+from create import calc_occurences
+from persistence import tokenize_values, load_source
 
 
 def render_venn(ckeywords: Dict[str, Set[str]], title: str = "") -> str:
@@ -46,17 +48,55 @@ def render_venn(ckeywords: Dict[str, Set[str]], title: str = "") -> str:
             "c": keywords[2] - keywords[0] - keywords[1] - keywords[3],
             "d": keywords[3] - keywords[0] - keywords[1] - keywords[2],
         }
-        word_cls["a_b_c"] = (keywords[0] & keywords[1] & keywords[2]) - word_cls["a_b_c_d"]
-        word_cls["a_b_d"] = (keywords[0] & keywords[1] & keywords[3]) - word_cls["a_b_c_d"]
-        word_cls["a_c_d"] = (keywords[0] & keywords[2] & keywords[3]) - word_cls["a_b_c_d"]
-        word_cls["b_c_d"] = (keywords[1] & keywords[2] & keywords[3]) - word_cls["a_b_c_d"]
+        word_cls["a_b_c"] = (keywords[0] & keywords[1] & keywords[2]) - word_cls[
+            "a_b_c_d"
+        ]
+        word_cls["a_b_d"] = (keywords[0] & keywords[1] & keywords[3]) - word_cls[
+            "a_b_c_d"
+        ]
+        word_cls["a_c_d"] = (keywords[0] & keywords[2] & keywords[3]) - word_cls[
+            "a_b_c_d"
+        ]
+        word_cls["b_c_d"] = (keywords[1] & keywords[2] & keywords[3]) - word_cls[
+            "a_b_c_d"
+        ]
 
-        word_cls["a_b"] = (keywords[0] & keywords[1]) - word_cls["a_b_c"] - word_cls["a_b_d"] - word_cls["a_b_c_d"]
-        word_cls["a_c"] = (keywords[0] & keywords[2]) - word_cls["a_b_c"] - word_cls["a_c_d"] - word_cls["a_b_c_d"]
-        word_cls["a_d"] = (keywords[0] & keywords[3]) - word_cls["a_b_d"] - word_cls["a_c_d"] - word_cls["a_b_c_d"]
-        word_cls["b_c"] = (keywords[1] & keywords[2]) - word_cls["a_b_c"] - word_cls["b_c_d"] - word_cls["a_b_c_d"]
-        word_cls["b_d"] = (keywords[1] & keywords[3]) - word_cls["a_b_d"] - word_cls["b_c_d"] - word_cls["a_b_c_d"]
-        word_cls["c_d"] = (keywords[2] & keywords[3]) - word_cls["a_c_d"] - word_cls["b_c_d"] - word_cls["a_b_c_d"]
+        word_cls["a_b"] = (
+            (keywords[0] & keywords[1])
+            - word_cls["a_b_c"]
+            - word_cls["a_b_d"]
+            - word_cls["a_b_c_d"]
+        )
+        word_cls["a_c"] = (
+            (keywords[0] & keywords[2])
+            - word_cls["a_b_c"]
+            - word_cls["a_c_d"]
+            - word_cls["a_b_c_d"]
+        )
+        word_cls["a_d"] = (
+            (keywords[0] & keywords[3])
+            - word_cls["a_b_d"]
+            - word_cls["a_c_d"]
+            - word_cls["a_b_c_d"]
+        )
+        word_cls["b_c"] = (
+            (keywords[1] & keywords[2])
+            - word_cls["a_b_c"]
+            - word_cls["b_c_d"]
+            - word_cls["a_b_c_d"]
+        )
+        word_cls["b_d"] = (
+            (keywords[1] & keywords[3])
+            - word_cls["a_b_d"]
+            - word_cls["b_c_d"]
+            - word_cls["a_b_c_d"]
+        )
+        word_cls["c_d"] = (
+            (keywords[2] & keywords[3])
+            - word_cls["a_c_d"]
+            - word_cls["b_c_d"]
+            - word_cls["a_b_c_d"]
+        )
     else:
         raise NotImplementedError(
             f"Venn diagrams for more than 4 corpora are not supported. You have {len(keywords)}."
@@ -103,7 +143,7 @@ def keywords_venn(
         occurences_tv (Dict[str, Dict[str, int]], optional): see create.calc_occurences(). Recalculated when missing.
     """
     if not values or not tokenized or not occurences_tv:
-        values, _ = tokenize_values(tkn, vocab=vocab)
+        values, _ = tokenize_values(tkn)
         _, tokenized = load_source(stemmers[tkn], corpora)
         _, occurences_tv, _ = calc_occurences(values, tokenized)
 
@@ -219,7 +259,7 @@ def clusters_venn(
     occurences_tv: Dict[str, Dict[str, int]] = {},
 ) -> Dict[str, str]:
     if not values or not occurences_tv:
-        values, _ = tokenize_values(tkn, vocab)
+        values, _ = tokenize_values(tkn)
         _, tokenized = load_source(stemmers[tkn], corpora)
         _, occurences_tv, _ = calc_occurences(values, tokenized)
 
@@ -236,7 +276,7 @@ def clusters_venn(
         per_corpus = {c: filter_clusters_containing(cl[c], v) for c in corpora}
         # if exactly one cluster per corpus contains the value
         if len([k for k, v in per_corpus.items() if len(v) == 1]) == 3:
-            print(per_corpus)
+            # print(per_corpus)
             result[v] = render_venn({k: set(v.pop()) for k, v in per_corpus.items()})
     return result
 

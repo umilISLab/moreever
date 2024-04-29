@@ -58,7 +58,7 @@ def render(
         for k, v in occurences.items()
     ]
     df = pd.DataFrame(data)
-    df.columns = ["country", "text", "value", "count", "label", "url"]
+    df.columns = ["country", "text", "value", "count", "label", "url"]  # type: ignore
     value_range = sorted(
         list(occurences_backref.keys()),
         key=lambda x: -sum(occurences_backref[x].values()),

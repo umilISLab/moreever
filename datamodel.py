@@ -14,7 +14,7 @@ language = "english"
 
 from template import span_templ
 
-nltk.download("punkt")
+# nltk.download("punkt")
 
 cleanup_map = {
     "-\n": "",

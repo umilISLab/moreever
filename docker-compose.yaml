@@ -2,16 +2,20 @@ version: '3.9'
 
 services:
   fastapi:
-    image: python:3-slim-buster
-    expose:
-      - 8000
+    # image: python:3-slim-buster
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # expose:
+    #   - 8000
     ports:
       - 8103:8000
     volumes:
       - .:/app
-    command: sh -c "tail -f /dev/null"
-    entrypoint: sh -c "apt-get update && apt-get install wget -y && rm -rf /var/lib/apt/lists/* && pip install --no-cache-dir --upgrade -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-level debug"
-    working_dir: /app
+    # command: sh -c "tail -f /dev/null"
+    # entrypoint: sh -c "apt-get update && apt-get install wget -y && rm -rf /var/lib/apt/lists/* && pip install --no-cache-dir --upgrade -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-level debug"
+    # entrypoint: sh -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-level debug"
+    # working_dir: /app
     healthcheck:
       test: ["CMD-SHELL", "wget -nv -t1 --spider http://localhost:8000/docs || exit 1"]
     restart: always

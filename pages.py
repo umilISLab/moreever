@@ -11,16 +11,20 @@ from settings import VOCAB
 
 from corpora import corpora
 from stemmers import stemmers, stemmer_labels
-from template import title_templ, span_templ, select_option_templ
+from template import title_templ, span_templ, select_option_templ, table_templ
 from template import index_templ, corpus_templ, text_templ, list_templ, values_templ
 from template import value_link_templ, list_link_templ
-from hyper import enrich_value
-
 
 from util import fname2name, fname2path, path2corpus, path2name
 from datamodel import Annotator
+from hyper import enrich_value
 
-from create import tokenize_values, load_source, calc_occurences
+# from create import tokenize_values, load_source, calc_occurences
+from create import calc_occurences, tokenize_values as flat_tokenize_values
+from persistence import tokenize_values, load_source
+
+from stats import corpora_tokens_count
+from persistence import stemmers_values
 
 
 def values_css(stemmer: str, vocab: str) -> str:
@@ -60,7 +64,7 @@ def index_html() -> str:
 
     text_default = "onboarding.html"
 
-    tokenize_values(stemmer_default, VOCAB)
+    tokenize_values(stemmer_default)
     return index_templ.format(
         stemmers=stemmers_html,
         corpora=corpora_html,
@@ -169,8 +173,8 @@ def values_html(stemmer: str, vocab: str) -> str:
     title = "Values and Labels"
     result = []
 
-    values, _ = tokenize_values(stemmer, f"{vocab}.flat")
-    _, tokenized = load_source(stemmers[stemmer], corpora)
+    values, _ = tokenize_values(stemmer)
+    _, tokenized = load_source(stemmer, corpora)
     _, _, occurences_backref = calc_occurences(values, tokenized)
 
     with open(f"vocab/{vocab}.csv") as fin:
@@ -191,6 +195,41 @@ def values_html(stemmer: str, vocab: str) -> str:
     )
 
 
+def stats_html():
+    body = []
+
+    # corpora stats
+    heading = (
+        "<tr><th>"
+        + "</th><th>".join(["corpus", "texts", "tokens", "avg.len"])
+        + "</th></tr>"
+    )
+    data = [
+        (corpus, str(count[0]), str(count[1]), f"{count[1]/count[0]:.3f}")
+        for corpus, count in corpora_tokens_count().items()
+    ]
+    rows = ["<tr><td>" + "</td><td>".join(d) + "</td></tr>" for d in data]
+    corpora_stats_table = (
+        '<table style="margin: 0 auto;">' + heading + "".join(rows) + "</table>"
+    )
+    body += [corpora_stats_table]
+
+    # values x stemmers table
+    data = stemmers_values()
+    cols = list(data["dummy"].keys())
+    heading = "<tr><th></th><th>" + "</th><th>".join(cols) + "</th></tr>"
+    rows = [
+        f"<tr><th>{d}</th><td>{'</td><td>'.join([str(data[d][c]) for c in cols])}</td></tr>"
+        for d in data.keys()
+    ]
+    stemmers_vocab_table = (
+        '<table style="margin: 0 auto;">' + heading + "".join(rows) + "</table>"
+    )
+    body += [stemmers_vocab_table]
+
+    return table_templ.format(body="<br/>".join(body), title="")
+
+
 def edit_vocab_html(stemmer: str, vocab: str) -> str:
     """same as values_html(), but editable"""
     with open(f"vocab/{vocab}.csv") as f:
@@ -203,3 +242,8 @@ def edit_vocab_html(stemmer: str, vocab: str) -> str:
         stemmer=stemmer,
         button="Save",
     )
+
+
+if __name__ == "__main__":
+    # print(text_anchor_dict("lan", "Refined_dictionary.lan", "split"))
+    print(text_anchor_html("lan", "Refined_dictionary.lan"))

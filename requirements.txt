@@ -6,6 +6,8 @@ networkx==3.2.1
 nltk==3.8.1
 pandas==2.2.0
 roman==4.1
+scipy==1.10.1
+SQLAlchemy==1.4.51
 uvicorn==0.17.1
 python-multipart==0.0.6
 

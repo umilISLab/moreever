@@ -3,13 +3,15 @@ from typing import Dict, List, Tuple
 from glob import glob
 import os
 
+from settings import VOCAB
+
 from stemmers import stemmers
 from util import story_tokenize, collect_tokens, get_dirs, mkdirs
 from flatvalues import flatten
 
 
 def tokenize_values(
-    func_name: str = "sb", vocab: str = "values"
+    func_name: str = "sb", vocab: str = ""
 ) -> Tuple[Dict[str, List[str]], Dict[str, str]]:
     """Get the two directional dictionaries between values and labels.
     As a byproduct make a stemmed version of the values list in the corresponding folder.
@@ -22,6 +24,9 @@ def tokenize_values(
         Tuple[Dict[str, List[str]], Dict[str, str]]: returns two dictionaries:
             value->list_labels and label->value
     """
+    if not vocab:
+        vocab = VOCAB
+
     token_func = stemmers[func_name]
     values: Dict[str, List[str]] = {}
     valuesbackref: Dict[str, str] = {}
@@ -40,7 +45,7 @@ def tokenize_values(
                 # if i in valuesbackref:
                 #     print(i, stemmed_fitems[0])
                 valuesbackref[i] = stemmed_fitems[0]
-    mkdirs()
+    # mkdirs()
     with open(f"vocab/{func_name}/{vocab}.csv", "w") as fout:
         fout.writelines("\n".join(", ".join(v) for v in values.values()))
     return values, valuesbackref

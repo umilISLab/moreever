@@ -14,6 +14,14 @@ text_templ = """<!DOCTYPE html>
   </head>
 <body><h1>{title}</h1>{body}</body></html>"""
 
+table_templ = """<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../../../style.css">
+  </head>
+<body style="background: none;">{body}</body></html>"""
+
 corpus_templ = """<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -128,7 +136,7 @@ venn_templ = {
     </g>
   </svg>
 </svg>""",
-  4: """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    4: """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Source: https://en.wikipedia.org/wiki/Venn_diagram#/media/File:Venn's_four_ellipse_construction.svg -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%">
   <title>{title}</title>
@@ -191,7 +199,7 @@ venn_templ = {
         {a_b_c_d}
       </text>
 
-</svg>"""
+</svg>""",
 }
 
 select_option_templ = '<option value="{value}" {default}>{label}</option>'
