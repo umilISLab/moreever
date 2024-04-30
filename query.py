@@ -1,5 +1,8 @@
 from customtypes import TokenToClassMap, ClassToTokenMap
 
+from sqlalchemy import func, distinct
+from sqlalchemy.sql import expression, functions
+
 from db import Session
 
 from corpora import corpora as global_corpora
@@ -23,7 +26,7 @@ def tokenize_values(
             value->list_labels and label->value
     """
     data = (
-        s.query(Token.token, Token.token_class).filter(Token.stemmer == stemmer).all()
+        s.query(Token.token, func.lower(Token.token_class)).filter(Token.stemmer == stemmer).all()
     )
     values: ClassToTokenMap = {}
     valuesbackref = dict(data)
@@ -76,7 +79,7 @@ def load_source(s: Session,
     fulltexts: dict[str, dict[str, str]] = {}
     tokenized: dict[str, dict[str, list[list[str]]]] = {}
     for corpus in corpora:
-        print(corpus)
+        # print(corpus)
         data = s.query(Text.name, Text.fulltext).filter(Text.corpus == corpus).all()
         fulltexts[corpus] = dict(data)
         tokenized[corpus] = {}
@@ -96,21 +99,19 @@ def load_source(s: Session,
             )
             sent_id = None
             sent: list[str] = []
-            for d in data:
-                if d[1].id != sent_id:
+            for w, sentence, t in data:
+                if sentence.id != sent_id:
+                    sent_id = sentence.id
                     if sent:
                         tokenized[corpus][textname] += [sent]
-                        sent = []
+                    sent = [w.word]                                                
                 else:
-                    sent += [d[0].word]
+                    sent += [w.word]
             tokenized[corpus][textname] += [sent]
+
     return fulltexts, tokenized
 
-def calc_occurences(s: Session, 
-    values: dict[str, list[str]],
-    tokenized: dict[str, dict[str, list[list[str]]]],
-    stemmer="dummy",
-) -> tuple[
+def calc_occurences(s: Session, stemmer: str = "dummy", flat: bool = False) -> tuple[
     dict[tuple[str, str], int], dict[str, dict[str, int]], dict[str, dict[str, int]]
 ]:
     """_Calculate occurences of words_
@@ -132,31 +133,34 @@ def calc_occurences(s: Session,
     occurences_tv: dict[str, dict[str, int]] = {}  # text_name: (value: count)
     occurences_backref: dict[str, dict[str, int]] = {}  # value: (text_name:count)
 
-    data = s.query
+    token_col = Token.token if flat else Token.token_class
+    data = (
+        s.query(Text.corpus + expression.literal("/") + Text.name, func.lower(token_col), func.count(distinct(Word.id)).label('cnt'))
+        # s.query(func.concat(Text.corpus, expression.literal("/"), Text.name), func.lower(Token.token_class), func.count(distinct(Word.id)).label('cnt'))
+        .join(Sentence, Sentence.text_id == Text.id)
+        .join(Word, Word.sentence_id == Sentence.id)
+        .filter(
+            Word.word == Token.token,
+            Word.stemmer == Token.stemmer,
+            Word.stemmer == stemmer
+        ).group_by(Text.name, token_col)
+        .all()
+    )
 
-    for corpus, chapters in tokenized.items():
-        for chapter, lists_of_tokens in chapters.items():
-            text_name = f"{corpus}/{chapter}"
-            # print(text_name)
-            for value_name, synonyms in values.items():
-                cnt = sum(
-                    sum(phrase.count(token_func(keyword)) for keyword in synonyms)
-                    for phrase in lists_of_tokens
-                )
-                if not cnt:
-                    continue
+    occurences = dict(((text, value),count) for text, value, count in data)
 
-                occurences[(text_name, value_name)] = cnt
+    for text, value, count in data:
+        if text in occurences_tv:
+            assert value not in occurences_tv[text]
+            occurences_tv[text][value] = count
+        else:
+            occurences_tv[text] = {value: count}
 
-                if text_name not in occurences_tv:
-                    occurences_tv[text_name] = {}
-                assert value_name not in occurences_tv[text_name]
-                occurences_tv[text_name][value_name] = cnt
-
-                if value_name not in occurences_backref:
-                    occurences_backref[value_name] = {}
-                assert text_name not in occurences_backref[value_name]
-                occurences_backref[value_name][text_name] = cnt
+        if value in occurences_backref:
+            assert text not in occurences_backref[value]
+            occurences_backref[value][text] = count
+        else:
+            occurences_backref[value] = {text: count}
 
     return occurences, occurences_tv, occurences_backref
 

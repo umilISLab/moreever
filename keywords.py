@@ -12,9 +12,7 @@ from corpora import corpora
 from algo import algos
 from template import venn_templ, tspan_templ, value_link_templ
 
-# from create import tokenize_values, load_source, calc_occurences
-from create import calc_occurences
-from persistence import tokenize_values, load_source
+from persistence import tokenize_values, load_source, calc_occurences
 
 
 def render_venn(ckeywords: Dict[str, Set[str]], title: str = "") -> str:
@@ -142,10 +140,7 @@ def keywords_venn(
         tokenized (Dict[str, Dict[str, List[List[str]]]], optional): see create.load_source(). Recalculated when missing.
         occurences_tv (Dict[str, Dict[str, int]], optional): see create.calc_occurences(). Recalculated when missing.
     """
-    if not values or not tokenized or not occurences_tv:
-        values, _ = tokenize_values(tkn)
-        _, tokenized = load_source(stemmers[tkn], corpora)
-        _, occurences_tv, _ = calc_occurences(values, tokenized)
+    _, occurences_tv, _ = calc_occurences(tkn, True)
 
     ckeywords: Dict[str, Set[str]] = {}
     for c in corpora:

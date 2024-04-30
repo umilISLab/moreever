@@ -17,10 +17,11 @@ DEBUG: Final = True
 # VOCAB = "variation"
 # VOCAB = "values"
 # VOCAB = "mfd2.0.dummy" # TODO: remove dots in classes
-VOCAB: Final = "Refined_dictionary.dummy"
-# VOCAB: Final = "Refined_dictionary.lan"
+# VOCAB: Final = "Refined_dictionary.dummy"
+VOCAB: Final = "Refined_dictionary.lan"
+CORPORA: Final = "stories"
 
-DATABASE_URL: Final = f"sqlite:///{VOCAB}.sqlite?check_same_thread=False"
+DATABASE_URL: Final = f"sqlite:///{VOCAB}.{CORPORA}.sqlite?check_same_thread=False"
 
 # lang = "it"
 lang: Final = "en"

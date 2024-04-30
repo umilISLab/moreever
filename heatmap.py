@@ -9,7 +9,7 @@ from stemmers import stemmers
 from palettes import pal_seq
 
 from util import fname2name, fname2path
-from create import tokenize_values, load_source, calc_occurences
+from persistence import tokenize_values, load_source, calc_occurences
 
 from bokeh.models import LinearColorMapper, LabelSet, ColumnDataSource, TapTool, OpenURL  # type: ignore
 from bokeh.plotting import figure  # type: ignore
@@ -35,10 +35,10 @@ def render(
         occurences (Dict[Tuple[str, str], int], optional): see create.calc_occurences(). Recalculated when missing.
         occurences_backref (Dict[str, Dict[str, int]], optional): see create.calc_occurences(). Recalculated when missing.
     """
-    if not values or not tokenized or not occurences or not occurences_backref:
-        values, _ = tokenize_values(tkn, vocab)
-        _, tokenized = load_source(stemmers[tkn], corpora)
-        occurences, _, occurences_backref = calc_occurences(values, tokenized)
+    # if not values or not tokenized or not occurences or not occurences_backref:
+        # values, _ = tokenize_values(tkn)
+        # _, tokenized = load_source(stemmers[tkn], corpora)
+    occurences, _, occurences_backref = calc_occurences(tkn, True)
 
     title = f"Clickable Map of Values in Texts (tokenisation: {tkn})"
     # output_file(filename=f"site/{tkn}/{vocab}/map.html", title=title)
@@ -74,7 +74,7 @@ def render(
         y_range=text_range,
         x_range=value_range,
         x_axis_location="above",
-        width=15 * len(value_range) + 250,
+        width=15 * len(value_range) + 450,
         height=15 * len(text_range) + 150,
         # toolbar_location = None,
         tools="tap",

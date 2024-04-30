@@ -13,17 +13,20 @@ def tokenize_values(stemmer: str = "dummy"):
 def load_source(stemmer="dummy", corpora: list[str] = []):
     return query.load_source(Session(), stemmer, corpora)
 
-def calc_occurences(values: ClassToTokenMap, tokenized: TokenizedMap):
-    return query.calc_occurences(Session(), values, tokenized)
+def calc_occurences(stemmer: str = "dummy", flat: bool = False):
+    return query.calc_occurences(Session(), stemmer, flat)
 
 if __name__ == "__main__":
     from corpora import corpora
-    stemmer = "dummy"
+    stemmer = "sb"
 
-    values = tokenize_values(stemmer)[0]
+    # print(tokenize_values(stemmer))
+    # print(load_source(stemmer, corpora)[1])
+    print(calc_occurences(stemmer, True))
+    # values = tokenize_values(stemmer)[0]
 
-    print(values)
-    _, tokenized = load_source(stemmer, corpora)
-    print(tokenized)
-    _, _, occurences_backref = calc_occurences(values, tokenized)
-    print(occurences_backref)
+    # print(values)
+    # _, tokenized = load_source(stemmer, corpora)
+    # print(tokenized)
+    # _, _, occurences_backref = calc_occurences(values, tokenized)
+    # print(occurences_backref)

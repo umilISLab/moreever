@@ -73,9 +73,9 @@ def fname2path(fname: str) -> str:
     'singles.html#sammy'
     """
     parts = fname.split("/")[-2:]
-    parts[-1] = parts[-1].split(".")[0]
+    parts[-1] = parts[-1].split(".")[0].lower()
     name = ".html#".join(parts)
-    return name.lower()
+    return name
 
 
 def path2corpus(path: str) -> str:

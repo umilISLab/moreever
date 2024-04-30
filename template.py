@@ -61,7 +61,7 @@ values_templ = """<!DOCTYPE html>
     <input type="hidden" name="stemmer" value="{stemmer}"/>
     <input type="hidden" name="vocab" value="{vocab}"/>
     {body}
-    '<input type="submit" id="submitVocab" value="{button}"/>'
+    <input type="submit" id="submitVocab" value="{button}"/>
     </form>
 </body></html>"""
 

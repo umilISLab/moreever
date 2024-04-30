@@ -28,7 +28,7 @@ def tokenize_values(
         vocab = VOCAB
 
     token_func = stemmers[func_name]
-    values: Dict[str, List[str]] = {}
+    values: Dict[str, set[str]] = {}
     valuesbackref: Dict[str, str] = {}
 
     if vocab.endswith(".flat") and not os.path.exists(f"vocab/{vocab}.csv"):
@@ -176,4 +176,11 @@ def annotate_occurences(
 
 
 if __name__ == "__main__":
-    print(tokenize_values(vocab="values.flat"))
+    from corpora import corpora
+    from stemmers import stemmers
+    stemmer = "sb"
+
+    values, _ = tokenize_values(stemmer)
+    _, tokenized = load_source(stemmers[stemmer], corpora)
+    print(calc_occurences(values, tokenized, stemmer)[2])
+

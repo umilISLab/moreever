@@ -20,8 +20,8 @@ from datamodel import Annotator
 from hyper import enrich_value
 
 # from create import tokenize_values, load_source, calc_occurences
-from create import calc_occurences, tokenize_values as flat_tokenize_values
-from persistence import tokenize_values, load_source
+from create import tokenize_values as flat_tokenize_values
+from persistence import tokenize_values, load_source, calc_occurences
 
 from stats import corpora_tokens_count
 from persistence import stemmers_values
@@ -111,7 +111,7 @@ def page_corpus_html(
 def text_anchor_html(
     stemmer: str, vocab: str, corpus: str = "", from_parent=False
 ) -> str:
-    """Refers to texts in a united corpus file.
+    """References to texts in united files per corpus.
     :param str corpus: Specifies corpus/country. If not set, will do for all
     :param bool from_parent: Specifies whether the generated file will be in the parent directory,
         so that URLs are adapted accordingly. This is not intended to be set manually
@@ -119,6 +119,7 @@ def text_anchor_html(
     if not corpus:
         return "\n".join(text_anchor_html(stemmer, vocab, c, True) for c in corpora)
     names = text_anchor_dict(stemmer, vocab, corpus)
+    #print(names)
     result = []
     for name in sorted(names.keys()):
         fname = names[name]
@@ -154,6 +155,7 @@ def value_list_html(
         # sample shortname is 'Germany/65_Allerleirauh'
         # shortname = fname[len(f"site/{stemmer}/{vocab}/") : -5]
         shortname = f"{path2corpus(fname)}/{path2name(fname)}"
+        #print(occurences_backref.keys())
         if shortname in occurences_backref[label]:
             names[f"{name} ({occurences_backref[label][shortname]})"] = fname
     result = []
@@ -170,12 +172,9 @@ def values_html(stemmer: str, vocab: str) -> str:
         stemmer - name as in stemmer.py
         vocab - list without path and extension
     """
-    title = "Values and Labels"
     result = []
 
-    values, _ = tokenize_values(stemmer)
-    _, tokenized = load_source(stemmer, corpora)
-    _, _, occurences_backref = calc_occurences(values, tokenized)
+    _, _, occurences_backref = calc_occurences(stemmer, True)
 
     with open(f"vocab/{vocab}.csv") as fin:
         for line in csv.reader(fin):
@@ -184,7 +183,6 @@ def values_html(stemmer: str, vocab: str) -> str:
             stems = [stemmers[stemmer](v.strip().lower()) for v in line]
             links = []
             for i, s in enumerate(stems):
-                # print(occurences_backref.keys())
                 found = len(occurences_backref[s]) if s in occurences_backref else 0
                 linked = enrich_value(stemmer, vocab, line[i].strip(), s, found)
                 links += [linked]

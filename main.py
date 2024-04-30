@@ -14,7 +14,7 @@ from stemmers import stemmers
 from template import list_templ
 
 from util import save_vocab
-from create import tokenize_values, load_source, calc_occurences
+from persistence import tokenize_values, load_source, calc_occurences
 from pages import index_html, page_corpus_html
 from pages import text_anchor_html
 from pages import edit_vocab_html, values_html, value_list_html
@@ -77,9 +77,9 @@ async def keywords_venn_page(vocab: str, stemmer: str):
 @app.get("/{stemmer}/{vocab}/cluster-{value}.svg", response_class=SVGResponse)
 async def cluster_venn_page(vocab: str, stemmer: str, value: str):
     """The Venn diagram with the word vectors"""
-    values, _ = tokenize_values(stemmer, vocab)
-    _, tokenized = load_source(stemmers[stemmer], corpora)
-    _, occurences_tv, _ = calc_occurences(values, tokenized)
+    values, _ = tokenize_values(stemmer)
+    # _, tokenized = load_source(stemmer, corpora)
+    _, occurences_tv, _ = calc_occurences(stemmer)
     cl = clusters(stemmer, values=values, occurences_tv=occurences_tv)
     per_corpus = {c: filter_clusters_containing(cl[c], value) for c in corpora}
     #print(per_corpus)
@@ -122,14 +122,16 @@ async def values_index(stemmer: str, vocab: str, corpus: str = ""):
 @app.get("/{stemmer}/{vocab}/values/{label}.html", response_class=HTMLResponse)
 @app.get("/{stemmer}/{vocab}/{corpus}/values/{label}.html", response_class=HTMLResponse)
 async def value_list_page(stemmer: str, vocab: str, label: str, corpus: str = ""):
+    """The list of texts that contain a specific label/token"""
     if corpus:
         if corpus not in corpora:
             raise HTTPException(
                 status_code=404, detail=f"Corpus not found for {corpus}"
             )
-        values, _ = tokenize_values(stemmer, f"{vocab}.flat")
-        _, tokenized = load_source(stemmers[stemmer], corpora)
-        _, _, occurences_backref = calc_occurences(values, tokenized)
+        # values, _ = tokenize_values(stemmer, f"{vocab}.flat")
+        # _, tokenized = load_source(stemmers[stemmer], corpora)
+        # _, _, occurences_backref = calc_occurences(values, tokenized)
+        _, _, occurences_backref = calc_occurences(stemmer, True)
         listed = value_list_html(occurences_backref, stemmer, vocab, label, corpus)
         # print(listed)
         if not listed.strip():
@@ -140,9 +142,10 @@ async def value_list_page(stemmer: str, vocab: str, label: str, corpus: str = ""
         title = f"{corpus} Texts [{label}]"
         return list_templ.format(title=title, body=listed, root_path="../../../../")
 
-    values, _ = tokenize_values(stemmer, f"{vocab}.flat")
-    _, tokenized = load_source(stemmers[stemmer], corpora)
-    _, _, occurences_backref = calc_occurences(values, tokenized)
+    # values, _ = tokenize_values(stemmer, f"{vocab}.flat")
+    # _, tokenized = load_source(stemmers[stemmer], corpora)
+    # _, _, occurences_backref = calc_occurences(values, tokenized)
+    _, _, occurences_backref = calc_occurences(stemmer, True)
     listed = value_list_html(occurences_backref, vocab, stemmer, label)
     if not listed.strip():
         raise HTTPException(
@@ -154,7 +157,7 @@ async def value_list_page(stemmer: str, vocab: str, label: str, corpus: str = ""
 
 @app.get("/{stemmer}/{vocab}/{corpus}.html", response_class=HTMLResponse)
 async def page_corpus(stemmer: str, vocab: str, corpus: str):
-    _, values_br = tokenize_values(stemmer, vocab)
+    _, values_br = tokenize_values(stemmer)
     return page_corpus_html(corpus, stemmer, vocab, values_br)
 
 
