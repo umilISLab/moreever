@@ -7,7 +7,7 @@ from glob import glob
 import colorcet as cc  # type: ignore
 from urllib.parse import quote_plus
 
-from settings import VOCAB, CORPORA
+from settings import VOCAB, CORPORA, CLEAN_THRESHOLD
 
 from corpora import corpora
 from stemmers import stemmers, stemmer_labels
@@ -20,7 +20,6 @@ from datamodel import Annotator
 from hyper import enrich_value
 
 # from create import tokenize_values, load_source, calc_occurences
-from create import tokenize_values as flat_tokenize_values
 from persistence import tokenize_values, load_source, calc_occurences
 
 from stats import corpora_tokens_count
@@ -180,12 +179,22 @@ def values_html(stemmer: str, vocab: str) -> str:
             if not line:
                 continue
             stems = [stemmers[stemmer](v.strip().lower()) for v in line]
-            links = []
+            links = {}
+            # TODO: refactor: currently first handled separately in enrich_values, then merged and separated here
+            first = None
             for i, s in enumerate(stems):
                 found = len(occurences_backref[s]) if s in occurences_backref else 0
                 linked = enrich_value(stemmer, vocab, line[i].strip(), s, found)
-                links += [linked]
-            result += [", ".join(links)]
+                if not i:
+                    first = linked
+                elif CLEAN_THRESHOLD <= found:
+                    links[linked] = found
+            tail = (
+                list(links.keys())
+                if CLEAN_THRESHOLD == 0
+                else [k for k, v in sorted(links.items(), key=lambda item: -item[1])]
+            )
+            result += [", ".join([first] + tail)]
     body = '<div class="show"><p>' + "</p><p>".join(result) + "</p></div>"
     return values_templ.format(
         title="Vocabulary", body=body, vocab=vocab, stemmer=stemmer, button="Modify"
@@ -205,20 +214,28 @@ def stats_html():
         (corpus, str(count[0]), str(count[1]), f"{count[1]/count[0]:.3f}")
         for corpus, count in corpora_tokens_count().items()
     ]
-    rows = ["<tr><td>" + "</td><td>".join(d) + "</td></tr>" for d in data]
+    rows = [
+        "<tr><td>" + '</td><td class="number">'.join(d) + "</td></tr>" for d in data
+    ]
     corpora_stats_table = (
         '<table style="margin: 0 auto;">' + heading + "".join(rows) + "</table>"
     )
     body += [corpora_stats_table]
 
+    body += ["<br/><br/>"]
+
     # values x stemmers table
     data = stemmers_values()
     cols = list(stemmers)
-    heading = "<tr><th></th><th>" + "</th><th>".join(cols) + "</th></tr>"
-    rows = [
-        f"<tr><th>{d}</th><td>{'</td><td>'.join([str(data[d][c]) for c in cols])}</td></tr>"
-        for d in data.keys()
-    ]
+    heading = (
+        "<tr><th></th><th>"
+        + "</th><th>".join([stemmer_labels[s].replace(" ", "<br/>") for s in cols])
+        + "</th></tr>"
+    )
+    rows = []
+    for d in data.keys():
+        part = '</td><td class="number">'.join([str(data[d][c]) for c in cols])
+        rows += [f"<tr><th>{d}</th><td class='number'>{part}</td></tr>"]
     stemmers_vocab_table = (
         '<table style="margin: 0 auto;">' + heading + "".join(rows) + "</table>"
     )

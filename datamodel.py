@@ -7,7 +7,7 @@ from typing import Dict, List, Union
 import nltk  # type: ignore
 
 from stemmers import stemmers
-from create import tokenize_values
+from persistence import tokenize_values
 
 regex_token = r"\w+"
 language = "english"

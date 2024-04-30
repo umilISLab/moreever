@@ -1,3 +1,5 @@
+"""OBSOLETE: Currently used only in auxiliary code and should be removed"""
+
 from typing import Dict, List, Tuple
 
 from glob import glob

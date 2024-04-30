@@ -18,10 +18,20 @@ DEBUG: Final = True
 # VOCAB = "values"
 # VOCAB = "mfd2.0.dummy" # TODO: remove dots in classes
 # VOCAB: Final = "Refined_dictionary.dummy"
-VOCAB: Final = "Refined_dictionary.lan"
-CORPORA: Final = "stories"
+# VOCAB: Final = "Refined_dictionary.lan"
+VOCAB = "mfd2.0.lan"
 
-DATABASE_URL: Final = f"sqlite:///{VOCAB}.{CORPORA}.sqlite?check_same_thread=False"
+# CORPORA: Final = "stories"
+CORPORA: Final = "twitter"
+
+DATABASE_URL: Final = f"sqlite:///db/{VOCAB}.{CORPORA}.sqlite?check_same_thread=False"
 
 # lang = "it"
 lang: Final = "en"
+
+# A clean dataset is bottom-up defined and has no vocabulary that does not occur.
+# An unclean is top-down (typically from a generic dictionary) and has many irrelevant or less relevant tokens.
+# Thus: 1) tokens are sorted by frequence, 2) missing tokens are not shown
+
+# CLEAN_THRESHOLD: Final = 0
+CLEAN_THRESHOLD: Final = 5
