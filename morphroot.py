@@ -1,7 +1,7 @@
 #!/bin/python
 from typing import Dict
 
-from settings import db_dir
+from settings import db_dir, CORPORA
 import os
 import csv
 
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     from corpora import corpora
 
     for corpus in corpora:
-        for fname in glob(f"./corpora/{corpus}/*.txt"):
+        for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
             print(fname)
             with open(fname) as f:
                 # talename = fname.split("/")[-1].split(".")[-2]

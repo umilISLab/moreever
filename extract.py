@@ -2,6 +2,8 @@
 
 from glob import glob
 
+from settings import CORPORA
+
 from corpora import corpora
 
 from datamodel import Annotator
@@ -12,7 +14,7 @@ def get_fulltexts() -> dict[str, dict[str, str]]:
     fulltexts: dict[str, dict[str, str]] = {}
     for corpus in corpora:
         fulltexts[corpus] = {}
-        for fname in glob(f"./corpora/{corpus}/*.txt"):
+        for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
             with open(fname) as f:
                 textname = fname.split("/")[-1].split(".")[-2]
                 assert textname, f"Seems not to contain file name: {fname}"
@@ -32,5 +34,7 @@ def corpora_tokens() -> dict[str, dict[str, list[str]]]:
             a = Annotator("dummy", fulltext)
             for paragraph in fulltext.split("\n"):
                 # tokens[c][fulltext] += [sentence for sentence in a.tokens(paragraph)]
-                tokens[c][fulltext] += [token for sentence in a.tokens(paragraph) for token in sentence]
+                tokens[c][fulltext] += [
+                    token for sentence in a.tokens(paragraph) for token in sentence
+                ]
     return tokens

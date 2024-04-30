@@ -19,7 +19,7 @@ wnl = WordNetLemmatizer()
 
 regex_token = r"\w+"
 
-from settings import DATEFORMAT_LOG, VOCAB
+from settings import DATEFORMAT_LOG, VOCAB, CORPORA
 
 
 # def clean_word(s: str) -> str:
@@ -74,7 +74,10 @@ def fname2path(fname: str) -> str:
     """
     parts = fname.split("/")[-2:]
     parts[-1] = parts[-1].split(".")[0].lower()
+    if parts[-1][-1] == "_":
+        parts[-1] = parts[-1][:-1]
     name = ".html#".join(parts)
+
     return name
 
 
@@ -89,9 +92,9 @@ def path2corpus(path: str) -> str:
 def path2name(path: str) -> str:
     """
     >>> path2name('site/sb2/clustering/bruce_marshall.html#la_ragazza_di_maggio')
-    'La_ragazza_di_maggio'
+    'La Ragazza Di Maggio'
     """
-    return path.split("#")[-1].capitalize()
+    return " ".join(w.capitalize() for w in path.split("#")[-1].split("_"))
 
 
 def story_tokenize(token_func, story: str) -> List[List[str]]:
@@ -204,7 +207,9 @@ def mkdirs():
         #             os.mkdir(nxt3)
 
 
-def get_dirs(path: str = "./corpora/") -> List[str]:
+def get_dirs(path: str = "") -> List[str]:
+    if not path:
+        path = f"corpora.{CORPORA}/"
     result = [
         f.replace(path, "") for f in glob(f"{path}/*") if os.path.isdir(os.path.join(f))
     ]

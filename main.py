@@ -82,7 +82,7 @@ async def cluster_venn_page(vocab: str, stemmer: str, value: str):
     _, occurences_tv, _ = calc_occurences(stemmer)
     cl = clusters(stemmer, values=values, occurences_tv=occurences_tv)
     per_corpus = {c: filter_clusters_containing(cl[c], value) for c in corpora}
-    #print(per_corpus)
+    # print(per_corpus)
     # if exactly one cluster per corpus contains the value
     if len([k for k, v in per_corpus.items() if len(v) == 1]) != 3:
         raise HTTPException(

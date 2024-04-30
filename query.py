@@ -26,7 +26,9 @@ def tokenize_values(
             value->list_labels and label->value
     """
     data = (
-        s.query(Token.token, func.lower(Token.token_class)).filter(Token.stemmer == stemmer).all()
+        s.query(Token.token, func.lower(Token.token_class))
+        .filter(Token.stemmer == stemmer)
+        .all()
     )
     values: ClassToTokenMap = {}
     valuesbackref = dict(data)
@@ -59,8 +61,8 @@ def flat_tokenize_values(
     return values, valuesbackref
 
 
-def load_source(s: Session, 
-    stemmer="dummy", corpora: list[str] = []
+def load_source(
+    s: Session, stemmer="dummy", corpora: list[str] = []
 ) -> tuple[dict[str, dict[str, str]], dict[str, dict[str, list[list[str]]]]]:
     """loads the sources from the specified directory structure
 
@@ -104,14 +106,17 @@ def load_source(s: Session,
                     sent_id = sentence.id
                     if sent:
                         tokenized[corpus][textname] += [sent]
-                    sent = [w.word]                                                
+                    sent = [w.word]
                 else:
                     sent += [w.word]
             tokenized[corpus][textname] += [sent]
 
     return fulltexts, tokenized
 
-def calc_occurences(s: Session, stemmer: str = "dummy", flat: bool = False) -> tuple[
+
+def calc_occurences(
+    s: Session, stemmer: str = "dummy", flat: bool = False
+) -> tuple[
     dict[tuple[str, str], int], dict[str, dict[str, int]], dict[str, dict[str, int]]
 ]:
     """_Calculate occurences of words_
@@ -135,19 +140,24 @@ def calc_occurences(s: Session, stemmer: str = "dummy", flat: bool = False) -> t
 
     token_col = Token.token if flat else Token.token_class
     data = (
-        s.query(Text.corpus + expression.literal("/") + Text.name, func.lower(token_col), func.count(distinct(Word.id)).label('cnt'))
+        s.query(
+            Text.corpus + expression.literal("/") + Text.name,
+            func.lower(token_col),
+            func.count(distinct(Word.id)).label("cnt"),
+        )
         # s.query(func.concat(Text.corpus, expression.literal("/"), Text.name), func.lower(Token.token_class), func.count(distinct(Word.id)).label('cnt'))
         .join(Sentence, Sentence.text_id == Text.id)
         .join(Word, Word.sentence_id == Sentence.id)
         .filter(
             Word.word == Token.token,
             Word.stemmer == Token.stemmer,
-            Word.stemmer == stemmer
-        ).group_by(Text.name, token_col)
+            Word.stemmer == stemmer,
+        )
+        .group_by(Text.name, token_col)
         .all()
     )
 
-    occurences = dict(((text, value),count) for text, value, count in data)
+    occurences = dict(((text, value), count) for text, value, count in data)
 
     for text, value, count in data:
         if text in occurences_tv:
@@ -172,10 +182,10 @@ def get_stemmer2vocab(s: Session):
     data = s.execute(q)
     result: dict[str, dict[str, int]] = {}
     for cnt, stem, token in data:
-        if stem not in result:
-            result[stem] = {}
-        assert token not in result[stem], "Two records with repeated data"
-        result[stem][token] = cnt
+        if token not in result:
+            result[token] = {}
+        assert stem not in result[token], "Two records with repeated data"
+        result[token][stem] = cnt
 
     return result
 

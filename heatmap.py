@@ -35,9 +35,6 @@ def render(
         occurences (Dict[Tuple[str, str], int], optional): see create.calc_occurences(). Recalculated when missing.
         occurences_backref (Dict[str, Dict[str, int]], optional): see create.calc_occurences(). Recalculated when missing.
     """
-    # if not values or not tokenized or not occurences or not occurences_backref:
-        # values, _ = tokenize_values(tkn)
-        # _, tokenized = load_source(stemmers[tkn], corpora)
     occurences, _, occurences_backref = calc_occurences(tkn, True)
 
     title = f"Clickable Map of Values in Texts (tokenisation: {tkn})"

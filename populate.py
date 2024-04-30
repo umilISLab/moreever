@@ -7,11 +7,11 @@ from glob import glob
 from db import Base, engine, Session
 
 from customtypes import FulltextsMap, TokenizedMap
-from settings import VOCAB
+from settings import VOCAB, CORPORA
 from stemmers import stemmers
 from corpora import corpora as global_corpora
 
-from util import rmdirs, mkdirs, story_tokenize
+from util import rmdirs, mkdirs, story_tokenize, fname2name
 from model import Token, Text, Annotation, Sentence, Word
 
 from flatvalues import flatten
@@ -41,7 +41,7 @@ def tokenize_values(s: Session, stemmer: str, vocab: str = "") -> None:
             outlines += [",".join(stemmed_fitems) + "\n"]
     s.commit()
 
-    with open(f"vocab/{stemmer}/{vocab}.csv", "w") as fout:        
+    with open(f"vocab/{stemmer}/{vocab}.csv", "w") as fout:
         # fout.write("\n".join(stemmed_fitems))
         fout.writelines(outlines)
 
@@ -62,12 +62,17 @@ def load_source(s: Session, stemmer="dummy", corpora: list[str] = []):
         corpora = global_corpora
 
     for corpus in corpora:
-        for fname in glob(f"./corpora/{corpus}/*.txt"):
+        for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
             with open(fname) as f:
                 textname = fname.split("/")[-1].split(".")[-2]
                 assert textname, f"Seems not to contain file name: {fname}"
                 content = "".join(f.readlines())
-                txt = Text(name=textname, corpus=corpus, fulltext=content)
+                txt = Text(
+                    fname=textname,
+                    name=fname2name(textname),
+                    corpus=corpus,
+                    fulltext=content,
+                )
                 s.add(txt)
                 s.flush()
                 tokenized = story_tokenize(stemmers[stemmer], content)
@@ -85,6 +90,7 @@ def load_source(s: Session, stemmer="dummy", corpora: list[str] = []):
                         ]
                     )
     s.commit()
+
 
 def calc_occurences(
     values: dict[str, list[str]],

@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 from glob import glob
 import os
 
-from settings import VOCAB
+from settings import VOCAB, CORPORA
 
 from stemmers import stemmers
 from util import story_tokenize, collect_tokens, get_dirs, mkdirs
@@ -75,7 +75,7 @@ def load_source(
     for corpus in corpora:
         fulltexts[corpus] = {}
         tokenized[corpus] = {}
-        for fname in glob(f"./corpora/{corpus}/*.txt"):
+        for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
             with open(fname) as f:
                 textname = fname.split("/")[-1].split(".")[-2]
                 assert textname, f"Seems not to contain file name: {fname}"
@@ -178,9 +178,9 @@ def annotate_occurences(
 if __name__ == "__main__":
     from corpora import corpora
     from stemmers import stemmers
+
     stemmer = "sb"
 
     values, _ = tokenize_values(stemmer)
     _, tokenized = load_source(stemmers[stemmer], corpora)
     print(calc_occurences(values, tokenized, stemmer)[2])
-

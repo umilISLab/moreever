@@ -57,7 +57,8 @@ def classify_vocab(
                 result[val][cat] = {word}  # {f"{word}({stem(word)})"}
     return result
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     vocab, vocab_br = tokenize_values(tkn, values_src)
     # print("# Our values vocabulary:")
     # for k, v2 in vocab.items():

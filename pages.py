@@ -7,7 +7,7 @@ from glob import glob
 import colorcet as cc  # type: ignore
 from urllib.parse import quote_plus
 
-from settings import VOCAB
+from settings import VOCAB, CORPORA
 
 from corpora import corpora
 from stemmers import stemmers, stemmer_labels
@@ -39,8 +39,7 @@ def values_css(stemmer: str, vocab: str) -> str:
 def text_anchor_dict(stemmer: str, vocab: str, corpus: str) -> Dict[str, str]:
     names = {}
     # for fname in glob(f"site/{stemmer}/{vocab}/{corpus}/*.html"):
-    # print(corpus)
-    for fname in glob(f"corpora/{corpus}/*.txt"):
+    for fname in glob(f"corpora.{CORPORA}/{corpus}/*.txt"):
         names[fname2name(fname)] = f"site/{stemmer}/{vocab}/{fname2path(fname)}"
     return names
 
@@ -91,7 +90,7 @@ def page_corpus_html(
     annotated = ""
 
     fulltext = ""
-    for fname in sorted(glob(f"corpora/{corpus}/*.txt")):
+    for fname in sorted(glob(f"corpora.{CORPORA}/{corpus}/*.txt")):
         with open(fname) as fin:
             ftitle = fname2name(fname)
             # parts = fname.split("_")[1:]
@@ -119,7 +118,7 @@ def text_anchor_html(
     if not corpus:
         return "\n".join(text_anchor_html(stemmer, vocab, c, True) for c in corpora)
     names = text_anchor_dict(stemmer, vocab, corpus)
-    #print(names)
+    # print(names)
     result = []
     for name in sorted(names.keys()):
         fname = names[name]
@@ -155,7 +154,7 @@ def value_list_html(
         # sample shortname is 'Germany/65_Allerleirauh'
         # shortname = fname[len(f"site/{stemmer}/{vocab}/") : -5]
         shortname = f"{path2corpus(fname)}/{path2name(fname)}"
-        #print(occurences_backref.keys())
+        # print(occurences_backref.keys())
         if shortname in occurences_backref[label]:
             names[f"{name} ({occurences_backref[label][shortname]})"] = fname
     result = []
@@ -214,7 +213,7 @@ def stats_html():
 
     # values x stemmers table
     data = stemmers_values()
-    cols = list(data["dummy"].keys())
+    cols = list(stemmers)
     heading = "<tr><th></th><th>" + "</th><th>".join(cols) + "</th></tr>"
     rows = [
         f"<tr><th>{d}</th><td>{'</td><td>'.join([str(data[d][c]) for c in cols])}</td></tr>"

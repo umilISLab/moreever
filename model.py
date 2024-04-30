@@ -26,6 +26,7 @@ class Text(Base):
     timestamp = Column(DateTime, server_default=func.now())
 
     name = Column(String, nullable=False)
+    fname = Column(String, nullable=False)
     corpus = Column(String, nullable=False)
     fulltext = Column(String, nullable=False)
 

@@ -36,17 +36,16 @@ class Annotator:
 
     def rich_text(self):
         """
-        >>> from nltk.stem.lancaster import LancasterStemmer
-        >>> lan = LancasterStemmer().stem
-        >>> s = "Once upon a time in the forest. Then there was a wedding and devotion! There's also open-mindedness and fairness. And so the story ends."
-        >>> Annotator('lan', s).rich_text()
-        "Once upon a time in the forest. Then there was a <span id='lov-0' class='wed lov' title='wedding'>wedding</span> and <span id='loy-0' class='devot loy' title='devotion'>devotion</span>! There's also open-mindedness and <span id='just-0' class='fair just' title='fairness'>fairness</span>. And so the story ends."
-        >>> s = "There was once a man whose wife died, and a woman whose husband died, and thend a woman whose husband died, and the man had a daughter, and the woman also had a daughter."
-        >>> Annotator('lan', s).rich_text()
-        "There was once a man whose <span id='lov-0' class='wif lov' title='wife'>wife</span> died, and a woman whose <span id='lov-0' class='husband lov' title='husband'>husband</span> died, and thend a woman whose <span id='lov-0' class='husband lov' title='husband'>husband</span> died, and the man had a daughter, and the woman also had a daughter."
-        >>> s = "Three women were changed into flowers which grew in the field, but one of them was allowed to be in her own home at night. Then once when day was drawing near, and she was forced to go back to her companions in the field and become a flower again, she said to her husband, “If thou wilt come this afternoon and gather me, I shall be set free and henceforth stay with thee.” And he did so. Now the question is, how did her husband know her, for the flowers were exactly alike, and without any difference? Answer: as she was at her home during the night and not in the field, no dew fell on her as it did on the others, and by this her husband knew her."
-        >>> Annotator('lan', s).rich_text()
-        "Three women were changed into flowers which grew in the field, but one of them was allowed to be in her own home at night. Then once when day was drawing near, and she was forced to go back to her companions in the field and become a flower again, she said to her <span id='lov-0' class='husband lov' title='husband'>husband</span>, “If thou wilt come this afternoon and gather me, I shall be set <span id='fre-0' class='fre fre' title='free'>free</span> and henceforth stay with thee.” And he did so. Now the question is, how did her <span id='lov-0' class='husband lov' title='husband'>husband</span> <span id='know-0' class='know know' title='know'>know</span> her, for the flowers were exactly alike, and without any difference? Answer: as she was at her home during the night and not in the field, no dew fell on her as it did on the others, and by this her <span id='lov-0' class='husband lov' title='husband'>husband</span> knew her."
+        >> from nltk.stem.lancaster import LancasterStemmer
+        >> s = "Once upon a time in the forest. Then there was a wedding and devotion! There's also open-mindedness and fairness. And so the story ends."
+        >> Annotator('lan', s).rich_text()
+        "<p>Once upon a time in the forest. Then there was a <span id='lov-0' class='wed lov' title='wedding'>wedding</span> and <span id='loy-0' class='devot loy' title='devotion'>devotion</span>! There's also open-mindedness and <span id='just-0' class='fair just' title='fairness'>fairness</span>. And so the story ends.</p>"
+        >> s = "There was once a man whose wife died, and a woman whose husband died, and thend a woman whose husband died, and the man had a daughter, and the woman also had a daughter."
+        >> Annotator('lan', s).rich_text()
+        "<p>There was once a man whose <span id='lov-0' class='wif lov' title='wife'>wife</span> died, and a woman whose <span id='lov-0' class='husband lov' title='husband'>husband</span> died, and thend a woman whose <span id='lov-0' class='husband lov' title='husband'>husband</span> died, and the man had a daughter, and the woman also had a daughter.</p>"
+        >> s = "Three women were changed into flowers which grew in the field, but one of them was allowed to be in her own home at night. Then once when day was drawing near, and she was forced to go back to her companions in the field and become a flower again, she said to her husband, “If thou wilt come this afternoon and gather me, I shall be set free and henceforth stay with thee.” And he did so. Now the question is, how did her husband know her, for the flowers were exactly alike, and without any difference? Answer: as she was at her home during the night and not in the field, no dew fell on her as it did on the others, and by this her husband knew her."
+        >> Annotator('lan', s).rich_text()
+        "<p>Three women were changed into flowers which grew in the field, but one of them was allowed to be in her own home at night. Then once when day was drawing near, and she was forced to go back to her companions in the field and become a flower again, she said to her <span id='lov-0' class='husband lov' title='husband'>husband</span>, “If thou wilt come this afternoon and gather me, I shall be set <span id='fre-0' class='fre fre' title='free'>free</span> and henceforth stay with thee.” And he did so. Now the question is, how did her <span id='lov-0' class='husband lov' title='husband'>husband</span> <span id='know-0' class='know know' title='know'>know</span> her, for the flowers were exactly alike, and without any difference? Answer: as she was at her home during the night and not in the field, no dew fell on her as it did on the others, and by this her <span id='lov-0' class='husband lov' title='husband'>husband</span> knew her.</p>"
         """
         values_count = {v: 0 for v in set(self.values.values())}
         # print(len(tokens), tokens)
@@ -108,24 +107,24 @@ class Annotator:
         >>> sb = SnowballStemmer("english").stem
         >>> lan = LancasterStemmer().stem
         >>> s = "Once upon a time in the forest. Then something else happened! There's also open-mindedness. And so the story ends."
-        >>> Annotator('dummy', s).tokens()
+        >>> Annotator('dummy', s).tokens(s)
         [['once', 'upon', 'a', 'time', 'in', 'the', 'forest'], ['then', 'something', 'else', 'happened'], ['there', 's', 'also', 'open', 'mindedness'], ['and', 'so', 'the', 'story', 'ends']]
-        >>> Annotator('wnl', s).tokens()
+        >>> Annotator('wnl', s).tokens(s)
         [['once', 'upon', 'a', 'time', 'in', 'the', 'forest'], ['then', 'something', 'else', 'happened'], ['there', 's', 'also', 'open', 'mindedness'], ['and', 'so', 'the', 'story', 'end']]
-        >>> Annotator('ps', s).tokens()
+        >>> Annotator('ps', s).tokens(s)
         [['onc', 'upon', 'a', 'time', 'in', 'the', 'forest'], ['then', 'someth', 'els', 'happen'], ['there', 's', 'also', 'open', 'minded'], ['and', 'so', 'the', 'stori', 'end']]
-        >>> Annotator('sb', s).tokens()
+        >>> Annotator('sb', s).tokens(s)
         [['onc', 'upon', 'a', 'time', 'in', 'the', 'forest'], ['then', 'someth', 'els', 'happen'], ['there', 's', 'also', 'open', 'minded'], ['and', 'so', 'the', 'stori', 'end']]
-        >>> Annotator('lan', s).tokens()
+        >>> Annotator('lan', s).tokens(s)
         [['ont', 'upon', 'a', 'tim', 'in', 'the', 'forest'], ['then', 'someth', 'els', 'hap'], ['ther', 's', 'also', 'op', 'mind'], ['and', 'so', 'the', 'story', 'end']]
         >>> s = "marriage married"
-        >>> Annotator('wnl', s).tokens()
+        >>> Annotator('wnl', s).tokens(s)
         [['marriage', 'married']]
-        >>> Annotator('ps', s).tokens()
+        >>> Annotator('ps', s).tokens(s)
         [['marriag', 'marri']]
-        >>> Annotator('sb', s).tokens()
+        >>> Annotator('sb', s).tokens(s)
         [['marriag', 'marri']]
-        >>> Annotator('lan', s).tokens()
+        >>> Annotator('lan', s).tokens(s)
         [['marry', 'marry']]
         """
         tokens = []
