@@ -92,58 +92,6 @@ def load_source(s: Session, stemmer="dummy", corpora: list[str] = []):
     s.commit()
 
 
-def calc_occurences(
-    values: dict[str, list[str]],
-    tokenized: dict[str, dict[str, list[list[str]]]],
-    func_name="dummy",
-) -> tuple[
-    dict[tuple[str, str], int], dict[str, dict[str, int]], dict[str, dict[str, int]]
-]:
-    """_Calculate occurences of words_
-
-    Args:
-        values (Dict[str, List[str]]): the dictionary mapping values to list of synonym labels, e.g. produced by tokenize_values()
-        tokenized (Dict[str, Dict[str, List[List[str]]]]): the tokenized text content, produced by load_source()
-        func_name (str, optional): The used stemmer, notice that stemmer is an idempotent function,
-        i.e. applying it twice produces the same result. Defaults to "dummy".
-
-    Returns:
-        Tuple[ Dict[Tuple[str, str], int], Dict[str, Dict[str, int]], Dict[str, Dict[str, int]] ]: returns three counting dictionaries:
-            (text_name, value): count, text_name: (value: count), value: (text_name: count),
-            where text_name is in the format <corpus>/<chapter>_<text> (no extension)
-    """
-    # print(tokenized)
-    token_func = stemmers[func_name]
-    occurences: dict[tuple[str, str], int] = {}  # (text_name, value): count)
-    occurences_tv: dict[str, dict[str, int]] = {}  # text_name: (value: count)
-    occurences_backref: dict[str, dict[str, int]] = {}  # value: (text_name:count)
-    for corpus, chapters in tokenized.items():
-        for chapter, lists_of_tokens in chapters.items():
-            text_name = f"{corpus}/{chapter}"
-            # print(text_name)
-            for value_name, synonyms in values.items():
-                cnt = sum(
-                    sum(phrase.count(token_func(keyword)) for keyword in synonyms)
-                    for phrase in lists_of_tokens
-                )
-                if not cnt:
-                    continue
-
-                occurences[(text_name, value_name)] = cnt
-
-                if text_name not in occurences_tv:
-                    occurences_tv[text_name] = {}
-                assert value_name not in occurences_tv[text_name]
-                occurences_tv[text_name][value_name] = cnt
-
-                if value_name not in occurences_backref:
-                    occurences_backref[value_name] = {}
-                assert text_name not in occurences_backref[value_name]
-                occurences_backref[value_name][text_name] = cnt
-
-    return occurences, occurences_tv, occurences_backref
-
-
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
     s = Session()

@@ -20,9 +20,12 @@ from datamodel import Annotator
 from hyper import enrich_value
 
 # from create import tokenize_values, load_source, calc_occurences
-from persistence import tokenize_values, load_source, calc_occurences
-
-from stats import corpora_tokens_count
+from persistence import (
+    tokenize_values,
+    load_source,
+    calc_occurences,
+    corpora_token_counts,
+)
 from persistence import stemmers_values
 
 
@@ -207,18 +210,37 @@ def stats_html():
     # corpora stats
     heading = (
         "<tr><th>"
-        + "</th><th>".join(["corpus", "texts", "tokens", "avg.len"])
+        + "</th><th>".join(["corpus", "texts", "sentences", "tokens", "avg.len"])
         + "</th></tr>"
     )
+    ctc = corpora_token_counts()
     data = [
-        (corpus, str(count[0]), str(count[1]), f"{count[1]/count[0]:.3f}")
-        for corpus, count in corpora_tokens_count().items()
+        (
+            corpus,
+            str(count[0]),
+            str(count[1]),
+            str(count[2]),
+            f"{count[2]/count[0]:.3f}",
+        )
+        for corpus, count in ctc.items()
     ]
+    txt, sent, tok = (sum(count) for count in zip(*ctc.values()))
     rows = [
         "<tr><td>" + '</td><td class="number">'.join(d) + "</td></tr>" for d in data
     ]
+    totals = (
+        "<tr><th>"
+        + "</th><th class='number'>".join(
+            ["totals", str(txt), str(sent), str(tok), f"{tok/txt:.3f}"]
+        )
+        + "</th></tr>"
+    )
     corpora_stats_table = (
-        '<table style="margin: 0 auto;">' + heading + "".join(rows) + "</table>"
+        '<table style="margin: 0 auto;">'
+        + heading
+        + "".join(rows)
+        + totals
+        + "</table>"
     )
     body += [corpora_stats_table]
 
@@ -233,11 +255,23 @@ def stats_html():
         + "</th></tr>"
     )
     rows = []
+    sums = [0] * len(cols)
     for d in data.keys():
         part = '</td><td class="number">'.join([str(data[d][c]) for c in cols])
         rows += [f"<tr><th>{d}</th><td class='number'>{part}</td></tr>"]
+        for i, c in enumerate(cols):
+            sums[i] += data[d][c]
+    totals = (
+        "<tr><th>totals</th><th>"
+        + "</th><th class='number'>".join(str(s) for s in sums)
+        + "</th></tr>"
+    )
     stemmers_vocab_table = (
-        '<table style="margin: 0 auto;">' + heading + "".join(rows) + "</table>"
+        '<table style="margin: 0 auto;">'
+        + heading
+        + "".join(rows)
+        + totals
+        + "</table>"
     )
     body += [stemmers_vocab_table]
 

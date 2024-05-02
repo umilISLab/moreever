@@ -4,7 +4,7 @@ import query
 from customtypes import ClassToTokenMap, TokenizedMap
 
 
-def stemmers_values():
+def stemmers_values() -> dict[str, dict[str, int]]:
     """values x stemmers table"""
     return query.get_stemmer2vocab(Session())
 
@@ -17,8 +17,14 @@ def load_source(stemmer="dummy", corpora: list[str] = []):
     return query.load_source(Session(), stemmer, corpora)
 
 
-def calc_occurences(stemmer: str = "dummy", flat: bool = False):
-    return query.calc_occurences(Session(), stemmer, flat)
+def calc_occurences(
+    stemmer: str = "dummy", flat: bool = False, aggregated: bool = False
+):
+    return query.calc_occurences(Session(), stemmer, flat, aggregated)
+
+
+def corpora_token_counts() -> dict[str, tuple[int, int, int]]:
+    return query.corpora_token_counts(Session())
 
 
 if __name__ == "__main__":

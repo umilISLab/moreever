@@ -1,6 +1,6 @@
 from customtypes import TokenToClassMap, ClassToTokenMap
 
-from sqlalchemy import func, distinct
+from sqlalchemy import func, distinct, and_
 from sqlalchemy.sql import expression, functions
 
 from db import Session
@@ -115,7 +115,7 @@ def load_source(
 
 
 def calc_occurences(
-    s: Session, stemmer: str = "dummy", flat: bool = False
+    s: Session, stemmer: str = "dummy", flat: bool = False, aggregated: bool = False
 ) -> tuple[
     dict[tuple[str, str], int], dict[str, dict[str, int]], dict[str, dict[str, int]]
 ]:
@@ -139,9 +139,13 @@ def calc_occurences(
     occurences_backref: dict[str, dict[str, int]] = {}  # value: (text_name:count)
 
     token_col = Token.token if flat else Token.token_class
+    group_col = Text.corpus if aggregated else Text.name
+    text_col = (
+        Text.corpus if aggregated else Text.corpus + expression.literal("/") + Text.name
+    )
     data = (
         s.query(
-            Text.corpus + expression.literal("/") + Text.name,
+            text_col,
             func.lower(token_col),
             func.count(distinct(Word.id)).label("cnt"),
         )
@@ -153,7 +157,7 @@ def calc_occurences(
             Word.stemmer == Token.stemmer,
             Word.stemmer == stemmer,
         )
-        .group_by(Text.name, token_col)
+        .group_by(group_col, token_col)
         .all()
     )
 
@@ -175,19 +179,51 @@ def calc_occurences(
     return occurences, occurences_tv, occurences_backref
 
 
-def get_stemmer2vocab(s: Session):
+def get_stemmer2vocab(s: Session) -> dict[str, dict[str, int]]:
     q = """SELECT count(words.id), words.stemmer, token_class  FROM words, tokens
     WHERE words.word = tokens.token AND words.stemmer = tokens.stemmer
     GROUP BY words.stemmer, token_class;"""
     data = s.execute(q)
     result: dict[str, dict[str, int]] = {}
-    for cnt, stem, token in data:
-        if token not in result:
-            result[token] = {}
-        assert stem not in result[token], "Two records with repeated data"
-        result[token][stem] = cnt
+    for cnt, stem, value in data:
+        if value not in result:
+            result[value] = {}
+        assert stem not in result[value], "Two records with repeated data"
+        result[value][stem] = cnt
 
     return result
+
+
+def corpora_token_counts(s: Session) -> dict[str, tuple[int, int, int]]:
+    data = (
+        s.query(
+            Text.corpus,
+            func.count(distinct(Text.name)).label("text_cnt"),
+            func.count(distinct(Sentence.id)).label("sent_count"),
+            func.count(distinct(Word.id)).label("word_cnt"),
+        )
+        .where(
+            Sentence.text_id == Text.id,
+            Word.sentence_id == Sentence.id,
+            "dummy" == Word.stemmer,
+        )
+        .group_by(Text.corpus)
+        .order_by(Sentence.order, Word.order)
+        .all()
+    )
+
+    tokens: dict[str, tuple[int, int, int]] = {}
+    for c, txts, sents, tkns in data:
+        if c in tokens:
+            tokens[c] += (
+                tokens[c][0] + txts,
+                tokens[c][1] + sents,
+                tokens[c][2] + tkns,
+            )
+        else:
+            tokens[c] = (txts, sents, tkns)
+
+    return tokens
 
 
 if __name__ == "__main__":

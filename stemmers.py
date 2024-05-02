@@ -42,7 +42,7 @@ all_stemmers = {
 stemmers = all_stemmers[lang]
 
 stemmer_labels = {
-    "dummy": "none",
+    "dummy": "none (exact words)",
     "sb": "SnowBall Stemmer",
     "sb2": "SnowBall repeated",
     "ps": "Porter Stemmer",

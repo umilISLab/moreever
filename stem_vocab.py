@@ -6,7 +6,7 @@ from typing import Dict, List, Set
 import csv
 
 from stemmers import stemmers
-from create import tokenize_values
+from persistence import tokenize_values
 
 tkn = "sb"
 stem = stemmers[tkn]
@@ -59,7 +59,7 @@ def classify_vocab(
 
 
 if __name__ == "__main__":
-    vocab, vocab_br = tokenize_values(tkn, values_src)
+    vocab, vocab_br = tokenize_values(tkn)
     # print("# Our values vocabulary:")
     # for k, v2 in vocab.items():
     #     print(f"{set(v2)}")

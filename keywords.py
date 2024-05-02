@@ -5,7 +5,7 @@ import itertools
 import networkx as nx  # type: ignore
 from networkx.algorithms import community  # type: ignore
 
-from settings import model_dir
+from settings import model_dir, CLEAN_THRESHOLD
 
 from stemmers import stemmers
 from corpora import corpora
@@ -146,7 +146,11 @@ def keywords_venn(
     for c in corpora:
         ckeywords[c] = set(
             itertools.chain(
-                *[list(v.keys()) for k, v in occurences_tv.items() if k.startswith(c)]
+                *[
+                    list(v.keys())
+                    for k, v in occurences_tv.items()
+                    if k.startswith(c) and sum(c for c in v.values()) >= CLEAN_THRESHOLD
+                ]
             )
         )
     return render_venn(ckeywords, "Venn Diagram of Labels in Corpora")
@@ -253,6 +257,7 @@ def clusters_venn(
     values: Dict[str, List[str]] = {},
     occurences_tv: Dict[str, Dict[str, int]] = {},
 ) -> Dict[str, str]:
+    """TODO: Update in line with persistence"""
     if not values or not occurences_tv:
         values, _ = tokenize_values(tkn)
         _, tokenized = load_source(stemmers[tkn], corpora)

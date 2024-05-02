@@ -95,7 +95,13 @@ async def cluster_venn_page(vocab: str, stemmer: str, value: str):
 @app.get("/{stemmer}/{vocab}/map.html", response_class=HTMLResponse)
 async def heatmap_page(stemmer: str, vocab: str):
     """The Heatmap with texts vs labels"""
-    return heatmap_render(stemmer, f"{vocab}.flat")
+    return heatmap_render(stemmer, True)
+
+
+@app.get("/{stemmer}/{vocab}/map-condensed.html", response_class=HTMLResponse)
+async def heatmap_page(stemmer: str, vocab: str):
+    """The Heatmap with texts vs labels"""
+    return heatmap_render(stemmer, aggregated=True)
 
 
 # @app.get("/{stemmer}", response_class=HTMLResponse)

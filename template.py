@@ -54,6 +54,7 @@ values_templ = """<!DOCTYPE html>
   <h3>Analysis</h3>
   <div>
     <a href="map.html" target="fulltext">Texts vs Labels Heatmap</a><br/>
+    <a href="map-condensed.html" target="fulltext">Corpora vs Values Heatmap</a><br/>
     <a href="keywords.svg" target="fulltext">Labels Venn Diagram</a>
   </div>
   <h3>{title}</h3>
@@ -156,14 +157,14 @@ venn_templ = {
   <text transform="translate(600,70)" width="20%" height="20%">
     <tspan x="0" y="-10" font-weight="bold">{b_name}</tspan>{b}
   </text>
-  <text transform="translate(55,350)" width="20%" height="20%">
+  <text transform="translate(80,260)" width="20%" height="20%">
     <tspan x="0" y="-10" font-weight="bold">{c_name}</tspan>{c}
   </text>
-  <text transform="translate(805,350)" width="20%" height="20%">
+  <text transform="translate(780,260)" width="20%" height="20%">
     <tspan x="0" y="-10" font-weight="bold">{d_name}</tspan>{d}
   </text>
 
-      <text transform="translate(425,135)" width="20%" height="20%">
+      <text transform="translate(425,65)" width="20%" height="20%">
         {a_b}
       </text>
       <text transform="translate(170,215)" width="20%" height="20%">
@@ -178,24 +179,24 @@ venn_templ = {
       <text transform="translate(700,215)" width="20%" height="20%">
         {b_d}
       </text>
-      <text transform="translate(425,620)" width="20%" height="20%">
+      <text transform="translate(465,600)" width="20%" height="20%">
         {c_d}
       </text>
 
       <text transform="translate(245,290)" width="20%" height="20%">
         {a_b_c}
       </text>
-      <text transform="translate(555,290)" width="20%" height="20%">
+      <text transform="translate(580,290)" width="20%" height="20%">
         {a_b_d}
       </text>
-      <text transform="translate(515,540)" width="20%" height="20%">
+      <text transform="translate(560,530)" width="20%" height="20%">
         {a_c_d}
       </text>
-      <text transform="translate(315,540)" width="20%" height="20%">
+      <text transform="translate(315,530)" width="20%" height="20%">
         {b_c_d}
       </text>
 
-      <text transform="translate(425,450)" width="20%" height="20%">
+      <text transform="translate(400,380)" width="20%" height="20%">
         {a_b_c_d}
       </text>
 

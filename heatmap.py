@@ -4,6 +4,8 @@ from typing import Dict, List, Tuple
 
 import pandas as pd  # type: ignore
 
+from settings import CLEAN_THRESHOLD, VOCAB
+
 from corpora import corpora, country2code
 from stemmers import stemmers
 from palettes import pal_seq
@@ -17,27 +19,20 @@ from bokeh.resources import CDN  # type: ignore
 from bokeh.embed import file_html  # type: ignore
 
 
-def render(
-    tkn: str,
-    vocab: str = "",
-    values: Dict[str, List[str]] = {},
-    tokenized: Dict[str, Dict[str, List[List[str]]]] = {},
-    occurences: Dict[Tuple[str, str], int] = {},
-    occurences_backref: Dict[str, Dict[str, int]] = {},
-) -> str:
+def render(tkn: str, flat: bool = False, aggregated=False) -> str:
     """Needs either vocab/fname or rest of named parameters.
 
     Args:
         tkn (str): stemmer name, see semmers
-        fname (str, optional): need to provide either fname or other parameters
-        values (Dict[str, List[str]], optional): see create.tokenize_values(). Recalculated when missing.
-        tokenized (Dict[str, Dict[str, List[List[str]]]], optional): see create.load_source(). Recalculated when missing.
-        occurences (Dict[Tuple[str, str], int], optional): see create.calc_occurences(). Recalculated when missing.
-        occurences_backref (Dict[str, Dict[str, int]], optional): see create.calc_occurences(). Recalculated when missing.
+        flat (bool): aggregate tokens by values
+        aggregated (bool): aggregate texts by corpora
     """
-    occurences, _, occurences_backref = calc_occurences(tkn, True)
+    occurences, _, occurences_backref = calc_occurences(tkn, flat, aggregated)
 
-    title = f"Clickable Map of Values in Texts (tokenisation: {tkn})"
+    interactive = "" if aggregated else "Clickable "
+    xaxis = "Labels" if flat else "Values"
+    yaxis = "Corpora" if aggregated else "Texts"
+    title = f"{interactive}Map of {xaxis} in {yaxis} (tokenisation: {tkn})"
     # output_file(filename=f"site/{tkn}/{vocab}/map.html", title=title)
 
     # print(occurences)
@@ -45,14 +40,16 @@ def render(
     data = [
         [
             k[0].split("/")[0],
-            f"{fname2name(k[0])} [{country2code[k[0].split('/')[0]]}]",
+            fname2name(k[0])
+            + ("" if aggregated else f" [{country2code[k[0].split('/')[0]]}]"),
             k[1],
             v,
             str(v),
             # f"/index.html#/{tkn}/{vocab.replace('.flat', '')}/{k[0]}.html",
-            f"/index.html#/{tkn}/{vocab.replace('.flat', '')}/{fname2path(k[0])}",
+            f"/index.html#/{tkn}/{VOCAB}/{fname2path(k[0])}",
         ]
         for k, v in occurences.items()
+        if v >= CLEAN_THRESHOLD
     ]
     df = pd.DataFrame(data)
     df.columns = ["country", "text", "value", "count", "label", "url"]  # type: ignore
@@ -61,7 +58,12 @@ def render(
         key=lambda x: -sum(occurences_backref[x].values()),
     )
 
-    text_range = list(df.groupby(["text"])["count"].sum().sort_values().index)
+    text_range = (
+        sorted(set(df["text"]))[::-1]
+        if aggregated
+        else list(df.groupby(["text"])["count"].sum().sort_values().index)
+    )
+    # text_range =  list(df.groupby(["text"])["count"].sum().sort_values().index)
     max_count = df["count"].max()
 
     source = ColumnDataSource(data=df)
@@ -74,7 +76,7 @@ def render(
         width=15 * len(value_range) + 450,
         height=15 * len(text_range) + 150,
         # toolbar_location = None,
-        tools="tap",
+        tools="" if aggregated else "tap",
         tooltips=[("label", "@value/@text: @count")],
     )
 
