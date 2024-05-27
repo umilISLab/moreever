@@ -17,6 +17,12 @@ To be able to use this tool, you would need to define:
 
 * corpora to be studied these are located in a directory named `./corpus.*` and referenced from [settings.py](settings.py).
 
+To initialise the database, use 
+    `docker exec -it api /app/populate.py <stemmer>`
+or
+    `docker exec -it api /app/populate.py --list`
+to see all available stemmers for the given language.
+
 ### Corpora
 
 Corpora are loaded in the [stories](stories/) directory, with each corpus represented by a subdirectory.

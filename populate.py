@@ -1,13 +1,28 @@
 #!/usr/bin/env python3
 """Populates the database.
-To be executed standalone before using the application."""
+To be executed standalone before using the application.
+
+Usage:
+  populate.py -l
+  populate.py <stemmer>
+
+Options:
+  -h --help             This information
+  -l --list             List available stemmers
+  --version             Print version
+
+"""
+__version__ = "0.0.1"
+
+from docopt import docopt  # type: ignore
+
 import os
 from glob import glob
 
 from db import Base, engine, Session
 
 from customtypes import FulltextsMap, TokenizedMap
-from settings import VOCAB, CORPORA
+from settings import VOCAB, CORPORA, LANG
 from stemmers import stemmers
 from corpora import corpora as global_corpora
 
@@ -15,6 +30,12 @@ from util import rmdirs, mkdirs, story_tokenize, fname2name
 from model import Token, Text, Annotation, Sentence, Word
 
 from flatvalues import flatten
+
+
+def drop_tokenized_values(s: Session, stemmer: str) -> None:
+    data = s.query(Token).where(Token.stemmer == stemmer).delete()
+    # s.delete(data)
+    s.commit()
 
 
 def tokenize_values(s: Session, stemmer: str, vocab: str = "") -> None:
@@ -44,6 +65,17 @@ def tokenize_values(s: Session, stemmer: str, vocab: str = "") -> None:
     with open(f"vocab/{stemmer}/{vocab}.csv", "w") as fout:
         # fout.write("\n".join(stemmed_fitems))
         fout.writelines(outlines)
+
+
+def drop_source(s: Session, stemmer: str):
+    texts = s.query(Text).join(Sentence, Sentence.text_id == Text.id).join(Word, Word.sentence_id == Sentence.id).where(Word.stemmer == stemmer).all()
+    for t in texts:
+        s.delete(t)
+    sents = s.query(Sentence).join(Word, Word.sentence_id == Sentence.id).where(Word.stemmer == stemmer).all()
+    for sent in sents:
+        s.delete(sent)
+    s.query(Word).where(Word.stemmer == stemmer).delete()
+    s.commit()
 
 
 def load_source(
@@ -97,32 +129,54 @@ def load_source(
 
 
 if __name__ == "__main__":
+    args = docopt(__doc__, version=__version__)
+
+    # print(args)
+
+    if "--list" in args and args["--list"]:
+        print(f"Available stemmers for '{LANG}':")
+        print("\n".join(stemmers))
+        exit(0)
+
+    stem = args["<stemmer>"]
+
     Base.metadata.create_all(engine)
     s = Session()
 
     rmdirs()
     mkdirs()
-    for stem in stemmers:
-        print(stem)
-        # print("=============== TOKENIZE VALUES")
-        tokenize_values(s, stem)
 
-        for corpus in global_corpora:
-            for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
-                load_source(s, corpus, fname, stem)
+    print(stem)
+    # print("=============== TOKENIZE VALUES")
+    drop_tokenized_values(s, stem)
+    drop_source(s, stem)
 
-        # corpus = "1_full"
-        # for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
-        #     load_source(s, corpus, fname, stem)
+    tokenize_values(s, stem)
+    for corpus in global_corpora:
+        for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
+            load_source(s, corpus, fname, stem)
 
-        # corpus = "2_consolidated"
-        # for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
-        #     load_source(s, corpus, fname, stem)
+    # for stem in stemmers:
+    #     print(stem)
+    #     # print("=============== TOKENIZE VALUES")
+    #     tokenize_values(s, stem)
 
-        # corpus = "3_majority"
-        # for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
-        #     load_source(s, corpus, fname, stem)
+    #     for corpus in global_corpora:
+    #         for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
+    #             load_source(s, corpus, fname, stem)
 
-        # corpus = "4_split"
-        # for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
-        #     load_source(s, corpus, fname, stem)
+    #     # corpus = "1_full"
+    #     # for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
+    #     #     load_source(s, corpus, fname, stem)
+
+    #     # corpus = "2_consolidated"
+    #     # for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
+    #     #     load_source(s, corpus, fname, stem)
+
+    #     # corpus = "3_majority"
+    #     # for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
+    #     #     load_source(s, corpus, fname, stem)
+
+    #     # corpus = "4_split"
+    #     # for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
+    #     #     load_source(s, corpus, fname, stem)

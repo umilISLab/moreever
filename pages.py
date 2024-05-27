@@ -272,10 +272,12 @@ def stats_html():
     rows = []
     sums = [0] * len(cols)
     for d in data.keys():
-        part = '</td><td class="number">'.join([str(data[d][c]) for c in cols])
+        part = '</td><td class="number">'.join(
+            [str(data[d][c] if d in data and c in data[d] else 0) for c in cols]
+        )
         rows += [f"<tr><th>{d}</th><td class='number'>{part}</td></tr>"]
         for i, c in enumerate(cols):
-            sums[i] += data[d][c]
+            sums[i] += data[d][c] if d in data and c in data[d] else 0
     totals = (
         "<tr><th>totals</th><th>"
         + "</th><th class='number'>".join(str(s) for s in sums)

@@ -15,23 +15,30 @@ DEBUG: Final = True
 
 # VOCAB = "clustering"
 # VOCAB = "variation"
-# VOCAB = "values"
+# VOCAB:Final = "values"
 # VOCAB = "mfd2.0.dummy" # TODO: remove dots in classes
 # VOCAB: Final = "Refined_dictionary.dummy"
 # VOCAB: Final = "Refined_dictionary.lan"
-VOCAB = "mfd2.0.lan"
+# VOCAB: Final = "mfd2.0.lan"
+# VOCAB: Final = "mfd2.0.custom"
+VOCAB: Final = os.environ["VOCAB"]
 
 # CORPORA: Final = "stories"
-CORPORA: Final = "twitter"
+# CORPORA: Final = "twitter"
+# CORPORA: Final = "reddit"
+# CORPORA: Final = "mft"
+CORPORA: Final = os.environ["CORPORA"]
 
-DATABASE_URL: Final = f"sqlite:///db/{VOCAB}.{CORPORA}.sqlite?check_same_thread=False"
+# DATABASE_URL: Final = f"sqlite:///db/{VOCAB}.{CORPORA}.sqlite?check_same_thread=False"
+DATABASE_URL: Final = "postgresql://postgres:xxxxxx@db/postgres"
 
-# lang = "it"
-lang: Final = "en"
+# LANG = "it"
+# LANG: Final = "en"
+LANG: Final = os.environ["ISO_LANG"]
 
 # A clean dataset is bottom-up defined and has no vocabulary that does not occur.
 # An unclean is top-down (typically from a generic dictionary) and has many irrelevant or less relevant tokens.
 # Thus: 1) tokens are sorted by frequence, 2) missing tokens are not shown
 
-# CLEAN_THRESHOLD: Final = 0
-CLEAN_THRESHOLD: Final = 5
+CLEAN_THRESHOLD: Final = 0
+# CLEAN_THRESHOLD: Final = 10

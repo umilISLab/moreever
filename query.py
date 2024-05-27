@@ -139,9 +139,17 @@ def calc_occurences(
     occurences_backref: dict[str, dict[str, int]] = {}  # value: (text_name:count)
 
     token_col = Token.token if flat else Token.token_class
-    group_col = Text.corpus if aggregated else Text.name
+    # group_col = Text.corpus if aggregated else Text.name
+    group_cols = (
+        (Text.corpus, token_col) if aggregated else (Text.corpus, Text.name, token_col)
+    )
     text_col = (
-        Text.corpus if aggregated else Text.corpus + expression.literal("/") + Text.name
+        # sqlite version
+        Text.corpus
+        if aggregated
+        else Text.corpus + expression.literal("/") + Text.name
+        # postgres version
+        # Text.corpus if aggregated else functions.concat(Text.corpus, expression.literal("/"), Text.name)
     )
     data = (
         s.query(
@@ -157,7 +165,7 @@ def calc_occurences(
             Word.stemmer == Token.stemmer,
             Word.stemmer == stemmer,
         )
-        .group_by(group_col, token_col)
+        .group_by(*group_cols)
         .all()
     )
 
@@ -210,7 +218,6 @@ def corpora_stats(s: Session) -> dict[str, tuple[int, int, int]]:
             "dummy" == Word.stemmer,
         )
         .group_by(Text.corpus)
-        .order_by(Sentence.order, Word.order)
         .all()
     )
 
@@ -244,7 +251,6 @@ def corpora_token_counts(s: Session) -> dict[str, int]:
             Word.token == Token.token,
         )
         .group_by(Text.corpus)
-        .order_by(Sentence.order, Word.order)
         .all()
     )
 

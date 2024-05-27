@@ -7,12 +7,12 @@ import nltk  # type: ignore
 import simplemma
 import spacy
 
-from settings import lang
+from settings import LANG
 
 from morphroot import get_root_morpheme, roots
 
 # nltk.download("wordnet")
-nlp = spacy.load(f"{lang}_core_web_lg")
+nlp = spacy.load(f"{LANG}_core_web_lg")
 
 # changes here need to also be reflected in static/index.html
 # en
@@ -51,7 +51,7 @@ all_stemmers = {
 }
 
 
-stemmers = all_stemmers[lang]
+stemmers = all_stemmers[LANG]
 
 stemmer_labels = {
     "dummy": "none (exact words)",

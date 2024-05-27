@@ -1,34 +1,61 @@
 version: '3.9'
 
 services:
-  fastapi:
+  db:
+    container_name: db
+    image: postgres:15.1
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=xxxxxx
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./db/${VOCAB}.${CORPORA}.postgres:/var/lib/postgresql/data/
+      # - ./db/init:/docker-entrypoint-initdb.d/:ro
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d postgres -U postgres"]
+
+  api:
+    container_name: api
     # image: python:3-slim-buster
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - ISO_LANGUAGE=${ISO_LANG}
     # expose:
     #   - 8000
     ports:
-      - 8103:8000
+      - 8000:8000
     volumes:
       - .:/app
+      - ./data/nltk_data:/root/nltk_data
+    environment:
+      - VOCAB=${VOCAB}
+      - CORPORA=${CORPORA}
+      # - ISO_LANGUAGE=${ISO_LANG}
+      - DEBUG=${DEBUG}
     # command: sh -c "tail -f /dev/null"
     # entrypoint: sh -c "apt-get update && apt-get install wget -y && rm -rf /var/lib/apt/lists/* && pip install --no-cache-dir --upgrade -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-level debug"
     # entrypoint: sh -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-level debug"
     # working_dir: /app
+    restart: always
     healthcheck:
       test: ["CMD-SHELL", "wget -nv -t1 --spider http://localhost:8000/docs || exit 1"]
-    restart: always
 
-  nginx:
+  server:
+    container_name: server
     image: nginx:1.25-alpine-slim
     ports:
       - 8102:80
     volumes: 
       # - ./frontend/dist:/usr/share/nginx/html:ro
-      - ./site:/usr/share/nginx
+      - ./static:/usr/share/nginx/html
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       # - ./logs:/val/log/nginx
+    restart: always
     healthcheck:
       test: ["CMD-SHELL", "wget -nv -t1 --spider http://localhost || exit 1"]
-    restart: always
