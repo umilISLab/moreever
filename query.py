@@ -1,6 +1,6 @@
 from customtypes import TokenToClassMap, ClassToTokenMap
 
-from sqlalchemy import func, distinct, and_
+from sqlalchemy import func, distinct, and_, text
 from sqlalchemy.sql import expression, functions
 
 from db import Session
@@ -106,9 +106,9 @@ def load_source(
                     sent_id = sentence.id
                     if sent:
                         tokenized[corpus][textname] += [sent]
-                    sent = [w.word]
+                    sent = [w.token]
                 else:
-                    sent += [w.word]
+                    sent += [w.token]
             tokenized[corpus][textname] += [sent]
 
     return fulltexts, tokenized
@@ -153,7 +153,7 @@ def calc_occurences(
         .join(Sentence, Sentence.text_id == Text.id)
         .join(Word, Word.sentence_id == Sentence.id)
         .filter(
-            Word.word == Token.token,
+            Word.token == Token.token,
             Word.stemmer == Token.stemmer,
             Word.stemmer == stemmer,
         )
@@ -180,10 +180,12 @@ def calc_occurences(
 
 
 def get_stemmer2vocab(s: Session) -> dict[str, dict[str, int]]:
-    q = """SELECT count(words.id), words.stemmer, token_class  FROM words, tokens
-    WHERE words.word = tokens.token AND words.stemmer = tokens.stemmer
+    q = """SELECT count(words.id), words.stemmer, token_class
+    FROM words, tokens
+    WHERE words.token = tokens.token AND words.stemmer = tokens.stemmer
     GROUP BY words.stemmer, token_class;"""
-    data = s.execute(q)
+    # data = s.execute(q)
+    data = s.execute(text(q))
     result: dict[str, dict[str, int]] = {}
     for cnt, stem, value in data:
         if value not in result:
@@ -194,7 +196,7 @@ def get_stemmer2vocab(s: Session) -> dict[str, dict[str, int]]:
     return result
 
 
-def corpora_token_counts(s: Session) -> dict[str, tuple[int, int, int]]:
+def corpora_stats(s: Session) -> dict[str, tuple[int, int, int]]:
     data = (
         s.query(
             Text.corpus,
@@ -224,6 +226,29 @@ def corpora_token_counts(s: Session) -> dict[str, tuple[int, int, int]]:
             tokens[c] = (txts, sents, tkns)
 
     return tokens
+
+
+def corpora_token_counts(s: Session) -> dict[str, int]:
+    data = (
+        s.query(
+            Text.corpus,
+            func.count(distinct(Text.name)).label("text_cnt"),
+            func.count(distinct(Sentence.id)).label("sent_count"),
+            func.count(distinct(Word.id)).label("word_cnt"),
+            func.count(distinct(Token.id)).label("token_cnt"),
+        )
+        .where(
+            Sentence.text_id == Text.id,
+            Word.sentence_id == Sentence.id,
+            "dummy" == Word.stemmer,
+            Word.token == Token.token,
+        )
+        .group_by(Text.corpus)
+        .order_by(Sentence.order, Word.order)
+        .all()
+    )
+
+    return dict((c, tok) for c, txt, sent, w, tok in data)
 
 
 if __name__ == "__main__":

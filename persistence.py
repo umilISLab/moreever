@@ -23,8 +23,22 @@ def calc_occurences(
     return query.calc_occurences(Session(), stemmer, flat, aggregated)
 
 
-def corpora_token_counts() -> dict[str, tuple[int, int, int]]:
-    return query.corpora_token_counts(Session())
+def corpora_stats() -> dict[str, tuple[int, int, int, int]]:
+    """For each corpus returns: num. texts, num. words, num. sentences"""
+    s = Session()
+    stats = query.corpora_stats(s)
+    tkns = query.corpora_token_counts(s)
+    result: dict[str, tuple[int, int, int]] = {}
+    for c, texts in stats.items():
+        # print(texts)
+        result[c] = (texts[0], texts[1], texts[2], tkns[c])
+        #     len(texts),
+        #     sum(t[0] for t in texts.values()),
+        #     sum(t[1] for t in texts.values()),
+        #     tkns[c]
+        # )
+
+    return result
 
 
 if __name__ == "__main__":

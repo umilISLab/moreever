@@ -28,6 +28,7 @@ def tokenize_values(
     """
     raise NotImplementedError("Please use equivalent method in persistence")
 
+
 def load_source(
     token_func=None, corpora: List[str] = []
 ) -> Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, List[List[str]]]]]:

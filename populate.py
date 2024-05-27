@@ -31,7 +31,7 @@ def tokenize_values(s: Session, stemmer: str, vocab: str = "") -> None:
                 continue
             token_class = l.split(",")[0]
             fitems = [x.strip().lower() for x in l.split(",") if x.strip()]
-            stemmed_fitems = [token_func(x) for x in fitems]
+            stemmed_fitems = [token_func(x, None) for x in fitems]
             s.add_all(
                 [
                     Token(token=token, stemmer=stemmer, token_class=token_class)
@@ -46,7 +46,9 @@ def tokenize_values(s: Session, stemmer: str, vocab: str = "") -> None:
         fout.writelines(outlines)
 
 
-def load_source(s: Session, stemmer="dummy", corpora: list[str] = []):
+def load_source(
+    s: Session, corpus: str, fname: str, stemmer="dummy", corpora: list[str] = []
+):
     """loads the sources from the specified directory structure
 
     Args:
@@ -58,37 +60,39 @@ def load_source(s: Session, stemmer="dummy", corpora: list[str] = []):
         Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, List[List[str]]]]]: returns two dictionaries:
             corpora->text_name->fulltext and corpora->text_name->list of tokenized sentences
     """
-    if not corpora:
-        corpora = global_corpora
-
-    for corpus in corpora:
-        for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
-            with open(fname) as f:
-                textname = fname.split("/")[-1].split(".")[-2]
-                assert textname, f"Seems not to contain file name: {fname}"
-                content = "".join(f.readlines())
-                txt = Text(
-                    fname=textname,
-                    name=fname2name(textname),
-                    corpus=corpus,
-                    fulltext=content,
-                )
-                s.add(txt)
-                s.flush()
-                tokenized = story_tokenize(stemmers[stemmer], content)
-                for i, sentence in enumerate(tokenized):
-                    s_text = " ".join(sentence)
-                    sent = Sentence(order=i, text_id=txt.id, sentence=s_text)
-                    s.add(sent)
-                    s.flush()
-                    s.add_all(
-                        [
-                            Word(
-                                word=word, order=j, sentence_id=sent.id, stemmer=stemmer
-                            )
-                            for j, word in enumerate(sentence)
-                        ]
+    with open(fname) as f:
+        # print("=============== " + fname)
+        textname = fname.split("/")[-1].split(".")[-2]
+        assert textname, f"Seems not to contain file name: {fname}"
+        content = "".join(f.readlines())
+        txt = Text(
+            fname=textname,
+            name=fname2name(textname),
+            corpus=corpus,
+            fulltext=content,
+        )
+        s.add(txt)
+        s.flush()
+        # print(content)
+        tokenized = story_tokenize(content)
+        # print(tokenized)
+        for i, sentence in enumerate(tokenized):
+            s_text = " ".join(sentence)
+            sent = Sentence(order=i, text_id=txt.id, sentence=s_text)
+            s.add(sent)
+            s.flush()
+            s.add_all(
+                [
+                    Word(
+                        word=word,
+                        order=j,
+                        sentence_id=sent.id,
+                        stemmer=stemmer,
+                        token=stemmers[stemmer](word, None),
                     )
+                    for j, word in enumerate(sentence)
+                ]
+            )
     s.commit()
 
 
@@ -100,5 +104,25 @@ if __name__ == "__main__":
     mkdirs()
     for stem in stemmers:
         print(stem)
+        # print("=============== TOKENIZE VALUES")
         tokenize_values(s, stem)
-        load_source(s, stem)
+
+        for corpus in global_corpora:
+            for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
+                load_source(s, corpus, fname, stem)
+
+        # corpus = "1_full"
+        # for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
+        #     load_source(s, corpus, fname, stem)
+
+        # corpus = "2_consolidated"
+        # for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
+        #     load_source(s, corpus, fname, stem)
+
+        # corpus = "3_majority"
+        # for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
+        #     load_source(s, corpus, fname, stem)
+
+        # corpus = "4_split"
+        # for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
+        #     load_source(s, corpus, fname, stem)

@@ -133,7 +133,7 @@ class Annotator:
             doc = self.tokenizer.tokenize(sentence)
             tokens += [
                 [
-                    self.token_func(t.lower()) for t in doc
+                    self.token_func(t, None) for t in doc
                 ]  # if t not in string.punctuation + "\n"]
             ]
         return tokens
