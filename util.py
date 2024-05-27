@@ -97,7 +97,7 @@ def path2name(path: str) -> str:
     return " ".join(w.capitalize() for w in path.split("#")[-1].split("_"))
 
 
-def story_tokenize(token_func, story: str) -> List[List[str]]:
+def story_tokenize(story: str) -> list[list[str]]:
     """get the text of the story and returns a lists of sentences represented as list of lemmas.
 
     >>> from nltk.stem import SnowballStemmer
@@ -130,16 +130,19 @@ def story_tokenize(token_func, story: str) -> List[List[str]]:
     [['marry', 'marry']]
     """
     tokens = []
+    words = []
     tokenizer = RegexpTokenizer(regex_token)
 
     sentences = sent_tokenize(story)
     for i, sentence in enumerate(sentences):
         # doc = word_tokenize(sentence)
         doc = tokenizer.tokenize(sentence)
-        tokens += [
-            [token_func(t.lower()) for t in doc if t not in string.punctuation + "\n"]
-        ]
-    return tokens
+        words += [[t for t in doc if t not in string.punctuation + "\n"]]
+    return words
+
+
+def word2tokens(token_func, story: list[list[str]]) -> list[list[str]]:
+    return [[token_func(w.lower(), s) for w in s] for s in story]
 
 
 def collect_tokens(

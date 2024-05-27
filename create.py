@@ -26,32 +26,7 @@ def tokenize_values(
         Tuple[Dict[str, List[str]], Dict[str, str]]: returns two dictionaries:
             value->list_labels and label->value
     """
-    if not vocab:
-        vocab = VOCAB
-
-    token_func = stemmers[func_name]
-    values: Dict[str, set[str]] = {}
-    valuesbackref: Dict[str, str] = {}
-
-    if vocab.endswith(".flat") and not os.path.exists(f"vocab/{vocab}.csv"):
-        flatten(f"vocab/{vocab[:-5]}.csv")
-    with open(f"vocab/{vocab}.csv") as f:
-        flines = f.readlines()
-        for l in flines:
-            if not l.strip():
-                continue
-            fitems = [x.strip().lower() for x in l.split(",") if x.strip()]
-            stemmed_fitems = [token_func(x) for x in fitems]
-            values[stemmed_fitems[0]] = stemmed_fitems
-            for i in stemmed_fitems:
-                # if i in valuesbackref:
-                #     print(i, stemmed_fitems[0])
-                valuesbackref[i] = stemmed_fitems[0]
-    # mkdirs()
-    with open(f"vocab/{func_name}/{vocab}.csv", "w") as fout:
-        fout.writelines("\n".join(", ".join(v) for v in values.values()))
-    return values, valuesbackref
-
+    raise NotImplementedError("Please use equivalent method in persistence")
 
 def load_source(
     token_func=None, corpora: List[str] = []
@@ -67,25 +42,7 @@ def load_source(
         Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, List[List[str]]]]]: returns two dictionaries:
             corpora->text_name->fulltext and corpora->text_name->list of tokenized sentences
     """
-    if not token_func:
-        token_func = stemmers["dummy"]
-    if not corpora:
-        corpora = get_dirs()
-
-    fulltexts: Dict[str, Dict[str, str]] = {}
-    tokenized: Dict[str, Dict[str, List[List[str]]]] = {}
-    for corpus in corpora:
-        fulltexts[corpus] = {}
-        tokenized[corpus] = {}
-        for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
-            with open(fname) as f:
-                textname = fname.split("/")[-1].split(".")[-2]
-                assert textname, f"Seems not to contain file name: {fname}"
-                fulltexts[corpus][textname] = "".join(f.readlines())
-                tokenized[corpus][textname] = story_tokenize(
-                    token_func, fulltexts[corpus][textname]
-                )
-    return fulltexts, tokenized
+    raise NotImplementedError("Please use equivalent method in persistence")
 
 
 def calc_occurences(
@@ -108,36 +65,7 @@ def calc_occurences(
             (text_name, value): count, text_name: (value: count), value: (text_name: count),
             where text_name is in the format <corpus>/<chapter>_<text> (no extension)
     """
-    # print(tokenized)
-    token_func = stemmers[func_name]
-    occurences: Dict[Tuple[str, str], int] = {}  # (text_name, value): count)
-    occurences_tv: Dict[str, Dict[str, int]] = {}  # text_name: (value: count)
-    occurences_backref: Dict[str, Dict[str, int]] = {}  # value: (text_name:count)
-    for corpus, chapters in tokenized.items():
-        for chapter, lists_of_tokens in chapters.items():
-            text_name = f"{corpus}/{chapter}"
-            # print(text_name)
-            for value_name, synonyms in values.items():
-                cnt = sum(
-                    sum(phrase.count(token_func(keyword)) for keyword in synonyms)
-                    for phrase in lists_of_tokens
-                )
-                if not cnt:
-                    continue
-
-                occurences[(text_name, value_name)] = cnt
-
-                if text_name not in occurences_tv:
-                    occurences_tv[text_name] = {}
-                assert value_name not in occurences_tv[text_name]
-                occurences_tv[text_name][value_name] = cnt
-
-                if value_name not in occurences_backref:
-                    occurences_backref[value_name] = {}
-                assert text_name not in occurences_backref[value_name]
-                occurences_backref[value_name][text_name] = cnt
-
-    return occurences, occurences_tv, occurences_backref
+    raise NotImplementedError("Please use equivalent method in persistence")
 
 
 def annotate_occurences(

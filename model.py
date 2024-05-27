@@ -53,7 +53,8 @@ class Word(Base):
     id = Column(Integer, primary_key=True)
     timestamp = Column(DateTime, server_default=func.now())
 
-    word = Column(String, nullable=False)
+    word = Column(String, nullable=False, comment="Word as originally present")
+    token = Column(String, nullable=False, comment="Actually token")
     order = Column(Integer, nullable=False)
     sentence_id = Column(Integer, nullable=False)
     stemmer = Column(String, nullable=False)

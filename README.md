@@ -13,9 +13,9 @@ This is meant to be useful for a set of three small corpora in English (tested o
 
 To be able to use this tool, you would need to define:
 
-* sets of words that represent your explicit references (labels representing values), and
+* sets of words that represent your explicit references (labels representing values). These are defined as CSV files in a file placed in [./vocab](./vocab/) and referenced from [settings.py](settings.py), and
 
-* corpora to be studied (currently specific to three national corpora (de, it, pt)
+* corpora to be studied these are located in a directory named `./corpus.*` and referenced from [settings.py](settings.py).
 
 ### Corpora
 

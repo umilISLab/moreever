@@ -20,13 +20,8 @@ from datamodel import Annotator
 from hyper import enrich_value
 
 # from create import tokenize_values, load_source, calc_occurences
-from persistence import (
-    tokenize_values,
-    load_source,
-    calc_occurences,
-    corpora_token_counts,
-)
-from persistence import stemmers_values
+from persistence import tokenize_values, load_source, calc_occurences
+from persistence import corpora_stats, stemmers_values
 
 
 def values_css(stemmer: str, vocab: str) -> str:
@@ -181,7 +176,7 @@ def values_html(stemmer: str, vocab: str) -> str:
         for line in csv.reader(fin):
             if not line:
                 continue
-            stems = [stemmers[stemmer](v.strip().lower()) for v in line]
+            stems = [stemmers[stemmer](v.strip(), None) for v in line]
             links = {}
             # TODO: refactor: currently first handled separately in enrich_values, then merged and separated here
             first = None
@@ -210,28 +205,48 @@ def stats_html():
     # corpora stats
     heading = (
         "<tr><th>"
-        + "</th><th>".join(["corpus", "texts", "sentences", "tokens", "avg.len"])
+        + "</th><th>".join(
+            [
+                "corpus",
+                "texts",
+                "sentences",
+                "tokens",
+                "avg.tokens",
+                "labels",
+                "avg.labels",
+            ]
+        )
         + "</th></tr>"
     )
-    ctc = corpora_token_counts()
+    ctc = corpora_stats()
     data = [
         (
             corpus,
             str(count[0]),
             str(count[1]),
-            str(count[2]),
-            f"{count[2]/count[0]:.3f}",
+            f"{count[2]}",
+            f"{count[2]/count[0]:.2f}",
+            f"{count[3]}",
+            f"{count[3]/count[0]:.2f}",
         )
         for corpus, count in ctc.items()
     ]
-    txt, sent, tok = (sum(count) for count in zip(*ctc.values()))
+    txt, sent, tok, lbl = (sum(count) for count in zip(*ctc.values()))
     rows = [
         "<tr><td>" + '</td><td class="number">'.join(d) + "</td></tr>" for d in data
     ]
     totals = (
         "<tr><th>"
         + "</th><th class='number'>".join(
-            ["totals", str(txt), str(sent), str(tok), f"{tok/txt:.3f}"]
+            [
+                "totals",
+                str(txt),
+                str(sent),
+                f"{tok}",
+                f"{tok/txt:.3f}",
+                f"{lbl}",
+                f"{lbl/txt:.3f}",
+            ]
         )
         + "</th></tr>"
     )
