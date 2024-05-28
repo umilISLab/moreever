@@ -10,7 +10,7 @@ from urllib.parse import quote_plus
 from settings import VOCAB, CORPORA, CLEAN_THRESHOLD
 
 from corpora import corpora
-from stemmers import stemmers, stemmer_labels
+from stemmers import stemmers, stemmer_labels, default_stemmer
 from template import title_templ, span_templ, select_option_templ, table_templ
 from template import index_templ, corpus_templ, text_templ, list_templ, values_templ
 from template import value_link_templ, list_link_templ
@@ -42,12 +42,11 @@ def text_anchor_dict(stemmer: str, vocab: str, corpus: str) -> Dict[str, str]:
 
 
 def index_html() -> str:
-    stemmer_default = next(reversed(stemmers.keys()))
     stemmers_html = "".join(
         select_option_templ.format(
             value=k,
             label=stemmer_labels[k],
-            default="selected" if k == stemmer_default else "",
+            default="selected" if k == default_stemmer else "",
         )
         for k in stemmers
     )
@@ -60,12 +59,12 @@ def index_html() -> str:
 
     text_default = "onboarding.html"
 
-    tokenize_values(stemmer_default)
+    tokenize_values(default_stemmer)
     return index_templ.format(
         stemmers=stemmers_html,
         corpora=corpora_html,
         vocab=VOCAB,
-        stem=stemmer_default,
+        stem=default_stemmer,
         corpus=corpus_default,
         text=text_default,
     )

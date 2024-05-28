@@ -4,9 +4,10 @@ from sqlalchemy.orm import sessionmaker  # type: ignore
 
 from settings import DATABASE_URL  # , DEBUG
 
+# DEBUG = True
 DEBUG = False
-# engine = create_engine(DATABASE_URL, echo=DEBUG, pool_size=10, max_overflow=20)
-engine = create_engine(DATABASE_URL, echo=DEBUG)
+engine = create_engine(DATABASE_URL, echo=DEBUG, pool_size=10, max_overflow=20)
+# engine = create_engine(DATABASE_URL, echo=DEBUG)
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()

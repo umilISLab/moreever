@@ -24,17 +24,17 @@ all_stemmers = {
             word.lower()
         ),
         # Double application of the Snowball Stemmer to ensure it is idempotent function over the values
-        "sb2": lambda word, sent: nltk.stem.SnowballStemmer("english").stem(
-            nltk.stem.SnowballStemmer("english").stem(word.lower())
-        ),
+        # "sb2": lambda word, sent: nltk.stem.SnowballStemmer("english").stem(
+        #     nltk.stem.SnowballStemmer("english").stem(word.lower())
+        # ),
         # Snowball stemmer on lemmatized tokens
         "sb-lem": lambda word, sent: nltk.stem.SnowballStemmer("english").stem(
             nltk.stem.WordNetLemmatizer().lemmatize(word.lower())
         ),
         "ps": lambda word, sent: nltk.stem.PorterStemmer().stem(word.lower()),
-        "lan": lambda word, sent: nltk.stem.lancaster.LancasterStemmer().stem(
-            word.lower()
-        ),
+        # "lan": lambda word, sent: nltk.stem.lancaster.LancasterStemmer().stem(
+        #     word.lower()
+        # ),
         # "morph": lambda x: get_root_morpheme(nltk.stem.WordNetLemmatizer().lemmatize(x.lower()), roots),
     },
     "it": {
@@ -46,6 +46,9 @@ all_stemmers = {
         # Double application of the Snowball Stemmer to ensure it is idempotent function over the values
         "sb2": lambda word, sent: nltk.stem.SnowballStemmer("italian").stem(
             nltk.stem.SnowballStemmer("italian").stem(word.lower())
+        ),
+        "sb-lem": lambda word, sent: nltk.stem.SnowballStemmer("english").stem(
+            simplemma.lemmatize(word.lower(), lang="it")
         ),
     },
 }
@@ -64,3 +67,5 @@ stemmer_labels = {
     "wnl": "Lemmatizer",
     "simpl": "Lemmatizer",
 }
+
+default_stemmer = "sb-lem"

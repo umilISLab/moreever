@@ -58,4 +58,4 @@ services:
       # - ./logs:/val/log/nginx
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "wget -nv -t1 --spider http://localhost || exit 1"]
+      test: ["CMD-SHELL", "wget -nv -t1 --spider http://localhost/index.css || exit 1"]

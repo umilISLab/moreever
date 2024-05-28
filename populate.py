@@ -146,14 +146,15 @@ if __name__ == "__main__":
     rmdirs()
     mkdirs()
 
-    print(stem)
-    # print("=============== TOKENIZE VALUES")
     drop_tokenized_values(s, stem)
     drop_source(s, stem)
 
+    print(f">>> TOKENIZE VALUES with {stem}")
     tokenize_values(s, stem)
+
     for corpus in global_corpora:
         for fname in glob(f"./corpora.{CORPORA}/{corpus}/*.txt"):
+	    print(f">>> TOKENIZE {fname} with {stem}")
             load_source(s, corpus, fname, stem)
 
     # for stem in stemmers:
